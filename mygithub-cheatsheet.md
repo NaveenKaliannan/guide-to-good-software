@@ -1,7 +1,4 @@
-
-
-Creating a new branch
-
+Setting up a new branch
 ```
 git branch new-branch-name
 ```
