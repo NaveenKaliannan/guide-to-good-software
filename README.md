@@ -1,6 +1,6 @@
 # How-to-write-a-Good-Software
 
-Tools that offers version control of the source code : [Github](https://github.com/)
+Tools that offers version control of the source code : [GITHUB](https://github.com/) - [Cheat sheet](https://education.github.com/git-cheat-sheet-education.pdf)
 
 Tools to format the source code: [Black](https://pypi.org/project/black/), [Pylint](https://pypi.org/project/pylint/)
 
