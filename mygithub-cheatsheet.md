@@ -7,6 +7,11 @@ Status checks
 git branch -v
 git status
 ```
+restore the files
+``
+git checkout filename
+git restore filename
+```
 Update the current code
 ```
 git pull
