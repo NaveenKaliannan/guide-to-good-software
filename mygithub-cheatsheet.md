@@ -36,9 +36,17 @@ git push --force
 ```
 ## second way (J)
 ```
+git branch backup/current-branch-name
+git checkout master or suitable branch
+git pull
 git rebase master
+in case if there is git reset --hard origin/
 git push --force-with-lease
+```
+##squash
+```
 git rebase -i master
+first commit to reword (top) and other all to squash (below)
 git rebase --continue
 git log
 ```
