@@ -37,12 +37,25 @@ git push --force
 ## second way (J)
 ```
 git branch backup/current-branch-name
-git checkout master or suitable branch
+git checkout master or interested-branch-name
 git pull
 git status
-in case if there is an Unmerged paths: git reset --hard origin/
-
-git rebase master
+in case if there is an Unmerged paths: git reset --hard origin/interested-branch-name or origin/master
+git status
+git checkout my-branch-name
+git rebase master or interested-branch-name (not origin)
+git abort
+git checkout master or interested-branch-name (not origin)
+git cherry-pick
+git cherry-pick SHA-values-of-commit
+git log
+git checkout my-branch-name
+git git reset --hard master or interested-branch-name (not origin)
+git log
+git checkout master or interested-branch-name (not origin)
+git reset --hard origin/master or interested-branch-name
+git log
+git checkout my-branch-name
 git push --force-with-lease
 ```
 ##squash
