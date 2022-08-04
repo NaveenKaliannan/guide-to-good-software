@@ -39,8 +39,10 @@ git push --force
 git branch backup/current-branch-name
 git checkout master or suitable branch
 git pull
+git status
+in case if there is an Unmerged paths: git reset --hard origin/
+
 git rebase master
-in case if there is git reset --hard origin/
 git push --force-with-lease
 ```
 ##squash
