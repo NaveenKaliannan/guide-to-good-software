@@ -68,7 +68,7 @@ git log
 Delete a specific commit 
 ```
 git rebase -i master
-do : delete the specific commit instead of squash or pick or other keywords
+do : delete the specific commit instead of squash or pick or other keywords. This means delete the entire line
 git push --force-with-lease
 ```
 
