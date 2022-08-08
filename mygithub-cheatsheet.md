@@ -61,10 +61,17 @@ git push --force-with-lease
 ##squash
 ```
 git rebase -i master
-first commit to reword (top) and other all to squash (below)
+do : first commit to reword (top) and other all to squash (below)
 git rebase --continue
 git log
 ```
+Delete a specific commit 
+```
+git rebase -i master
+do : delete the specific commit instead of squash or pick or other keywords
+git push --force-with-lease
+```
+
 To avoid from the following errors: "smudge filter lfs failed" or "external filter 'git-lfs filter-process' failed"
 ```
 git lfs install --skip-smudge
