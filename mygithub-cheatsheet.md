@@ -21,6 +21,11 @@ Checking out the created branch or master
 git checkout new-branch-name
 git checkout master
 ```
+coping a specific commit from one branch to the interested branch
+```
+git checkout interested-branch
+git cherrypick SHA-values-of-commit
+```
 Git commit history
 ```
 git log
@@ -50,7 +55,7 @@ git cherry-pick
 git cherry-pick SHA-values-of-commit
 git log
 git checkout my-branch-name
-git git reset --hard master or interested-branch-name (not origin)
+git reset --hard master or interested-branch-name (not origin)
 git log
 git checkout master or interested-branch-name (not origin)
 git reset --hard origin/master or interested-branch-name
