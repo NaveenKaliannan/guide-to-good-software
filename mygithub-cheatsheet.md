@@ -1,3 +1,7 @@
+Configuring your github repos. For example, user id, password
+```
+git config
+```
 Setting up a new branch
 ```
 git branch new-branch-name
