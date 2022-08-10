@@ -1,4 +1,4 @@
-Configuring your github repos. For example, user id, password
+Configuring your /home/naveen/.gitconfig. For example, user id, password
 ```
 git config
 ```
