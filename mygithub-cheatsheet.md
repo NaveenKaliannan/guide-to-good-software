@@ -76,6 +76,14 @@ git rebase -i master
 do : delete the specific commit instead of squash or pick or other keywords. This means delete the entire line
 git push --force-with-lease
 ```
+Delete a branch 
+```
+git branch -d unwanted-branch-name
+-d option will delete the branch locally and -D will force the branch to delete locally
+git push
+Deleting a branch remotely. Use the following command
+git push origin --delete unwanted-branch-name
+```
 
 To avoid from the following errors: "smudge filter lfs failed" or "external filter 'git-lfs filter-process' failed"
 ```
