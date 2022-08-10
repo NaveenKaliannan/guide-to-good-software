@@ -92,3 +92,13 @@ git clone repository-name
 git lfs pull
 git lfs install --force
 ```
+How to igonre files For example, binaries, inputs of large size, extrnal libraries (https://www.w3schools.com/git/git_ignore.asp)
+```
+go to root of your local git and create gitignore file
+touch .gitignore
+inside the file
+# ignore ALL .log .xyz, .o files
+*.log, .xyz, .o
+# ignore ALL files in ANY directory named temp
+temp/
+```
