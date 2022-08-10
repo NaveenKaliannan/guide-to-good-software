@@ -106,3 +106,9 @@ inside the file
 # ignore ALL files in ANY directory named temp
 temp/
 ```
+To see the git root directory or branch hsa values 
+```
+git rev-parse --show-toplevel
+git rev-parse --git-dir
+git rev-parse --branches
+```
