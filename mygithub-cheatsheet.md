@@ -1,4 +1,4 @@
-Configuring your /home/naveen/.gitconfig. For example, user id, password
+Configuring your /home/naveen/.gitconfig and /my-repository/.git. For example, user id, password
 ```
 git config
 ```
@@ -98,7 +98,7 @@ git lfs install --force
 ```
 How to igonre files For example, binaries, inputs of large size, extrnal libraries (https://www.w3schools.com/git/git_ignore.asp)
 ```
-go to root of your local git and create gitignore file
+go to root of your local git (repository-name/.gitigonre) and create gitignore file
 touch .gitignore
 inside the file
 # ignore ALL .log .xyz, .o files
