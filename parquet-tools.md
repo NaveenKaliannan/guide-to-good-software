@@ -11,3 +11,7 @@ Converting parquet to json file
 ```
 pt cat --json filename.snappy.parquet | jq | tee filename.json
 ```
+Converting all the parquet files in folder into a single json file
+```
+for i in * ; do pt cat -json $i >> odometry.json ; done
+```
