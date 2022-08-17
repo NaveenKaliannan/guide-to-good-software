@@ -8,12 +8,14 @@ sed -i 's/old/new/g' file-name
 ```
 Notation
 ```
-b - block special file
+b - block special file for storage, drives, usb. Can be mounted. 
+c - character device file  ex. mouse, keyboard
 d - directory
 r - read
 w - write 
 x - executable
 + - add permission
+- - removes the permission
 = - ignore all permissions
 ```
 Chaning the permission of file or directory 
@@ -48,6 +50,10 @@ lsblk - Lists the available block devices in the system. It displays the output 
 mount allows filesystem accessible in the Linux directory tree. Normally `/mnt` directory is used for mounting
 
 ```
+fdisk -l --->  find the location in /dev
+/dev/sdb1 is a device file. and when you mount it, you access the files in the device.
+mount /dev/sdb1 /mnt/location/ - then you can access the files in the filesystem. otherwise you cannot see the folders or files in drives such as USB, external.  
+BTRFS, EXT4 (large file system, good performance for large size, unlimited sub directories) oder NTFS
 mount - allowing acces to a filesystem
 umount - remove all those access.
 sudo mount /dev/sdb1 /mnt/media
