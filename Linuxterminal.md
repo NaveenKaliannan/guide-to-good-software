@@ -40,9 +40,9 @@ information about /dev/sd - https://www.baeldung.com/linux/dev-sda
 ```
 /dev  contains device files
 /sd is  scsi disk
-/dev/sd is a hard disk /sd[a-z] - naming format for our disks.
+/dev/sd is a hard disk /sd[a-z] - naming format for our disks. Every storage has own sd[a-z] name
 sudo fdisk -l shows the capacity of a hard disk
-lsblk - available block devices connected to the system. It displays the output in a tree-like structure
+lsblk - Lists the available block devices in the system. It displays the output in a tree-like structure
 ```
 
 mount allows filesystem accessible in the Linux directory tree. Normally `/mnt` directory is used for mounting
