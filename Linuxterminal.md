@@ -48,12 +48,25 @@ lsblk - Lists the available block devices in the system. It displays the output 
 mount allows filesystem accessible in the Linux directory tree. Normally `/mnt` directory is used for mounting
 
 ```
-mount
+mount - allowing acces to a filesystem
+umount - remove all those access.
 sudo mount /dev/sdb1 /mnt/media
 -t option to specify the file system type
 mount -t TYPE DEVICE_NAME DIRECTORY
 mount -o OPTIONS DEVICE_NAME DIRECTORY
 /dev contains device files
+```
+
+Hard Link and symbolic or soft link
+```
+ln -s filename softlink
+if the original file is removed. the softfile or link will removed.
+Both the files have different innode and file permission
+ln filename hardlink
+Both file `filename` and hardlink file will have same permission and same  innode number
+If the original file is removed. still the content in hardlink can be seen.
+If the original file is modified, it will also reflected in hard link
+Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
 ```
 
 
