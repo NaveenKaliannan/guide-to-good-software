@@ -1,5 +1,8 @@
 # How-to-write-a-Good-Software
 
+> __Note__ for USERS:  @Reach me via naveenkumar5892@gmail.com if you are interested in contributing to this repository. 
+
+
 Tools that offers version control for the source code : [GITHUB](https://github.com/) - [Cheat sheet](https://education.github.com/git-cheat-sheet-education.pdf)
 
 Tools that offers version control for the Binaries or Executables : [JFrog Artifactory](https://jfrog.com/solution-sheet/jfrog-artifactory-de/?utm_source=google&utm_medium=cpc&utm_campaign=Search|DSK|DACH|DSA&utm_term=&utm_network=g&cq_plac=&cq_plt=gp&utm_content=u-bin&gclid=EAIaIQobChMI4uqgx_PV-QIVyPZRCh26Yg6lEAAYASAAEgLOA_D_BwE)
