@@ -11,4 +11,6 @@ Tools to format the source code: [Black](https://pypi.org/project/black/), [Pyli
 
 Tools to find the unused source code :  [Vulture](https://pypi.org/project/vulture/), [Pyflakes](https://pypi.org/project/pyflakes/), [Pylint](https://pypi.org/project/pylint/)
 
+Different types of data format used in software development: JSON (stores simple data structures), Parquet (designed for efficient data storage and retrieval). For big data, processing parquet data will be faster.
+
 Read Parquet data : [parquet-tools](https://pypi.org/project/parquet-tools/)
