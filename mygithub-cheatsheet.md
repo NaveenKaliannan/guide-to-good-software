@@ -112,3 +112,7 @@ git rev-parse --show-toplevel
 git rev-parse --git-dir
 git rev-parse --branches
 ```
+How to add note and warning in github read me 
+> __Note__  
+
+> __Warning__
