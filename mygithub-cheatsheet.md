@@ -67,7 +67,7 @@ git log
 git checkout my-branch-name
 git push --force-with-lease
 ```
-##squash
+squash commits
 ```
 git rebase -i master
 do : first commit to reword (top) and other all to squash (below)
@@ -96,7 +96,7 @@ git clone repository-name
 git lfs pull
 git lfs install --force
 ```
-How to igonre files For example, binaries, inputs of large size, external libraries 
+How to igonre or exclude files For example, binaries, inputs of large size, external libraries 
 ```
 go to root of your local git (repository-name/.gitigonre) and create gitignore file
 touch .gitignore
