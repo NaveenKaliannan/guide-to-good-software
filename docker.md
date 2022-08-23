@@ -1,4 +1,4 @@
-## How to build Docker image and run container
+## How to build a Docker image (template) and run Docker containers (running instance)
 
 Create a docker file with name "Dockerfile"
 ```
