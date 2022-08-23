@@ -112,7 +112,32 @@ git rev-parse --show-toplevel
 git rev-parse --git-dir
 git rev-parse --branches
 ```
-How to add note and warning in github read me 
+How to add note and warning in Github Readme.md file 
+
 > __Note__  
 
 > __Warning__
+ 
+:exclamation:  :warning:  :boom: :memo: :point_up: :zap: 
+
+| :warning: WARNING          |
+|:---------------------------|
+| content   |
+
+| :boom: DANGER              |
+|:---------------------------|
+| content |
+
+| :memo:        | content       |
+|---------------|:------------------------|
+
+| :point_up:    | content |
+|---------------|:------------------------|
+
+| :exclamation:  content   |
+|-----------------------------------------|
+
+| :zap:        content   |
+|-----------------------------------------|
+
+
