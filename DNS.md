@@ -14,6 +14,10 @@ IPv6 (128-bit address length, more address space,address representatin is hexade
 
 DNS serves can be manually configured via DHCP.
 
+
+```
+ping google.com - pings the google.com and gets the ipv4 address of the google.com
+
 ipconfig - PC IP address, subnet mask and default gateway
 ipconfig/all - command used to show information about the network configuration and DHCP and DNS Settings.
 nslookup google.com -  used for obtaining DNS records
@@ -21,7 +25,7 @@ both ipconfig/all nslookup will show the DNS records
 ping google.com -  ping the google.com
 ipconfig /displaydns - PC DNS cache
 DHCP - host use it learn the address of thir  DNS Server, IP address. subnet mask, default gateway
-
+```
 
 when we type the google.com, a querry with our IP address will be send to the IP address of google.com. 
 then the desination will send the response with their IP address to us. 
