@@ -43,3 +43,5 @@ ip dns server - command
 ip name-server 8.8.8.8
 ip domain loopup
 ip domain name
+
+If you are using a private DNS nameserver, add it to the /etc/resolv.conf file.
