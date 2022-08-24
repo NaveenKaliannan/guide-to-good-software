@@ -3,7 +3,7 @@
 DNS is used to covert the human readbale names (google.com) to IP addresss. 
 PC or Laptop uses addresses IPv4/IPv6
 Names are convenient for humans
-When you type google.com in web browser, the device asks DNS for IP address of the google.com.
+When you type google.com in web browser, the device asks DNS server for IP address of the google.com.
 
 increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced.
 
@@ -14,10 +14,13 @@ IPv6 (128-bit address length, more address space,address representatin is hexade
 
 DNS serves can be manually configured via DHCP.
 
+ipconfig - PC IP address, subnet mask and default gateway
 ipconfig/all - command used to show information about the network configuration and DHCP and DNS Settings.
 nslookup google.com -  used for obtaining DNS records
+both ipconfig/all nslookup will show the DNS records
 ping google.com -  ping the google.com
-ipconfig /displaydns
+ipconfig /displaydns - PC DNS cache
+DHCP - host use it learn the address of thir  DNS Server, IP address. subnet mask, default gateway
 
 
 when we type the google.com, a querry with our IP address will be send to the IP address of google.com. 
@@ -28,3 +31,11 @@ DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes)
 
 Devices has a host file in /etc/hosts/ - lists hosts and IP address. 
 you can also add host ip address and name in hosts file. 
+
+Two types of DNS server: Internal or External. 
+How to configure ip address in router
+
+ip dns server - command
+ip name-server 8.8.8.8
+ip domain loopup
+ip domain name
