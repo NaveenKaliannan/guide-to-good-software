@@ -6,6 +6,10 @@ find and replace
 ```
 sed -i 's/old/new/g' file-name
 ```
+greping only number
+```
+cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
+```
 Notation
 ```
 b - block special file for storage, drives, usb. Can be mounted. 
