@@ -7,9 +7,13 @@ docker image ls
 docker image rm image-ID
 docker ps
 ```
-How to run Docker
+How to run Docker or create a container
 ```
 docker run software-name:version
+docker run -d software-name:version
+docker stop container-ID
+docker start container-ID
+docker ps -a
 ```
 
 Docker containers - software package that contain all the dependencies and configurations to run an application. The package is portable. Containers stored in contained repository. [public reopsitory for docker container](https://hub.docker.com/) .
@@ -19,12 +23,13 @@ with Docker, No need for any installation. Has its own operating layer. No envir
 
 Container is made up of images. The base is Linux Base image (Alpine or linux distributions). The top is application image.
 
-Docker container (running, container environment is created) and Docker image (actual package, artifact that move around, not running)
+Docker container (running, container environment is created) and Docker image (actual package, artifact that move around, not running). Container is the running environment of image.  Docker image can be pulled or pused.
 
-## Difference between docker and VM
+## Difference between docker, VM and host machine.
 Operating system has two layer OS kernel (layer 1) and application layer (layer 2 and top layer). The kernel communicates with hardware such as cpu, mouse and etc. The applications run on the kernel layer. All linux OS looks different becuase they use different application layer  but on same OS kernal.
 
 VM virtualize OS kernel and application layer. Docker virualizae application layer. 
+Host machnie is local machine. 
 
 Docker occupys less space compared to VM. 
 Faster boot time
