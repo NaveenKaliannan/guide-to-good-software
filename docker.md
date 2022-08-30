@@ -11,6 +11,7 @@ How to run Docker or create a container
 ```
 docker run software-name:version
 docker run -d software-name:version
+docker run -p6000:6379  software-name:version
 docker stop container-ID
 docker start container-ID
 docker ps -a
@@ -38,6 +39,8 @@ Easy to scale up
 High efficieny
 Reproduciability
 Developer and tester can run the same code and get the same results even thought the machines are different
+
+[Docker port binding](https://betterprogramming.pub/how-does-docker-port-binding-work-b089f23ca4c8) - Docker port and Host port
 
 
 ## How to build a Docker image (template) and run Docker containers (running instance)
