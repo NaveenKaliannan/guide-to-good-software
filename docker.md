@@ -9,11 +9,11 @@ docker ps
 ```
 How to run Docker or create a container
 ```
-docker run software-name:version
+docker run software-name:version - takes an image and creates a new container
 docker run -d software-name:version
 docker run -p6000:6379  software-name:version
 docker stop container-ID
-docker start container-ID
+docker start container-ID - working with containers not with images
 docker ps -a
 docker logs container-ID
 docker exec -it container-ID /bin/bash - virutal file system inside a container
