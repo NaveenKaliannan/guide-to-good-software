@@ -78,5 +78,13 @@ If the original file is removed. still the content in hardlink can be seen.
 If the original file is modified, it will also reflected in hard link
 Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
 ```
-
+See the environmental variables
+```
+env
+```
+Make changes to bashrc
+```
+vim ~/.bashrc
+alias cddata='cd $HOME/tmp/data'
+```
 
