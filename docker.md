@@ -17,6 +17,7 @@ docker start container-ID - working with containers not with images
 docker ps -a
 docker logs container-ID
 docker exec -it container-ID /bin/bash - virutal file system inside a container
+docker network ls
 env - to see all the environmental variables
 ```
 
@@ -45,6 +46,8 @@ Developer and tester can run the same code and get the same results even thought
 
 [Docker port binding](https://betterprogramming.pub/how-does-docker-port-binding-work-b089f23ca4c8) - Docker port and Host port
 
+
+Docker file - copy the contents of application into dockerfile. The docker file is from image. 
 
 ## How to build a Docker image (template) and run Docker containers (running instance)
 
