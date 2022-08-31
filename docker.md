@@ -15,6 +15,9 @@ docker run -p6000:6379  software-name:version
 docker stop container-ID
 docker start container-ID
 docker ps -a
+docker logs container-ID
+docker exec -it container-ID /bin/bash - virutal file system inside a container
+env - to see all the environmental variables
 ```
 
 Docker containers - software package that contain all the dependencies and configurations to run an application. The package is portable. Containers stored in contained repository. [public reopsitory for docker container](https://hub.docker.com/) .
