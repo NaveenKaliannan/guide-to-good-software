@@ -87,4 +87,10 @@ Make changes to bashrc
 vim ~/.bashrc
 alias cddata='cd $HOME/tmp/data'
 ```
+Proc file systems - virtual file system created on fly when system boots and is disappears when system shut downs.
+```
+ls –l /proc
+ps -aux
+ls -l /proc/pid/file-name Ex.,status, root, stat
+```
 
