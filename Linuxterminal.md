@@ -93,4 +93,7 @@ ls –l /proc
 ps -aux
 ls -l /proc/pid/file-name Ex.,status, root, stat
 ```
-
+A path variable can several paths. This is can done by using a colon (:)
+```
+export PYTHONPATH=$(pwd):/home/naveen/newpython
+```
