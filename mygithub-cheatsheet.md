@@ -1,3 +1,9 @@
+Difference between git and github
+```
+Git is a version control system
+GitHub is a cloud-based hosting service that helps to manage git repositories
+```
+
 Configuring your /home/naveen/.gitconfig and /my-repository/.git. For example, user id, password
 ```
 git config
