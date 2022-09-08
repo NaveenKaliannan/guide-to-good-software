@@ -3,12 +3,13 @@ Difference between git and github
 Git is a version control system
 GitHub is a cloud-based hosting service that helps to manage git repositories
 ```
-Configuring the SSH keys, which are important the access credential for the SSH network protocol
+Configuring the SSH keys, which are important the access credential for the SSH network protocol. 
+This allows to you connect to remote repository. No need to type password
 ```
 Create a new key in your local machine
 cd .ssh/
 ls -ltr
-copy the content in id_rsa.pub and paste in github add key section
+copy the content in public key id_rsa.pub and paste in github add key section
 go to settings -> ssh and GPG keys (you can add keys by clicking the new keys)
 ```
 How to generate a new key
