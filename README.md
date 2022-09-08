@@ -4,7 +4,7 @@
 
 Tools to store your user id and password: [KeePass](https://keepass.info/download.html)
 
-Tools that offers version control for the source code :  [GITLAB]( https://gitlab.com/) - [Cheat sheet](https://about.gitlab.com/images/press/git-cheat-sheet.pdf),  [GITHUB](https://github.com/) - [Cheat sheet](https://education.github.com/git-cheat-sheet-education.pdf)
+Tools that offers version control for the source code or mainting source codes :  [GITLAB]( https://gitlab.com/) - [Cheat sheet](https://about.gitlab.com/images/press/git-cheat-sheet.pdf),  [GITHUB](https://github.com/) - [Cheat sheet](https://education.github.com/git-cheat-sheet-education.pdf)
 
 Tools that offers version control for the Binaries or Executables : [JFrog Artifactory](https://jfrog.com/solution-sheet/jfrog-artifactory-de/?utm_source=google&utm_medium=cpc&utm_campaign=Search|DSK|DACH|DSA&utm_term=&utm_network=g&cq_plac=&cq_plt=gp&utm_content=u-bin&gclid=EAIaIQobChMI4uqgx_PV-QIVyPZRCh26Yg6lEAAYASAAEgLOA_D_BwE)
 
