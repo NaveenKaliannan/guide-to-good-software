@@ -116,6 +116,31 @@ git clone repository-name
 git lfs pull
 git lfs install --force
 ```
+Bookmark commits. Release different versions
+```
+git tag
+```
+How to clean the untracked files
+```
+git clean
+```
+git reset is used to updating the HEAD inorder to add or remove commits from the branch
+```
+git reset HEAD is for undoing uncommitted changes
+git reflog is rescue to git reset
+```
+reverse the changes made in commits
+git revert will make a new commit that reverts the changes made by other commits.
+```
+git revert commit id
+git revert HEAD
+```
+HEAD is a pointer
+```
+cat .git/HEAD
+HEAD in git is used to keep track tip of the branch. When new commits are made, the pointer  point to the new commit.
+git checkout specific commit will make the head points to specific commit. not the new commit anymore. 
+```
 How to igonre or exclude files For example, binaries, inputs of large size, external libraries 
 ```
 go to root of your local git (repository-name/.gitigonre) and create gitignore file
