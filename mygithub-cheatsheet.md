@@ -19,6 +19,8 @@ ssh-keygen -t rsa -b 4096 will generate ssh key for 4096 bit
 Configuring your /home/naveen/.gitconfig and /my-repository/.git. For example, user id, password
 ```
 git config
+git config --global user.email navee...@gmail.com
+git config --global user.name  Naveen.....
 ```
 Setting up a new branch
 ```
