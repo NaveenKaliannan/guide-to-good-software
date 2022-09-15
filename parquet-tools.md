@@ -15,3 +15,7 @@ Converting all the parquet files in folder into a single json file
 ```
 for i in * ; do pt cat -json $i >> filename.json ; done
 ```
+Select numbers in the lines and sort them
+```
+cat  filename  | tr '\n' ' ' | sed -e 's/[^0-9]/ /g' -e 's/^ *//g' -e 's/ *$//g' | tr -s ' ' | sed 's/ /\n/g' |sort
+```
