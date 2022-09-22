@@ -1,0 +1,189 @@
+
+set encoding utf8 
+set terminal postscript enhanced 
+set terminal postscript eps size 3.5,3 enhanced color \
+    font 'Arial,10'  linewidth 0.2
+
+set key width 0.5 height 0.5
+set key font 'Arial,7'
+set key spacing 2
+set key right bottom
+
+
+#set terminal pdfcairo enhanced size 2.0in,3.5in
+#set output 'Fig3_1.pdf'
+
+set terminal postscript eps enhanced size 2.0in,3.5in
+set output 'Fig2.eps'
+
+set style fill transparent solid 0.13 # partial transparency
+set style fill noborder # no separate top/bottom lines
+
+set size 1,1
+
+NZ=2000
+NX=2000
+SCALE=0.2
+
+set lmargin 7
+set rmargin 2
+
+# Axes
+set xr [0:NZ] #Time /16
+set mytics 5
+set mxtics
+
+# Multiplot
+set multiplot layout 4,1 rowsfirst
+
+#----------------
+#-  running average
+#----------------
+
+# number of points in moving average
+n = 10
+
+# initialize the variables
+do for [i=1:n] {
+    eval(sprintf("back%d=0", i))
+}
+
+# build shift function (back_n = back_n-1, ..., back1=x)
+shift = "("
+do for [i=n:2:-1] {
+    shift = sprintf("%sback%d = back%d, ", shift, i, i-1)
+} 
+shift = shift."back1 = x)"
+# uncomment the next line for a check
+# print shift
+
+# build sum function (back1 + ... + backn)
+sum = "(back1"
+do for [i=2:n] {
+    sum = sprintf("%s+back%d", sum, i)
+}
+sum = sum.")"
+# uncomment the next line for a check
+# print sum
+
+# define the functions like in the gnuplot demo
+# use macro expansion for turning the strings into real functions
+samples(x) = $0 > (n-1) ? n : ($0+1)
+avg_n(x) = (shift_n(x), @sum/samples($0))
+shift_n(x) = @shift
+
+
+#----------------
+#-  shade object
+#----------------
+
+#set style rect fc lt -1 fs transparent solid .1 noborder lc rgb "gray90"
+#set obj rect from 700, graph 0 to 2300, graph 1
+
+#----------------
+#-  1 plot  -
+#----------------
+
+
+
+# labels and axis
+set tmargin at screen 0.98; set bmargin at screen 0.84
+set size 0.9, 1
+set origin 0.033, 0.0
+
+unset title
+set label "E_{THz}" at 250,0.001  font 'Arial,8' textcolor rgb "black"
+unset xtics
+unset ytics
+set xrange [0:4560]
+set yrange [-0.001:0.0015]
+unset key
+
+#plotting
+plot "pulse.dat" using 1:2 notitle  with line ls 1 lc rgb "light-red" lw 0.8
+####, \"line.dat" using 1:2 notitle with line ls 1 dt 2 lc rgb "black" lw 2
+unset label
+
+#----------------
+#-  2 plot  -
+#----------------
+
+# labels and axis
+set tmargin at screen 0.84; set bmargin at screen 0.60
+set size 0.9, 1
+set origin 0.033, 0.0
+
+set ytics
+unset title
+
+
+
+set xrange [0:4560]
+unset xtics
+set xtics
+set format x ""
+set yrange [-0.066:0.055]
+
+
+set key
+#plotting
+
+plot "cos1875" using ($1):($2 -  0.0179785 )  title "H_2O having high {/Symbol g}_d ({/Symbol g}_d > 0.8)"   with line ls 1 lc rgb "red" lw 0.2, \
+     "cos1875" using ($1):($4 - 0.0214689  ) title "H_2O having medium {/Symbol g}_d (0.2 < {/Symbol g}_d < 0.8)"  with line ls 1 lc rgb "green" lw 0.2,\
+     "cos1875" using ($1):($3 - 0.0295646 ) title "H_2O having low {/Symbol g}_d ({/Symbol g}_d < 0.2)"  with line ls 1 lc rgb "blue" lw 0.2, \
+     "line.dat" using 1:2 notitle with line ls 1 dt 2 lc rgb "black" lw 2
+
+unset key
+unset label
+
+#-----------------
+#-  4 plot  -
+#-----------------
+
+unset xtics
+set xtics
+set format x ""
+set tmargin at screen 0.60; set bmargin at screen 0.34
+set xrange [0:4560]
+set size 0.9, 1
+set origin 0.033, 0.0
+set yrange [-0.066:0.055]
+set ylabel '< cos {/Symbol q}>' 
+
+#plotting
+plot "cos2900" using ($1):($2 -  0.030482 )  notitle   with line ls 1 lc rgb "red" lw 0.2, \
+     "cos2900" using ($1):($4 - 0.0210894   ) notitle  with line ls 1 lc rgb "green" lw 0.2,\
+     "cos2900" using ($1):($3 -  0.012895) notitle  with line ls 1 lc rgb "blue" lw 0.2, \
+     "line.dat" using 3:2 notitle with line ls 1 dt 2 lc rgb "black" lw 2
+unset ylabel
+unset key
+#-----------------
+#-  3 plot  -
+#-----------------
+
+unset label
+set tmargin at screen 0.34; set bmargin at screen 0.08
+
+set size 0.9, 1
+set origin 0.033, 0.0
+
+unset title
+#set label "Low {/Symbol g}_d" at 250,16.8  font 'Arial,8' textcolor rgb "black"
+set xrange [0:4.5]
+set xtics
+set format x
+#set xtics 500,1000,4560
+set yrange [-0.066:0.055]
+set xlabel "t (ps)"
+
+#plotting
+#plotting
+plot "cos4125" using ($1*0.001):($2 -   0.0144042 )  notitle   with line ls 1 lc rgb "red" lw 0.2, \
+     "cos4125" using ($1*0.001):($4 - 0.0232355    ) notitle  with line ls 1 lc rgb "green" lw 0.2,\
+     "cos4125" using ($1*0.001):($3 -  0.0254125) notitle  with line ls 1 lc rgb "blue" lw 0.2, \
+     "line.dat" using 4:2 notitle with line ls 1 dt 2 lc rgb "black" lw 2
+
+
+unset multiplot
+unset output
+

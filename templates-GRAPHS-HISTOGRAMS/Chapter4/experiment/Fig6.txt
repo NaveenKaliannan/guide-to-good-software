@@ -1,0 +1,5 @@
+        cations   Anions   Between      Bulk   
+   
+MgCl2	19.12	  16.33	   18.47	16.53
+Na2SO4	15.15	  15.95	   15.42	16.66
+MgSO4	19.69	  16.82	   18.82	17.52
