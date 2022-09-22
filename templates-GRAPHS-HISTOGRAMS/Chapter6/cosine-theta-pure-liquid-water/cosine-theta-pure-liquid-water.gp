@@ -58,7 +58,7 @@ set yrange [-0.065:0.06]
 set format y '%.1t'  # Format for 'y' values using mantissa  
 
 
-set ylabel "< cos {/Symbol q}>" offset 4,0,0 font 'Arial,9'
+set ylabel "< cos {/Symbol q} >" offset 4,0,0 font 'Arial,9'
 
 
 set xrange [0:3.1]

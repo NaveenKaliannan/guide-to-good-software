@@ -97,7 +97,7 @@ set format x
 set xtics 0,1,4
 set ylabel 'Relative translational KE' font 'Arial,12'
 set yrange [-0.0025:0.022]
-set ytics -0.006, 0.002, 0.024
+set ytics -0.008, 0.004, 0.024
 set xlabel "t (ps)" font 'Arial,12'
 set label gprintf('×10^{%T}',0.01) at graph 0.0, screen 0.94 offset 0.55,0 font 'Arial,8'
 set format y '%.1t'  # Format for 'y' values using mantissa  

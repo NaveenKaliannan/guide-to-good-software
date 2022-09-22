@@ -94,7 +94,7 @@ set ytics ("0" 0, "1" 1, "2" 2, "3" 3, "4" 4, "5" 5, "6" 6, "7" 7, "8" 8, "9" 9,
 set xtics ("MgCl_2 [1mol]" 1.4, "MgCl_2 [2mol]" 2.4,  "MgCl_2 [4mol]" 3.4, "Na_2SO_4 [1mol]" 4.4, "NaCl [4mol]" 5.4) font 'Arial,6.5'
 set boxwidth 0.1
 set style fill solid
-set label "PFFMD" at 4.5,9.5
+set label "PFFMD" at 4.5,9 font 'Arial,20'  textcolor rgb "blue" 
 
 c=-0.00076
 plot      "line.dat" using 1:2 title "Liquid water (reference)" with line ls 1 dt 0 lc rgb "black" lw 1, \

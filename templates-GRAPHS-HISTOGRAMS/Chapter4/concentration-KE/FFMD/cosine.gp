@@ -1,0 +1,127 @@
+set encoding utf8 
+set terminal postscript enhanced 
+set terminal postscript eps size 3.5,3 enhanced color \
+    font 'Arial,10'  linewidth 1
+##set key box lw 1
+set key width 0.5 height 0.5
+set key font 'Arial,10'
+set key spacing 1.8
+set key left top
+
+
+set terminal postscript eps enhanced size 3.5in,2.8in
+set output 'Fig2.eps'
+
+
+set style fill transparent solid 0.25 # partial transparency
+set style fill noborder # no separate top/bottom lines
+
+set terminal pdfcairo enhanced size 3.5in,2.5in
+#set term png truecolor  # or "set term pngcairo"
+set output 'Cosine_FFMD.pdf'
+
+#set style fill transparent solid 0.13 # partial transparency
+#set style fill noborder # no separate top/bottom lines
+
+set size 1,1
+
+NZ=2000
+NX=2000
+SCALE=0.2
+
+set lmargin 7
+set rmargin 2
+
+# Axes
+set xr [0:NZ] #Time /16
+set mytics 5
+set mxtics
+
+# Multiplot
+set multiplot layout 1,1 rowsfirst
+
+#----------------
+#-  running average
+#----------------
+
+# number of points in moving average
+n = 1
+
+# initialize the variables
+do for [i=1:n] {
+    eval(sprintf("back%d=0", i))
+}
+
+# build shift function (back_n = back_n-1, ..., back1=x)
+shift = "("
+do for [i=n:2:-1] {
+    shift = sprintf("%sback%d = back%d, ", shift, i, i-1)
+} 
+shift = shift."back1 = x)"
+# uncomment the next line for a check
+# print shift
+
+# build sum function (back1 + ... + backn)
+sum = "(back1"
+do for [i=2:n] {
+    sum = sprintf("%s+back%d", sum, i)
+}
+sum = sum.")"
+# uncomment the next line for a check
+# print sum
+
+# define the functions like in the gnuplot demo
+# use macro expansion for turning the strings into real functions
+samples(x) = $0 > (n-1) ? n : ($0+1)
+avg_n(x) = (shift_n(x), @sum/samples($0))
+shift_n(x) = @shift
+
+
+#----------------
+#-  shade object
+#----------------
+
+#set style rect fc lt -1 fs transparent solid .1 noborder lc rgb "gray90"
+#set obj rect from 700, graph 0 to 2300, graph 1
+
+
+unset label
+set tmargin at screen 0.98; set bmargin at screen 0.15
+
+set size 0.9, 1
+set origin 0.033, 0.0
+
+set xrange [0:3.1]
+set xtics
+set format x
+set xtics 0,1,4
+set ylabel '< cos {/Symbol q} >' font 'Arial,12'
+set yrange [-0.2:0.4]
+set ytics -0.6, 0.2, 0.64
+set xlabel "t (ps)" font 'Arial,12'
+set label gprintf('×10^{%T}',0.1) at graph 0.0, screen 0.94 offset 0.55,0 font 'Arial,8'
+set format y '%.1t'  # Format for 'y' values using mantissa  
+
+set xlabel "t (ps)" font 'Arial,12' offset 0.0,1
+set label "FFMD" at 2.2,0.35 font 'Arial,20'  textcolor rgb "blue"
+
+f(x) = (x)**2
+
+c=1
+tol=0.004
+
+plot "pureliquidwater/KEtransfer.dat" using ($1*0.001):($29) title       "H_2O (ref.)" with line ls 1 lc rgb "black" lw 1 dt 1,\
+     'pureliquidwater/KEtransfer.dat' using ($1*0.001):($29+tol):($29-tol) with filledcurves lc "black" notitle,\
+     "mgcl2-2mol/KEtransfer.dat" using ($1*0.001):($29) title       "MgCl_2 (2M)" with line ls 1 lc rgb "blue" lw 0.4 dt 1,\
+     'mgcl2-2mol/KEtransfer.dat' using ($1*0.001):($29+tol):($29-tol) with filledcurves lc "blue" notitle,\
+     "mgcl2-4mol/KEtransfer.dat" using ($1*0.001):($29) title       "MgCl_2 (4M)" with line ls 1 lc rgb "red" lw 0.4 dt 1,\
+     'mgcl2-4mol/KEtransfer.dat' using ($1*0.001):($29+tol):($29-tol) with filledcurves lc "red" notitle,\
+     "nacl-4mol/KEtransfer.dat" using ($1*0.001):($29) title       "NaCl (4M)" with line ls 1 lc rgb "yellow" lw 0.4 dt 1,\
+     'nacl-4mol/KEtransfer.dat' using ($1*0.001):($29+tol):($29-tol) with filledcurves lc "yellow" notitle,\
+     "na2so4-1mol/KEtransfer.dat" using ($1*0.001):($29) title       "Na_2SO_4 (1M)" with line ls 1 lc rgb "green" lw 0.4 dt 1,\
+     'na2so4-1mol/KEtransfer.dat' using ($1*0.001):($29+tol):($29-tol) with filledcurves lc "green" notitle,\
+      "pulse.dat" using ($1*0.001):(f($2)*100000) title "E^2_{THz}"  with line ls 1 lc rgb "gray" lw 0.8
+
+unset multiplot
+unset output
+
