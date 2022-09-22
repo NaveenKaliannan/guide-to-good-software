@@ -14,6 +14,8 @@ Tools to quickly build, test, deploy and run applications: [Docker](https://www.
 
 Tools to find the unused source code :  [Vulture](https://pypi.org/project/vulture/), [Pyflakes](https://pypi.org/project/pyflakes/), [Pylint](https://pypi.org/project/pylint/)
 
+Tools to make good poster and nice graphical images: [scribus](https://www.scribus.net/), [GIMP](https://www.gimp.org/)
+
 Read Parquet data : [parquet-tools](https://pypi.org/project/parquet-tools/) 
 
 Read Json data : [Python Pandas]() 
