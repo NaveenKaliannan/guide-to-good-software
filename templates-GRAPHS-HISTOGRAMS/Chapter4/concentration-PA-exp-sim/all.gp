@@ -58,7 +58,7 @@ set yrange [-0.0093:0.003]
 set format y '%.1t'  # Format for 'y' values using mantissa  
 
 
-set label "{/Symbol a}_{xx} - 0.5 ({/Symbol a}_{yy} + {/Symbol a}_{zz}) in [arb. unit]" offset 4,0,0 at -1.3,-0.032 rotate by 90 left font 'Arial,9'
+set label "{/Symbol a}_{xx} - 0.5 ({/Symbol a}_{yy} + {/Symbol a}_{zz}) in [arb. unit]" offset 4,0,0 at -1.3,-0.027 rotate by 90 left font 'Arial,9'
 
 
 set title "TKE Experiments" font 'Arial,9'  offset 0.0,-0.5,0
@@ -74,7 +74,9 @@ path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 set key font 'Arial,8'
 set key bottom
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+
+
+set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 c=1
 c=0.4
@@ -104,7 +106,7 @@ set title "PFFMD simulation (AMOEBA)" font 'Arial,9'  offset 0.0,-0.5,0
 set label "MgCl_2"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
 
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 c=1
 c=2.5
@@ -134,7 +136,7 @@ set title "FFMD simulation (AMBER/SPC)" font 'Arial,9'   offset 0.0,-0.5,0
 path_to_directory1="../FFMD-150000-trajectories-Starting-frames-long-NVT-trajectories-then-pulse-applied/with-damping"
 
 
-set arrow 1 from 1,  -0.006  to 1, -0.0035 fill lc rgb "gray" 
+set arrow 1 from 2, -0.004  to 2, -0.0025 fill lc rgb "brown" 
 
 set key bottom font 'Arial,8'
 c=1
@@ -177,7 +179,8 @@ set label "Na_2SO_4"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
 
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 
-set arrow 1 from 1,  -0.006  to 1, -0.0035 fill lc rgb "gray" 
+
+set arrow 1 from  2, -0.004  to 2, -0.0025 fill lc rgb "brown" 
 
 set key bottom
 c=1
@@ -205,7 +208,9 @@ path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 set xtics format " "
 set label "Na_2SO_4"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+
+
+set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 c=1
 c=2.5
@@ -214,7 +219,8 @@ plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
      path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "1 M"   with line ls 1 lc rgb "green" lw 0.5,\
      path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "green" notitle,\
-
+     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c -  0  ) title "1 M"   with line ls 1 lc rgb "red" lw 0.5 dt 7,\
+     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c + 0.00012):($4*c - 0.00012) with filledcurves lc "red" notitle,\
 
 unset label 
 unset arrow 
@@ -233,13 +239,15 @@ set xtics format " "
 set key bottom font 'Arial,8'
 
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 c=1
 plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
      path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "1 M"   with line ls 1 lc rgb "green" lw 0.5,\
      path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "green" notitle,\
+     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c -  0  ) title "H_2O around SO_4^{2-}"   with line ls 1 lc rgb "red" lw 0.5 dt 7,\
+     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c + 0.00012):($4*c - 0.00012) with filledcurves lc "red" notitle,\
 
 unset label 
 unset arrow
@@ -272,7 +280,7 @@ set label "MgSO_4"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 set key bottom
 c=1
@@ -296,7 +304,7 @@ set xrange [0:3.1]
 unset ytics
 set ytics format " "
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 set xtics format " "
@@ -324,7 +332,7 @@ set label "MgSO_4"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
 set xtics format " "
 path_to_directory1="../FFMD-150000-trajectories-Starting-frames-long-NVT-trajectories-then-pulse-applied/with-damping"
 
-set arrow 1 from 1,  -0.006  to 1, -0.0035 fill lc rgb "gray" 
+set arrow 1 from 2, -0.004  to 2, -0.0025 fill lc rgb "brown" 
 
 set key bottom font 'Arial,8'
 c=1
@@ -363,7 +371,7 @@ set xtics format
 set xtics 0,0.5,3.5 offset 0,0.5,0
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 set key bottom
 c=1
@@ -393,7 +401,7 @@ path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 
 set label "NaCl"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 c=1
 c=2.5
@@ -421,7 +429,7 @@ set label "NaCl"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
 
 path_to_directory1="../FFMD-150000-trajectories-Starting-frames-long-NVT-trajectories-then-pulse-applied/with-damping"
 
-set arrow 1 from 1, -0.0035 to 1, -0.006 fill lc rgb "gray" 
+set arrow 2 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 set key bottom font 'Arial,8'
 c=1
