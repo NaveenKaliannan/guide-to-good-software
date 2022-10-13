@@ -1,3 +1,15 @@
+# Linux
+
+Linux is a UNIX-like operating system that is quicker, lighter, more secure (cannot break the kernel), open sourced, and more stable. It is strongly preferred when it comes to software development and scientific computing. Numerous Linux distributions exist, including Debian, Ubuntu, Centos, and others.
+
+
+The internal core of the Linux architecture contains the hardware, the central core is the kernel (machine code written in C and the assembled language both manage the hardware), the external layer is the application layer. Between the kernel and the application layer are these shell commands (cp, grep, ls, pwd, shell manage the user). The shell interprets the command entered and sends it to the kernel for execution. This is done by first validating the command, sending it to the kernel using the hardware, and finally executing or showing the output. The kernel manages memory, resources, device management and system calls (function that allows a process to communicate with the Linux kernel)
+
+
+![alt tag](https://static.javatpoint.com/linux/images/architecture-of-linux.png)
+*The structure of Linux architecture. This image was taken from the static.javatpoint.com site*
+
+
 copy (paste) to terminal 
 ```
 ctrl-shift-c (v)
