@@ -2,12 +2,47 @@
 
 Linux is a UNIX-like operating system that is quicker, lighter, more secure (cannot break the kernel), open sourced, and more stable. It is strongly preferred when it comes to software development and scientific computing. Numerous Linux distributions exist, including Debian, Ubuntu, Centos, and others.
 
-
-The internal core of the Linux architecture contains the hardware, the central core is the kernel (machine code written in C and the assembled language both manage the hardware), the external layer is the application layer. Between the kernel and the application layer are these shell commands (cp, grep, ls, pwd, shell manage the user). The shell interprets the command entered and sends it to the kernel for execution. This is done by first validating the command, sending it to the kernel using the hardware, and finally executing or showing the output. The kernel manages memory, resources, device management and system calls (function that allows a process to communicate with the Linux kernel)
-
+The internal core of the Linux architecture contains the hardware, the central core is the kernel (machine code written in C and the assembled language both manage the hardware), the external layer is the application layer. Between the kernel and the application layer are these shell commands (cp, grep, ls, pwd, shell manage the user). The shell interprets the command entered by user and sends it to the kernel for execution. This is done by first validating the command, sending it to the kernel using the hardware, and finally executing or showing the output. The kernel manages memory, resources, device management and system calls (function that allows a process to communicate with the Linux kernel)
 
 ![alt tag](https://static.javatpoint.com/linux/images/architecture-of-linux.png)
 *The structure of Linux architecture. This image was taken from the static.javatpoint.com site*
+
+### Linux directory structure 
+Linux directory structure starts with /, the root directory. 
+
+* **/bin/ (root)** contains executable or binary files such as cp, mv, bash, ps, pwd.
+* **/etc (root)** has the system configuration file
+* **/sbin/ (root)** has the system binaries such as fdisk, ifconfig, reboot, root, init, getty, fsck, mkfs, mkswap, halt, and etc
+* **/usr/ (users)** has read only applications, data and binaries. It has many sub folders: bin, include, lib, local, share.
+* **/var/ (users)** has variable data files such as cache, lock files, log files, tmp files. 
+* **/dev**  contains device files (USB drive, mouse, keyboard, hard drives)
+* **/home**  contains home and user, group directory
+* **/lib** contains libraries and kernel modules
+* **/mnt** contains mount files for temporary filesystems 
+* **/proc** - process and kernel information files 
+* **/root** - home directory of the root user
+
+![alt tag](https://helpdeskgeek.com/wp-content/pictures/2020/02/file-directory.png)
+*The structure of typical Linux directory 
+. This image was taken from the helpdeskgeek.com site*
+
+### Shell commands
+Type the following command in the terminal to see all shell commands. The most common commands are explained here.
+```
+ls /bin/* 
+```
+
+Command guide for each shell
+```
+man ls
+ls --version
+whereis ls
+```
+
+
+
+
+
 
 
 copy (paste) to terminal 
