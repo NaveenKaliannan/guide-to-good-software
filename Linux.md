@@ -62,8 +62,14 @@ ls /bin/*
  ```
  export PYTHONPATH=$(pwd):$(path2):$(path3)
  ```
-* **LD_LIBRARY_PATH** specifies the search paths for shared libraries 
-* **PATH** specific directories for executable.
+* **PATH** This variable specifies directories for executable.
+```
+export PATH=$PATH:/home/user/dipole/bin/
+```
+* **LD_LIBRARY_PATH** This variable specifies the search paths for shared libraries. By setting the path, we will be calling the corresponding header files.
+```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64:
+``` 
 * **unset** remove the variable which is set <br />
 * **expr** computes the given expression and displays the output <br />
 * **vim, emacs, nano, vi** file editors in terminal
