@@ -38,6 +38,10 @@ Here both UID and GID are same. When working in group, it should be different.
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
 * **/home/user/.ssh/known_hosts** contains host keys and is located in the user's home directory
 * **/home/user/.bashrc** is a script file that's executed when a user logs in. This includes setting up or enabling: coloring, completion, shell history, command aliases, and more.
+```
+vim ~/.bashrc
+alias cddata='cd $HOME/tmp/data'
+```
 ### Shell commands
 Type the following command in the terminal to see all shell commands in linux. 
 ```
@@ -111,19 +115,31 @@ ps -l
 ```
 * **top** displays the processes information but run time 
 * **nice and renice** used to change the priority of a process. Nice is used for before a process start or while schedulig. Renice is used to change the priority when the process is running.
+* **sed** performs editing operations
+```
+sed -i 's/old/new/g' file-name
+```
+* **grep** searches for expressions in a file
+```
+cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
+```
+* **env** prints the environment variables
+* **ln -s and ln** create the soft (s) and hard symbolic links. 
+```
+ln -s filename softlink
+If the original file is removed. the softfile or link will removed. Both the files have different innode and file permission
+ln filename hardlink
+Both file `filename` and hardlink file will have same permission and same innode number. If the original file is removed. still the content in hardlink can be seen.
+If the original file is modified, it will also reflected in hard link. Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
+```
 
 copy (paste) to terminal 
 ```
 ctrl-shift-c (v)
 ```
 find and replace 
-```
-sed -i 's/old/new/g' file-name
-```
-greping only number
-```
-cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
-```
+
+
 
 
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
@@ -151,33 +167,9 @@ mount -o OPTIONS DEVICE_NAME DIRECTORY
 /dev contains device files
 ```
 
-Hard Link and symbolic or soft link
-```
-ln -s filename softlink
-if the original file is removed. the softfile or link will removed.
-Both the files have different innode and file permission
-ln filename hardlink
-Both file `filename` and hardlink file will have same permission and same  innode number
-If the original file is removed. still the content in hardlink can be seen.
-If the original file is modified, it will also reflected in hard link
-Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
-```
-See the environmental variables
-```
-env
-```
-Make changes to bashrc
-```
-vim ~/.bashrc
-alias cddata='cd $HOME/tmp/data'
-```
 Proc file systems - virtual file system created on fly when system boots and is disappears when system shut downs.
 ```
 ls –l /proc
 ps -aux
 ls -l /proc/pid/file-name Ex.,status, root, stat
-```
-A path variable can several paths. This is can done by using a colon (:)
-```
-export PYTHONPATH=$(pwd):/home/naveen/newpython
 ```
