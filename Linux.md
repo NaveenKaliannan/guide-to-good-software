@@ -57,6 +57,8 @@ ls /bin/*
  ```
  export PYTHONPATH=$(pwd):$(path2):$(path3)
  ```
+* **LD_LIBRARY_PATH** specifies the search paths for shared libraries 
+* **PATH** specific directories for executable.
 * **unset** remove the variable which is set <br />
 * **expr** computes the given expression and displays the output <br />
 * **vim, emacs, nano, vi** file editors in terminal
@@ -101,7 +103,14 @@ chmod u-x file
 chown username:groupname file
 ```
 * **PID** when a command issued in a linux starts a new process, which creates a 5 digit (PID) number and it can be tracked.
-* **nice** command is used to change the prioity and nice of the process
+* **ps** displays the processes information but static
+```
+ps
+ps -aux
+ps -l
+```
+* **top** displays the processes information but run time 
+* **nice and renice** used to change the priority of a process. Nice is used for before a process start or while schedulig. Renice is used to change the priority when the process is running.
 
 copy (paste) to terminal 
 ```
