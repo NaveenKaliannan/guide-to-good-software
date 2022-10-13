@@ -2,6 +2,8 @@
 
 > __Note__ for USERS:  @Reach me via naveenkumar5892@gmail.com if you are interested in contributing to this repository. 
 
+OS for scientific computing purpose: [Linux](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/Linux.md)
+
 Gnuplot templates to create high quality graphics and graphs: [xy plots](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter5/translational-KE/translational-KE.pdf), [Mutliple xy plots](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter4/induced-seperated/PFFMD/mgcl2-total-induced_PFFMD.pdf), [histogram](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter6/Hbond-population/Fig3.gp)
 
 Tools to store your user id and password: [KeePass](https://keepass.info/download.html)
