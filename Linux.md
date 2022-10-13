@@ -32,7 +32,7 @@ Here both UID and GID are same. When working in group, it should be different.
 ,,, should be contact details
 /home/username is the users home directory
 ```
-[Note that the UID number is assigned by Linux to each user on the system. There are three different types of UID: real (is the user id of its user who started the job) effective (It allows an unprivileged user to access documents that only root can access), saved user.](https://linuxhint.com/difference-between-real-effective-user-id-in-linux-os/)
+[Note that the UID number is assigned by Linux to each user on the system. There are three different types of UID: real (is the user id of its user who started the job) effective (It allows an unprivileged user to access documents that only root can access), saved user.](https://linuxhint.com/difference-between-real-effective-user-id-in-linux-os/). [The passwd command is for SUID. The EUID will be in use at the time the passwd command is executed and copied to the root SUID.](https://www.cyberciti.biz/faq/understanding-etcshadow-file/)
 * **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/home/user/.netrc** contains login and initialization information used by the auto-login process.
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
@@ -59,22 +59,9 @@ ls /bin/*
  ```
 * **unset** remove the variable which is set <br />
 * **expr** computes the given expression and displays the output <br />
-
-
-
-copy (paste) to terminal 
-```
-ctrl-shift-c (v)
-```
-find and replace 
-```
-sed -i 's/old/new/g' file-name
-```
-greping only number
-```
-cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
-```
-Notation
+* **vim, emacs, nano, vi** file editors in terminal
+* **cat, less, more, head, tail** diplays the content of file as output
+* **Notation in linux**
 ```
 b - block special file for storage, drives, usb. Can be mounted. 
 c - character device file  ex. mouse, keyboard
@@ -86,11 +73,10 @@ x - executable
 - - removes the permission
 = - ignore all permissions
 ```
-Chaning the permission of file or directory 
-https://askubuntu.com/questions/932713/what-is-the-difference-between-chmod-x-and-chmod-755
+* **chmod** modify the file permission or directory.
 ```
-chmod +rwx filename or folder - read, write, executable
-read = 4, write = 2, execute = 1
+Read (r) = 4, Write (w) = 2, eXecute (x) = 1
+u - user, g - group, o - others
 -----------------------------------
 Symbolic:  r-- -w- --x  |  421
 Binary:    100 010 001  |  -------
@@ -105,7 +91,32 @@ Group  ------/   /      |  111 = 7
 Others ---------/       |  Binary to Octal chart
 ------------------------------------
 chmod 755 filename or folder or chmod u=rwx,g=rx,o=rx  filename or folder
+chmod u+x file
+chmod u-x file
+755 u=rwx,g=rx,o=rx, 
+751 u=rwx,g=rx,o=x
 ```
+* **chown** change a file's ownership, directory, or symbolic link for a user or group
+```
+chown username:groupname file
+```
+* **PID** when a command issued in a linux starts a new process, which creates a 5 digit (PID) number and it can be tracked.
+* **nice** command is used to change the prioity and nice of the process
+
+copy (paste) to terminal 
+```
+ctrl-shift-c (v)
+```
+find and replace 
+```
+sed -i 's/old/new/g' file-name
+```
+greping only number
+```
+cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
+```
+
+
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
 ```
 /dev  contains device files
