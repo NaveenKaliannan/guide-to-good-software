@@ -15,16 +15,20 @@ Linux directory structure starts with /, the root directory.
 * **/sbin/ (root)** has the system binaries such as fdisk, ifconfig, reboot, root, init, getty, fsck, mkfs, mkswap, halt, and etc
 * **/usr/ (users)** has read only applications, data and binaries. It has many sub folders: bin, include, lib, local, share.
 * **/var/ (users)** has variable data files such as cache, lock files, log files, tmp files. 
-* **/dev**  contains device files (USB drive, mouse, keyboard, hard drives)
-* **/home**  contains home and user, group directory
-* **/lib** contains libraries and kernel modules
-* **/mnt** contains mount files for temporary filesystems 
-* **/proc** - process and kernel information files 
-* **/root** - home directory of the root user
+* **/dev (users)**  contains device files (USB drive, mouse, keyboard, hard drives)
+* **/home (users)**  contains home and user, group directory
+* **/lib (users)** contains libraries and kernel modules
+* **/mnt (users)** contains mount files for temporary filesystems 
+* **/proc (users)** - process and kernel information files 
+* **/root (users)** - home directory of the root user
 
 ![alt tag](https://helpdeskgeek.com/wp-content/pictures/2020/02/file-directory.png)
 *The structure of typical Linux directory 
 . This image was taken from the helpdeskgeek.com site*
+
+### Important files in linux
+* **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
+
 
 ### Shell commands
 Type the following command in the terminal to see all shell commands. The most common commands are explained here.
