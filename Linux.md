@@ -21,6 +21,7 @@ Linux directory structure starts with /, the root directory. <br />
 *The structure of typical Linux directory 
 . This image was taken from the helpdeskgeek.com site*
 ### Important Linux Files You Should Know About
+* **/etc/passwd** file contains information such as user ID, group ID, home directory, shell, and etc.
 * **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/home/user/.netrc** contains login and initialization information used by the auto-login process.
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
