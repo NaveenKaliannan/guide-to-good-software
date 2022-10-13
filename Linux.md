@@ -21,7 +21,7 @@ Linux directory structure starts with /, the root directory. <br />
 *The structure of typical Linux directory 
 . This image was taken from the helpdeskgeek.com site*
 ### Important Linux Files You Should Know About
-* **/etc/passwd** file contains information such as UID (user ID), GID (group ID), home directory, shell, and etc.
+* **/etc/passwd** file contains information such as UID (user ID), GID (group ID), home directory, shell interpreter, and etc.
 ```
 cat /etc/passwd |grep "username"
 username:x:1001:1000:username,,,:/home/username:/bin/bash
@@ -31,6 +31,7 @@ Fourth section 1000 is GID
 Here both UID and GID are same. When working in group, it should be different.
 ,,, should be contact details
 /home/username is the users home directory
+/bin/bash is the shell interpreter
 ```
 [Note that the UID number is assigned by Linux to each user on the system. There are three different types of UID: real (is the user id of its user who started the job) effective (It allows an unprivileged user to access documents that only root can access), saved user.](https://linuxhint.com/difference-between-real-effective-user-id-in-linux-os/). [The passwd command is for SUID. The EUID will be in use at the time the passwd command is executed and copied to the root SUID.](https://www.cyberciti.biz/faq/understanding-etcshadow-file/)
 * **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
@@ -122,8 +123,18 @@ sed -i 's/old/new/g' file-name
 * **grep** searches for expressions in a file
 ```
 cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
+history | grep "info"
+```
+* **find** searches for file and directory
+```
+find -name filename or folder name
 ```
 * **env** prints the environment variables
+* **cp** is used to copy the files or folder
+* **mv** moves the files or folder
+* **mkdir** creates a directory or directories
+* **ls** lists the files or folder in the current directory
+* **pwd** diplays the relative path of your current directory
 * **ln -s and ln** create the soft (s) and hard symbolic links. 
 ```
 ln -s filename softlink
@@ -132,16 +143,8 @@ ln filename hardlink
 Both file `filename` and hardlink file will have same permission and same innode number. If the original file is removed. still the content in hardlink can be seen.
 If the original file is modified, it will also reflected in hard link. Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
 ```
-
-copy (paste) to terminal 
-```
-ctrl-shift-c (v)
-```
-find and replace 
-
-
-
-
+### Networking in linux
+### File systems in linux
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
 ```
 /dev  contains device files
@@ -150,7 +153,6 @@ information about /dev/sd - https://www.baeldung.com/linux/dev-sda
 sudo fdisk -l shows the capacity of a hard disk
 lsblk - Lists the available block devices in the system. It displays the output in a tree-like structure
 ```
-
 mount allows filesystem accessible in the Linux directory tree. Normally `/mnt` directory is used for mounting
 
 ```
@@ -173,3 +175,13 @@ ls –l /proc
 ps -aux
 ls -l /proc/pid/file-name Ex.,status, root, stat
 ```
+
+
+copy (paste) to terminal 
+```
+ctrl-shift-c (v)
+```
+
+
+
+
