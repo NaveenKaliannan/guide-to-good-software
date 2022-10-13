@@ -48,7 +48,7 @@ Type the following command in the terminal to see all shell commands in linux.
 ```
 ls /bin/* 
 ```
-### The most common shell commands are explained here.
+### The most commonly used shell commands are explained here.
 * **#!** header file of shell script or shebang and it will tell which interpreter should be used. <br />
  ```
  #!/bin/bash
