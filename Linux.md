@@ -25,20 +25,30 @@ Linux directory structure starts with /, the root directory. <br />
 * **/home/user/.netrc** contains login and initialization information used by the auto-login process.
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
 * **/home/user/.ssh/known_hosts** contains host keys and is located in the user's home directory
-
+* **/home/user/.bashrc** is a script file that's executed when a user logs in. This includes setting up or enabling: coloring, completion, shell history, command aliases, and more.
 ### Shell commands
 Type the following command in the terminal to see all shell commands in linux. 
 ```
 ls /bin/* 
 ```
 ### The most common shell commands are explained here.
+* **#!** header file of shell script or shebang and it will tell which interpreter should be used. <br />
+ ```
+ #!/bin/bash
+ ```
+* **man** display the user manual of any command <br />
+* **ls --version** display the version of the binary <br />
+* **whereis ls** finds the location of source/binary file of a command <br />
+* **sudo su** used for root previliges <br />
+* **set** is used to define the value of system variables <br />
+* **export** is used the create environment variables <br />
+ ```
+ export PYTHONPATH=$(pwd):$(path2):$(path3)
+ ```
+* **unset** remove the variable which is set <br />
+* **expr** computes the given expression and displays the output <br />
 
-Command guide for each shell
-```
-man ls
-ls --version
-whereis ls
-```
+
 
 copy (paste) to terminal 
 ```
