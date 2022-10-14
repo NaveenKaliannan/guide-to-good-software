@@ -143,7 +143,12 @@ ps -aux
 ps -l
 ```
 * **top** displays the processes information but run time 
-* **nice and renice** used to change the priority of a process. Nice is used for before a process start or while schedulig. Renice is used to change the priority when the process is running.
+* **nice and renice** used to change the priority of a process. Nice is used for before a process start or while schedulig. Renice is used to change the priority when the process is running. For setting negative value, one needs root permission.
+```
+nice -value comand
+renice -n value -p PID_of_process
+The value should be taken from -20 (high priority) to 19 (lowest priority). Processes started by normal users have priority 0, which is the standard.
+```
 * **sed** performs editing operations
 ```
 sed -i 's/old/new/g' file-name
@@ -175,7 +180,7 @@ If the original file is modified, it will also reflected in hard link. Hard link
 * **innode number** is a uniquely existing number for all the files
 ```
 ls -l
-first number in file permission is inode number
+first number in file permission is inode number (5 digit number). Sometime in between date and user
 ```
 ### Networking in linux
 ### File systems in linux
