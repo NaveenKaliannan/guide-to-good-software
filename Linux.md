@@ -53,6 +53,11 @@ it will change -rwxrw-rw-  to -rwsrw-rw-
 vim ~/.bashrc
 alias cddata='cd $HOME/tmp/data'
 ```
+* **/etc/inittab** configuration file which is to be used by initialization system. ```init``` create processes from this file.
+```
+init 0 will shutdown the machine
+init 6 will reboot the machine
+```
 ### Shell commands
 Type the following command in the terminal to see all shell commands in linux. 
 ```
