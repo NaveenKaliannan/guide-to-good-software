@@ -68,6 +68,19 @@ ls /bin/*
 * **whereis ls** finds the location of source/binary file of a command <br />
 * **which** locates the executable location
 * **sudo su** used for root previliges <br />
+* **adduser** adding new user
+```
+sudo adduser newuser
+sudo userdel newuser
+```
+* **usermod** adding user to sudo group
+```
+sudo usermod -aG sudo newuser
+group newuser
+su - newuser
+sudo ls /root
+```
+* **finger** user info lookup command and provides details of all the users logged in. It is recommended to disable because remote login people might be able to look at all the user information.
 * **set** is used to define the value of system variables <br />
 * **export** is used the create environment variables <br />
  ```
@@ -143,6 +156,7 @@ ps -aux
 ps -l
 ```
 * **top** displays the processes information but run time 
+* **sat** command records system activity, retrospective, cpu, memory, disks, network interface and etc.
 * **nice and renice** used to change the priority of a process. Nice is used for before a process start or while schedulig. Renice is used to change the priority when the process is running. For setting negative value, one needs root permission.
 ```
 nice -value firefox or other commands such as executable
@@ -182,6 +196,7 @@ If the original file is modified, it will also reflected in hard link. Hard link
 ls -l
 first number in file permission is inode number (5 digit number). Sometime in between date and user
 ```
+### Shell scripting
 ### Networking in linux
 ### File systems in linux
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
