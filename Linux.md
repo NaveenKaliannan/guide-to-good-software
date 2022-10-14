@@ -145,7 +145,7 @@ ps -l
 * **top** displays the processes information but run time 
 * **nice and renice** used to change the priority of a process. Nice is used for before a process start or while schedulig. Renice is used to change the priority when the process is running. For setting negative value, one needs root permission.
 ```
-nice -value comand
+nice -value firefox or other commands such as executable
 renice -n value -p PID_of_process
 The value should be taken from -20 (high priority) to 19 (lowest priority). Processes started by normal users have priority 0, which is the standard.
 ```
