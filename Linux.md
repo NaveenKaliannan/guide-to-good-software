@@ -66,6 +66,7 @@ ls /bin/*
 * **man** display the user manual of any command <br />
 * **ls --version** display the version of the binary <br />
 * **whereis ls** finds the location of source/binary file of a command <br />
+* **which** locates the executable location
 * **sudo su** used for root previliges <br />
 * **set** is used to define the value of system variables <br />
 * **export** is used the create environment variables <br />
