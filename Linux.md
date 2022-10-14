@@ -33,7 +33,17 @@ Here both UID and GID are same. When working in group, it should be different.
 /home/username is the users home directory
 /bin/bash is the shell interpreter
 ```
-[Note that the UID number is assigned by Linux to each user on the system. There are three different types of UID: real (is the user id of its user who started the job) effective (It allows an unprivileged user to access documents that only root can access), saved user.](https://linuxhint.com/difference-between-real-effective-user-id-in-linux-os/). [The passwd command is for SUID. The EUID will be in use at the time the passwd command is executed and copied to the root SUID.](https://www.cyberciti.biz/faq/understanding-etcshadow-file/)
+Note that the UID number is assigned by Linux to each user on the system. The purpose of this UID and GID is explained here: when a user starts a process (a program is running or in execution, an running instance of the program), that process gets a real UID and an effective UID. Both the real UID and the effective UID are the same as the user's UID number (1000). The UID number indicates which resources or files the user's process can access. When a user process wants to access root-related resources or files, the effective UID changes to 0, which is the UID of the root. When the process of root wants to access resources or files related to normal users, the normal user's EUID will be stored in the root's saved UID. Hence, there are three different types of UID: real (process of user and will be same as the UID of user) effective (It allows a process of unprivileged user to access documents or resources that only root can access), saved user (process of root wants to do some underpreviliged work. Example: root wants to backup the user data, update something). 
+```
+ls -l /bin/passwd
+-rwsr-xr-x root root number data /bin/passwd - user who runs the passwd command will run it with the same permission as root.
+/etc/passwd and /etc/shadow are owned by the root. Normal user will be able to modify them using SUID flag
+```
+how to set SUID flag
+```
+chmod u+s filename
+it will change -rwxrw-rw-  to -rwsrw-rw-
+```
 * **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/home/user/.netrc** contains login and initialization information used by the auto-login process.
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
@@ -76,9 +86,12 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64:
 * **cat, less, more, head, tail** diplays the content of file as output
 * **Notation in linux**
 ```
+s - special permission for the user (represent SUID) and it is used instead of x (executable) (-rwsrwxr--)
+t - sticky bit. The sticky bit is only for directory. When it is set for a directory, all files in the directory can only be deleted or renamed by file owners or root. Example: tmp foler. user cannot delete temp file created by other users but root can delete.
 b - block special file for storage, drives, usb. Can be mounted. 
 c - character device file  ex. mouse, keyboard
 d - directory
+l -  links
 r - read
 w - write 
 x - executable
@@ -86,10 +99,16 @@ x - executable
 - - removes the permission
 = - ignore all permissions
 ```
+* **Linux file permission**
+```
+-rwxrwxrwx
+first character defines the directory (d), files (-), links (l)
+the latter are user rights, group rights, other rights
+```
 * **chmod** modify the file permission or directory.
 ```
-Read (r) = 4, Write (w) = 2, eXecute (x) = 1
-u - user, g - group, o - others
+Read (r) = 4, Write (w) = 2, eXecute (x) = 1 SUID (s) - 4 for adding and 0 for removing, Sticky bit (t)
+u - user, g - group, o - others a - all user
 -----------------------------------
 Symbolic:  r-- -w- --x  |  421
 Binary:    100 010 001  |  -------
@@ -108,6 +127,8 @@ chmod u+x file
 chmod u-x file
 755 u=rwx,g=rx,o=rx, 
 751 u=rwx,g=rx,o=x
+chmod 4766 test2.txt -> -rwsrw-rw-
+chmod u-s test.txt or chmod 0766 test2.txt
 ```
 * **chown** change a file's ownership, directory, or symbolic link for a user or group
 ```
@@ -133,7 +154,8 @@ history | grep "info"
 ```
 * **find** searches for file and directory
 ```
-find -name filename or folder name
+find -name filename or folder name 
+find * -perm /4000
 ```
 * **env** prints the environment variables
 * **cp** is used to copy the files or folder
@@ -148,6 +170,11 @@ If the original file is removed. the softfile or link will removed. Both the fil
 ln filename hardlink
 Both file `filename` and hardlink file will have same permission and same innode number. If the original file is removed. still the content in hardlink can be seen.
 If the original file is modified, it will also reflected in hard link. Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
+```
+* **innode number** is a uniquely existing number for all the files
+```
+ls -l
+first number in file permission is inode number
 ```
 ### Networking in linux
 ### File systems in linux
