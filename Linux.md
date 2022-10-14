@@ -148,7 +148,10 @@ chmod u-s test.txt or chmod 0766 test2.txt
 ```
 chown username:groupname file
 ```
-* **PID** when a command issued in a linux starts a new process, which creates a 5 digit (PID) number and it can be tracked.
+* **PID** when a command issued in a linux starts a new process, which creates a 5 digit (PID) number and it can be tracked. 
+```
+The process id of init process is 1
+```
 * **ps** displays the processes information but static
 ```
 ps
@@ -195,6 +198,11 @@ If the original file is modified, it will also reflected in hard link. Hard link
 ```
 ls -l
 first number in file permission is inode number (5 digit number). Sometime in between date and user
+```
+* **absolute and relative path**
+```
+abs path = /home/username/.../../document
+relative path = document/
 ```
 ### Shell scripting
 ### Networking in linux
