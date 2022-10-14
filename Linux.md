@@ -210,6 +210,12 @@ abs path = /home/username/.../../document
 relative path = document/
 ```
 ### Shell scripting
+* **setting variables**
+* **for**
+* **while**
+* **if**
+* **until**
+* **select**
 ### Networking in linux
 ### File systems in linux
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
