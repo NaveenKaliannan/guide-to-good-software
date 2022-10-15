@@ -45,14 +45,7 @@ chmod u+s filename
 it will change -rwxrw-rw-  to -rwsrw-rw-
 ```
 * **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
-* **/home/user/.netrc** contains login and initialization information used by the auto-login process.
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
-* **/home/user/.ssh/known_hosts** contains host keys and is located in the user's home directory
-* **/home/user/.bashrc** is a script file that's executed when a user logs in. This includes setting up or enabling: coloring, completion, shell history, command aliases, and more.
-```
-vim ~/.bashrc
-alias cddata='cd $HOME/tmp/data'
-```
 * **/etc/inittab** configuration file which is to be used by initialization system. ```init``` create processes from this file.
 ```
 init 0 will shutdown the machine
@@ -70,6 +63,13 @@ localhost - 127.0.0.1
 http:/ - protocol
 ```
 * **/etc/hosts** is used for name resolution and contains ip address and its corresponding domain name.
+* **/home/user/.netrc** contains login and initialization information used by the auto-login process.
+* **/home/user/.ssh/known_hosts** contains host keys and is located in the user's home directory
+* **/home/user/.bashrc** is a script file that's executed when a user logs in. This includes setting up or enabling: coloring, completion, shell history, command aliases, and more.
+```
+vim ~/.bashrc
+alias cddata='cd $HOME/tmp/data'
+```
 ### Shell commands
 Type the following command in the terminal to see all shell commands in linux. 
 ```
@@ -290,36 +290,32 @@ if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell
 * **until**
 * **select**
 ### Networking in linux
-DNS resolver in local machine sents our DNS querries to DNS nameserver. <br />
-DNS nameserver is used to covert the human readbale names (google.com) to IP addresss (number:..:..). <br />
+DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss (number:..:..). <br />
 Names are convenient for humans and Numbers are convenient for machines. <br />
-When you type google.com in web browser, DNS resolver in our notebook asks DNS server for IP address of the google.com. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP.
-* IPv4 (32-bit address length, less address space, address representatin is decimal, mnaual or with DHCP configuration,  4 fields which are separated by dot (.), Example of IPv4:  66.94.29.13	)
- * IPv6 (128-bit address length, more address space,address representatin is hexadecimal, Autoconfiguration , 8 fields, which are separated by colon (:), Example of IPv6: 2001:0000:3238:DFE1:0063:0000:0000:FEFB
-)
-A -  used to map names to IPv4 addresses
-AAAA -  used to map names to IPv6 addresses
-when we type the google.com, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us. 
-
+When you type google.com in web browser, DNS resolver in our notebook asks DNS server for IP address of the google.com. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP. when we type the google.com, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us. 
+* IPv4 (32-bit address length, less address space, address representatin is decimal, mnaual or with DHCP configuration,  4 fields which are separated by dot (.), Example of IPv4:  66.94.29.13	) <br />
+ * IPv6 (128-bit address length, more address space,address representatin is hexadecimal, Autoconfiguration , 8 fields, which are separated by colon (:), Example of IPv6: 2001:0000:3238:DFE1:0063:0000:0000:FEFB) <br />
+A -  used to map names to IPv4 addresses and  AAAA -  used to map names to IPv6 addresses.  <br />
+DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used. Two types of DNS server: Internal or External. 
+our notebook has a host file in /etc/hosts/ - lists hosts and IP address. you can also add host ip address and name in hosts file. 
 ```
 ping google.com - pings the google.com and gets the ipv4 address of the google.com
 ipconfig - PC IP address, subnet mask and default gateway
 ipconfig/all - command used to show information about the network configuration and DHCP and DNS Settings.
 nslookup google.com -  used for obtaining DNS records
 both ipconfig/all nslookup will show the DNS records
-ping google.com -  ping the google.com
 ipconfig /displaydns - PC DNS cache
+DHCP is used to assign IP address and helps IP address management. DHCP server maintain records of all IP address and assigns IP address to DHCP client. 
+A new machine doesnt have IP address. First it sents a DHCP message to the network and the DHCP server assigns the IP address to our machine. This will be our IP address and it will be sent with DNS querries to DNS name server.
 DHCP - host use it learn the address of thir  DNS Server, IP address. subnet mask, default gateway
 ```
-DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used
-Devices has a host file in /etc/hosts/ - lists hosts and IP address. 
-you can also add host ip address and name in hosts file. 
-Two types of DNS server: Internal or External. 
 How to configure ip address in router
+```
 ip dns server - command
 ip name-server 8.8.8.8
 ip domain loopup
 ip domain name
+````
 If you are using a private DNS nameserver, add it to the /etc/resolv.conf file.
 ### File systems in linux
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
