@@ -210,9 +210,65 @@ abs path = /home/username/.../../document
 relative path = document/
 ```
 ### Shell scripting
+* **Operator**
+```
+**Arithmetic Operators**
++   - addition
+-   - subtraction
+*   - multiplication
+/   - division
+%   - remainder
+=   - assignment
+**Relational operators**
+==  - equality
+!=  - not equality
+-eq	- equal to
+-ne	- not equal to
+-gt	- greater than
+-lt	- less than
+-ge	- greater than or equal to
+-le	- less than or equal to
+**Boolean operators**
+!   - logical negation
+-o	 - OR operator
+-a	 - and operator
+**String operators**
+=  - checks two string variable whether they are equal
+!= - checks two string variable whether they are not equal
+-z - checks string variable size zero
+-n	- checks the string size variableis non zero
+str - checks a string variable whether it is not an empty string
+**File test operator**
+b - Checks if file is a block special file (used for mounting)
+c - Checks if file is a character file (mouse, keyboard)
+d - directory, f - ordinary file, g - checks if the file has group id
+k - check if the file has sticky bit, p - Checks if file is a named pipe
+t - Check if file descriptor is open and associated with a terminal
+u - checks if the file has SUID
+r - readable w - writeable x - executable
+s - checks if the file size is greater than 0
+e - checks if the file exists or not
+```
 * **setting variables**
 * **for**
+```
+for i in * ; do commands ; done ##  * means for loop goes via all files
+for i in 1 2 3 4 5; do commands; done
+for i in {1..5}; do commands; done
+for i in {1..5..2}; do commands; done
+for i in (( initializer; condition; step )); do commands; done
+for i in (( i=1; i<=5; i++ )); do commands; done
+for i in ((  ; ;  )); do commands; done ## ; ; means infinite loop
+```
 * **while**
+```
+n=1
+while [ $n -le 5 ]
+do
+	echo "Welcome $n times."
+	n=$(( n+1 ))	 # increments $n
+done
+```
 * **if**
 * **until**
 * **select**
