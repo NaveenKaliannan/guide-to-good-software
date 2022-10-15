@@ -248,8 +248,14 @@ u - checks if the file has SUID
 r - readable w - writeable x - executable
 s - checks if the file size is greater than 0
 e - checks if the file exists or not
+Example if  test -e $file ; then echo $file exists ; fi
 ```
 * **setting variables**
+```
+declare -i x=1 ## declares integer
+declare -i y=1 ## declares integer
+z=$(( x + y ))
+```
 * **for**
 ```
 for i in * ; do commands ; done ##  * means for loop goes via all files
@@ -260,16 +266,15 @@ for i in (( initializer; condition; step )); do commands; done
 for i in (( i=1; i<=5; i++ )); do commands; done
 for i in ((  ; ;  )); do commands; done ## ; ; means infinite loop
 ```
-* **while**
+* **while and if**
 ```
-n=1
-while [ $n -le 5 ]
-do
-	echo "Welcome $n times."
-	n=$(( n+1 ))	 # increments $n
-done
+n=1; while [ $n -le 5 ] ;  do echo $n ; n=$(( n+1 )) ; done
+file=/etc/resolv.conf;
+if  test -e $file ; then while IFS= read -r line ; do echo $line ; done < "$file" ; fi
+if  test -e $file ; then while IFS= read -r f1 f2 ; do echo "field # 1 : $f1 ==> field #2 : $f2" ; done < "$file" ; fi
+file=/etc/passwd
+if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell ; do [ $uid -ge 500 ] && echo "User $user ($uid) assigned \"$home\" home directory with $shell shell." ; done < "$file" ; fi
 ```
-* **if**
 * **until**
 * **select**
 ### Networking in linux
