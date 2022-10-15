@@ -58,6 +58,16 @@ alias cddata='cd $HOME/tmp/data'
 init 0 will shutdown the machine
 init 6 will reboot the machine
 ```
+* **/etc/resolv.conf** configuration file which is used to configure DNS name servers. Hence, allows computer to covert or translate or resolve human readable format address to machine-readable IP addresses (IPv4 or IPv6) and viceversa. The file is maintained maually  or when DHCP is used. The file contains domain name and name server (in machine-readable IP addresses). This means which the IP-address of a name server to use for name resolution.
+```
+Resolver (translate) program in linux (or in our local computer) offer access to the Internet Domain Name System (DNS). The resolv.conf file is read by this program. The DNS querries requested by us will sent to DNS nameserver with the help of DNS resolver program. DNS resolver forwards our DNS querries to DNS nameserver.
+DNS Nameserver is a host on the internet which resolve or translate or convert human readable format address to machine-readable IP addresses. It answers the DNS querries, sent by DNS clients. This process is name resolution.
+
+domain name is upb.de. It has IP address. DNS name server will resolve.
+global host name is www. 
+localhost - 127.0.0.1 
+```
+* **/etc/hosts** is used for name resolution and contains ip address and its corresponding domain name.
 ### Shell commands
 Type the following command in the terminal to see all shell commands in linux. 
 ```
