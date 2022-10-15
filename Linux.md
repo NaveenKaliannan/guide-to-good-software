@@ -60,7 +60,11 @@ what will be inside our DNS querry? Our IP address and what we requested for (ex
 domain name is upb.de. It has IP address. DNS name server will resolve.
 global host name is www. 
 localhost - 127.0.0.1 
-http:/ - protocol
+http protocol  - handles the communication between a web server and a web browser
+HTTP secure protocol - handles the communication between a web server and a web browser.
+FTP (file transfer protocol) - hands file transfer between two machines
+SFTP (ssh file transfer protocol or secure FTP)
+ssh - secure shell to access a machine
 ```
 * **/etc/hosts** is used for name resolution and contains ip address and its corresponding domain name.
 * **/home/user/.netrc** contains login and initialization information used by the auto-login process.
@@ -290,6 +294,7 @@ if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell
 * **until**
 * **select**
 ### Networking in linux
+Networking is the important in Linux. TCP/IP Transmission Control Protocol/Internet Protocol model is the base.
 DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss (number:..:..). <br />
 Names are convenient for humans and Numbers are convenient for machines. <br />
 When you type google.com in web browser, DNS resolver in our notebook asks DNS server for IP address of the google.com. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP. when we type the google.com, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us. 
