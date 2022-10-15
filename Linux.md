@@ -63,9 +63,11 @@ init 6 will reboot the machine
 Resolver (translate) program in linux (or in our local computer) offer access to the Internet Domain Name System (DNS). The resolv.conf file is read by this program. The DNS querries requested by us will sent to DNS nameserver with the help of DNS resolver program. DNS resolver forwards our DNS querries to DNS nameserver.
 DNS Nameserver is a host on the internet which resolve or translate or convert human readable format address to machine-readable IP addresses. It answers the DNS querries, sent by DNS clients. This process is name resolution.
 
+what will be inside our DNS querry? Our IP address and what we requested for (examples: images, file downloads).
 domain name is upb.de. It has IP address. DNS name server will resolve.
 global host name is www. 
 localhost - 127.0.0.1 
+http:/ - protocol
 ```
 * **/etc/hosts** is used for name resolution and contains ip address and its corresponding domain name.
 ### Shell commands
@@ -288,19 +290,16 @@ if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell
 * **until**
 * **select**
 ### Networking in linux
-DNS is used to covert the human readbale names (google.com) to IP addresss. 
-PC or Laptop uses addresses IPv4/IPv6
-Names are convenient for humans
-When you type google.com in web browser, the device asks DNS server for IP address of the google.com.
-
-increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced.
-
-IPv4 (32-bit address length, less address space, address representatin is decimal, mnaual or with DHCP configuration,  4 fields which are separated by dot (.), Example of IPv4:  66.94.29.13	)
-
-IPv6 (128-bit address length, more address space,address representatin is hexadecimal, Autoconfiguration , 8 fields, which are separated by colon (:), Example of IPv6: 2001:0000:3238:DFE1:0063:0000:0000:FEFB
+DNS resolver in local machine sents our DNS querries to DNS nameserver. <br />
+DNS nameserver is used to covert the human readbale names (google.com) to IP addresss (number:..:..). <br />
+Names are convenient for humans and Numbers are convenient for machines. <br />
+When you type google.com in web browser, DNS resolver in our notebook asks DNS server for IP address of the google.com. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP.
+* IPv4 (32-bit address length, less address space, address representatin is decimal, mnaual or with DHCP configuration,  4 fields which are separated by dot (.), Example of IPv4:  66.94.29.13	)
+ * IPv6 (128-bit address length, more address space,address representatin is hexadecimal, Autoconfiguration , 8 fields, which are separated by colon (:), Example of IPv6: 2001:0000:3238:DFE1:0063:0000:0000:FEFB
 )
-
-DNS serves can be manually configured via DHCP.
+A -  used to map names to IPv4 addresses
+AAAA -  used to map names to IPv6 addresses
+when we type the google.com, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us. 
 
 ```
 ping google.com - pings the google.com and gets the ipv4 address of the google.com
@@ -312,10 +311,6 @@ ping google.com -  ping the google.com
 ipconfig /displaydns - PC DNS cache
 DHCP - host use it learn the address of thir  DNS Server, IP address. subnet mask, default gateway
 ```
-when we type the google.com, a querry with our IP address will be send to the IP address of google.com. 
-then the desination will send the response with their IP address to us. 
-A -  used to map names to IPv4 addresses
-AAAA -  used to map names to IPv6 addresses
 DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used
 Devices has a host file in /etc/hosts/ - lists hosts and IP address. 
 you can also add host ip address and name in hosts file. 
