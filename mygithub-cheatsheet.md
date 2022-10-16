@@ -157,6 +157,14 @@ git rev-parse --show-toplevel
 git rev-parse --git-dir
 git rev-parse --branches
 ```
+error: You have not concluded your merge (MERGE_HEAD exists)
+```
+git merge --abort
+git fetch --all
+git branch -v
+git reset --hard origin/branch-name
+git pull
+```
 How to add note and warning in Github Readme.md file 
 
 > __Note__  
