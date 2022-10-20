@@ -302,10 +302,10 @@ When you type google.com in web browser, DNS resolver in our notebook asks DNS s
 What is the differene between IPv4 and IPv6?. <br />
 **IPv4** 
 ```
-- 32-bit address length
+- 32-bit address length (1 byte = 8 bits (10101100->172, 00000001->1), 4 bytes = 32 bits)
 - less address space
 - address representatin is decimal
-- 4 fields which are separated by dot (.) Example of IPv4:  66.94.29.13	
+- 4 fields which are separated by dot (.) Example of IPv4:  66.94.29.13, local host address is 127.0.0.1, IP address for modems and devices 192.168. 178.1
 - manual or with DHCP configuration
 - A -  used to map names to IPv4 addresses
 ```
@@ -314,10 +314,14 @@ What is the differene between IPv4 and IPv6?. <br />
 - 128-bit address length
 - more address space 
 - address representatin is hexadecimal
-- 8 fields, which are separated by colon (:) Example of IPv6: 2001:0000:3238:DFE1:0063:0000:0000:FEFB) 
+- 8 fields, which are separated by colon (:) Example of IPv6: 2001:0000:3238:DFE1:0063:0000:0000:FEFB, localhost address is ::1
 - Autoconfiguration 
 - AAAA -  used to map names to IPv6 addresses.  
 ```
+What is the use of IP? 
+* identifies any network devices
+* Computers use IP addresses to communicate with each other
+
 TCP/IP Transmission Control Protocol/Internet Protocol model is the base
 DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used. Two types of DNS server: Internal or External. 
 our notebook has a host file in /etc/hosts/ - lists hosts and IP address. you can also add host ip address and name in hosts file. 
