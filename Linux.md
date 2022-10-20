@@ -297,7 +297,7 @@ if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell
 * **until**
 * **select**
 ### [Networking in linux](https://doc.lagout.org/operating%20system%20/linux/Linux%20Networking%20Cookbook.pdf)
-To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers, DNS records and IP address, what do they do?
+To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers, DNS records, ports and IP address, what do they do?
 DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss.  PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. Names (google.com) are convenient for humans and Numbers are convenient for machines. <br />
 What is the differene between IPv4 and IPv6?. <br />
 * **IPv4** 
@@ -364,6 +364,19 @@ ip name-server 8.8.8.8
 ip domain loopup
 ip domain name
 ````
+
+* **port number** helps to transmit data between a network and a specified application. This number is used by TCP and UDP of IP suite. It is 16 bit unsigned integer (0-65535). Each computers have its own IP address and each application in them has its own port number. Some application like HTTPS (80) have same port number. The port number is assigned by OS to each processes.
+```
+port number  -  application
+21 - FTP Server
+22 - SSH Server 
+23 - TELENET
+25 -  SMTP
+53 - DNS
+80 -  HTTP
+110 - POP3 mail server
+443 - HTTPS
+```
 
 ### File systems in linux
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
