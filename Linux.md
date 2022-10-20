@@ -296,7 +296,7 @@ if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell
 ```
 * **until**
 * **select**
-### Networking in linux
+### [Networking in linux](https://doc.lagout.org/operating%20system%20/linux/Linux%20Networking%20Cookbook.pdf)
 To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers, DNS records and IP address, what do they do?
 DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss.  PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. Names (google.com) are convenient for humans and Numbers are convenient for machines. <br />
 What is the differene between IPv4 and IPv6?. <br />
@@ -333,6 +333,10 @@ A new machine doesnt have IP address. First it sents a DHCP message to the netwo
 ```
 ping amazon.com 
 ```
+* **host** command finds IPv4, IPv6 address and DNS records (such as alias name) of a host
+```
+ping amazon.com 
+```
 * **ipconfig** displays current network configuration information, such as notebook local host IP address, ethernet address, subnet mask, default gateway and etc
 ```
 ipconfig 
@@ -351,6 +355,7 @@ Note that both ipconfig/all nslookup will show the DNS records or the domain add
 * **ipconfig /flushdns** removes the DNS resolver cache
 * **tcpdump** allows one to analyze network traffic going via machines.
 * **netstat** diplays problems in the network and finds the amount of traffic in the network
+* **route** command shows and manipulates ip routing table
 
 How to configure ip address in router
 ```
