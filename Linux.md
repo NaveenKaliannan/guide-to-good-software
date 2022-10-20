@@ -67,6 +67,9 @@ SFTP (ssh file transfer protocol or secure FTP)
 ssh - secure shell to access a machine
 ```
 * **/etc/hosts** is used for name resolution and contains ip address and its corresponding domain name.
+```
+ip address host-name or user-defined-alias-name (alias name for the amazon.com is ama.com)
+```
 * **/home/user/.netrc** contains login and initialization information used by the auto-login process.
 * **/home/user/.ssh/known_hosts** contains host keys and is located in the user's home directory
 * **/home/user/.bashrc** is a script file that's executed when a user logs in. This includes setting up or enabling: coloring, completion, shell history, command aliases, and more.
@@ -294,13 +297,10 @@ if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell
 * **until**
 * **select**
 ### Networking in linux
-To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers and IP address, what do they do?
-DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss (number:..:..). <br />
-Names are convenient for humans and Numbers are convenient for machines. <br />
-When you type google.com in web browser or ssh userid@server-name in terminal, DNS resolver in our notebook asks DNS server (or DNS nameserver) for IP address of the google.com or server-name. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP. when we type the google.com or ss, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us.
-
+To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers, DNS records and IP address, what do they do?
+DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss.  PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. Names (google.com) are convenient for humans and Numbers are convenient for machines. <br />
 What is the differene between IPv4 and IPv6?. <br />
-**IPv4** 
+* **IPv4** 
 ```
 - 32-bit address length (1 byte = 8 bits (10101100->172, 00000001->1), 4 bytes = 32 bits, For 8 bits, 0 to 255 numbers, 2 power 8 is 256 numbers)
 - less address space
@@ -309,7 +309,7 @@ What is the differene between IPv4 and IPv6?. <br />
 - manual or with DHCP configuration
 - A -  used to map names to IPv4 addresses
 ```
-**IPv6** 
+* **IPv6** 
 ```
 - 128-bit address length
 - more address space 
@@ -318,13 +318,16 @@ What is the differene between IPv4 and IPv6?. <br />
 - Autoconfiguration 
 - AAAA -  used to map names to IPv6 addresses.  
 ```
-What is the use of IP? 
-* identifies any network devices
-* Computers use IP addresses to communicate with each other
+What is the use of IP? 1. identifies any network devices 2. Computers use IP addresses to communicate with each other
 
-TCP/IP Transmission Control Protocol/Internet Protocol model is the base
-DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used. Two types of DNS server: Internal or External. 
-our notebook has a host file in /etc/hosts/ - lists hosts and IP address. you can also add host ip address and name in hosts file. 
+When one types google.com in web browser or ssh userid@server-name in terminal, DNS resolver in our notebook asks DNS server (or DNS nameserver) for IP address of the google.com or server-name. This asking process involves a DNS query where our IP address is sent to the google.com. Then the destination sends us the reply with its IP address.
+
+What is the use of DHCP
+* DNS nameserves can be manually configured via DHCP.
+* host use it learn the address of their DNS Server, IP address. subnet mask, default gateway. 
+* assign IP address and helps IP address management. 
+* DHCP server maintain records of all IP address and assigns IP address to DHCP client. <br />
+A new machine doesnt have IP address. First it sents a DHCP message to the network and the DHCP server assigns the IP address to our machine. This will be our IP address and it will be sent with DNS querries to DNS name server. If you are using a private DNS nameserver, add it to the `/etc/resolv.conf` file. TCP/IP Transmission Control Protocol/Internet Protocol model is the base. DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used. 
 
 * **ping** command pings a host and get its ipv4 address.
 ```
@@ -334,20 +337,21 @@ ping amazon.com
 ```
 ipconfig 
 ```
-* **ipconfig**  show information about the network configuration and DHCP and DNS Settings
+* **ipconfig/all**  show information about the network configuration and DHCP and DNS Settings
 ```
 ipconfig/all 
 ```
-* **nslookup** displays the DNS records or the domain address records
+* **nslookup** displays the DNS records or the domain address records and IP address of the given host name
 ```
 nslookup google.com
 ```
 Note that both ipconfig/all nslookup will show the DNS records or the domain address records.
-* **ipconfig /displaydns** is for  PC DNS cache
-DHCP is used to assign IP address and helps IP address management. DHCP server maintain records of all IP address and assigns IP address to DHCP client. 
-A new machine doesnt have IP address. First it sents a DHCP message to the network and the DHCP server assigns the IP address to our machine. This will be our IP address and it will be sent with DNS querries to DNS name server.
-DHCP - host use it learn the address of thir  DNS Server, IP address. subnet mask, default gateway
-```
+* **dhclient** used for assigning dynamic IP addresses.
+* **ipconfig /displaydns** displays the contents of PC DNS resolver cache. It contains a table with DNS records (host name, ip address) of already visited domain names. Example., DNS querries, IP address of visited website. If we are visting the same website next time, there is no need for nslookup, we can get the DNS record quickly and response will be faster. If the data for a website is not available, then the DNS querry will be sent to DNS nameserver and it will be stored in DNS cache. Clearing the browsing history or /flushdns will clear the cache.
+* **ipconfig /flushdns** removes the DNS resolver cache
+* **tcpdump** allows one to analyze network traffic going via machines.
+* **netstat** diplays problems in the network and finds the amount of traffic in the network
+
 How to configure ip address in router
 ```
 ip dns server - command
@@ -355,7 +359,7 @@ ip name-server 8.8.8.8
 ip domain loopup
 ip domain name
 ````
-If you are using a private DNS nameserver, add it to the /etc/resolv.conf file.
+
 ### File systems in linux
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
 ```
