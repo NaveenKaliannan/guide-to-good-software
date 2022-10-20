@@ -353,18 +353,7 @@ Note that both ipconfig/all nslookup will show the DNS records or the domain add
 * **dhclient** used for assigning dynamic IP addresses.
 * **ipconfig /displaydns** displays the contents of PC DNS resolver cache. It contains a table with DNS records (host name, ip address) of already visited domain names. Example., DNS querries, IP address of visited website. If we are visting the same website next time, there is no need for nslookup, we can get the DNS record quickly and response will be faster. If the data for a website is not available, then the DNS querry will be sent to DNS nameserver and it will be stored in DNS cache. Clearing the browsing history or /flushdns will clear the cache.
 * **ipconfig /flushdns** removes the DNS resolver cache
-* **tcpdump** allows one to analyze network traffic going via machines.
-* **netstat** diplays problems in the network and finds the amount of traffic in the network
 * **route** command shows and manipulates ip routing table
-
-How to configure ip address in router
-```
-ip dns server - command
-ip name-server 8.8.8.8
-ip domain loopup
-ip domain name
-````
-
 * **port number** helps to transmit data between a network and a specified application. This number is used by TCP and UDP of IP suite. It is 16 bit unsigned integer (0-65535). Each computers have its own IP address and each application in them has its own port number. Some application like HTTPS (80) have same port number. The port number is assigned by OS to each processes.
 ```
 port number  -  application
@@ -377,6 +366,19 @@ port number  -  application
 110 - POP3 mail server
 443 - HTTPS
 ```
+* **tcpdump** allows one to analyze network traffic going via machines.
+* **netstat** diplays problems in the network and finds the amount of traffic in the network
+
+How to configure ip address in router
+```
+ip dns server - command
+ip name-server 8.8.8.8
+ip domain loopup
+ip domain name
+````
+
+
+
 
 ### File systems in linux
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
