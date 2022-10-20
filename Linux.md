@@ -143,7 +143,7 @@ the latter are user rights, group rights, other rights
 * **chmod** modify the file permission or directory.
 ```
 Read (r) = 4, Write (w) = 2, eXecute (x) = 1 SUID (s) - 4 for adding and 0 for removing, Sticky bit (t)
-u - user, g - group, o - others a - all user
+u - user, g - group, o - others, a - all user
 -----------------------------------
 Symbolic:  r-- -w- --x  |  421
 Binary:    100 010 001  |  -------
