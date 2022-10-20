@@ -297,12 +297,12 @@ if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell
 To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers and IP address, what do they do?
 DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss (number:..:..). <br />
 Names are convenient for humans and Numbers are convenient for machines. <br />
-When you type google.com in web browser, DNS resolver in our notebook asks DNS server (or DNS nameserver) for IP address of the google.com. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP. when we type the google.com, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us.
+When you type google.com in web browser or ssh userid@server-name in terminal, DNS resolver in our notebook asks DNS server (or DNS nameserver) for IP address of the google.com or server-name. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP. when we type the google.com or ss, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us.
 
 What is the differene between IPv4 and IPv6?. <br />
 **IPv4** 
 ```
-- 32-bit address length (1 byte = 8 bits (10101100->172, 00000001->1), 4 bytes = 32 bits)
+- 32-bit address length (1 byte = 8 bits (10101100->172, 00000001->1), 4 bytes = 32 bits, For 8 bits, 0 to 255 numbers, 2 power 8 is 256 numbers)
 - less address space
 - address representatin is decimal
 - 4 fields which are separated by dot (.) Example of IPv4:  66.94.29.13, local host address is 127.0.0.1, IP address for modems and devices 192.168. 178.1
@@ -326,14 +326,24 @@ TCP/IP Transmission Control Protocol/Internet Protocol model is the base
 DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used. Two types of DNS server: Internal or External. 
 our notebook has a host file in /etc/hosts/ - lists hosts and IP address. you can also add host ip address and name in hosts file. 
 
-
+* **ping** command pings a host and get its ipv4 address.
 ```
-ping google.com - pings the google.com and gets the ipv4 address of the google.com
-ipconfig - PC IP address, subnet mask and default gateway
-ipconfig/all - command used to show information about the network configuration and DHCP and DNS Settings.
-nslookup google.com -  used for obtaining DNS records
-both ipconfig/all nslookup will show the DNS records
-ipconfig /displaydns - PC DNS cache
+ping amazon.com 
+```
+* **ipconfig** displays current network configuration information, such as notebook local host IP address, ethernet address, subnet mask, default gateway and etc
+```
+ipconfig 
+```
+* **ipconfig**  show information about the network configuration and DHCP and DNS Settings
+```
+ipconfig/all 
+```
+* **nslookup** displays the DNS records or the domain address records
+```
+nslookup google.com
+```
+Note that both ipconfig/all nslookup will show the DNS records or the domain address records.
+* **ipconfig /displaydns** is for  PC DNS cache
 DHCP is used to assign IP address and helps IP address management. DHCP server maintain records of all IP address and assigns IP address to DHCP client. 
 A new machine doesnt have IP address. First it sents a DHCP message to the network and the DHCP server assigns the IP address to our machine. This will be our IP address and it will be sent with DNS querries to DNS name server.
 DHCP - host use it learn the address of thir  DNS Server, IP address. subnet mask, default gateway
