@@ -294,15 +294,35 @@ if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell
 * **until**
 * **select**
 ### Networking in linux
-Networking is the important in Linux. TCP/IP Transmission Control Protocol/Internet Protocol model is the base.
+To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers and IP address, what do they do?
 DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss (number:..:..). <br />
 Names are convenient for humans and Numbers are convenient for machines. <br />
-When you type google.com in web browser, DNS resolver in our notebook asks DNS server for IP address of the google.com. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP. when we type the google.com, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us. 
-* IPv4 (32-bit address length, less address space, address representatin is decimal, mnaual or with DHCP configuration,  4 fields which are separated by dot (.), Example of IPv4:  66.94.29.13	) <br />
- * IPv6 (128-bit address length, more address space,address representatin is hexadecimal, Autoconfiguration , 8 fields, which are separated by colon (:), Example of IPv6: 2001:0000:3238:DFE1:0063:0000:0000:FEFB) <br />
-A -  used to map names to IPv4 addresses and  AAAA -  used to map names to IPv6 addresses.  <br />
+When you type google.com in web browser, DNS resolver in our notebook asks DNS server (or DNS nameserver) for IP address of the google.com. PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. DNS nameserves can be manually configured via DHCP. when we type the google.com, a querry with our IP address will be send to the IP address of google.com. Then the desination will send the response with their IP address to us.
+
+What is the differene between IPv4 and IPv6?. <br />
+**IPv4** 
+```
+- 32-bit address length
+- less address space
+- address representatin is decimal
+- 4 fields which are separated by dot (.) Example of IPv4:  66.94.29.13	
+- manual or with DHCP configuration
+- A -  used to map names to IPv4 addresses
+```
+**IPv6** 
+```
+- 128-bit address length
+- more address space 
+- address representatin is hexadecimal
+- 8 fields, which are separated by colon (:) Example of IPv6: 2001:0000:3238:DFE1:0063:0000:0000:FEFB) 
+- Autoconfiguration 
+- AAAA -  used to map names to IPv6 addresses.  
+```
+TCP/IP Transmission Control Protocol/Internet Protocol model is the base
 DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used. Two types of DNS server: Internal or External. 
 our notebook has a host file in /etc/hosts/ - lists hosts and IP address. you can also add host ip address and name in hosts file. 
+
+
 ```
 ping google.com - pings the google.com and gets the ipv4 address of the google.com
 ipconfig - PC IP address, subnet mask and default gateway
