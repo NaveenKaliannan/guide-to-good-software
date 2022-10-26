@@ -159,8 +159,10 @@ git rev-parse --branches
 ```
 When someone updated your branch and it is available in cloud, Wanna update the head pointer to latest one and pull the updates
 ```
-git reset --hard origin/branch-name
-git pull
+git checkout master
+git pull -> will update the master from origin
+git reset --hard origin/branch-name -> No need to update the code. Just update the head where it points to.
+git pull  
 ```
 error: You have not concluded your merge (MERGE_HEAD exists)
 ```
