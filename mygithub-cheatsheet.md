@@ -157,6 +157,11 @@ git rev-parse --show-toplevel
 git rev-parse --git-dir
 git rev-parse --branches
 ```
+When someone updated your branch and it is available in cloud, Wanna update the head pointer to latest one and pull the updates
+```
+git reset --hard origin/branch-name
+git pull
+``
 error: You have not concluded your merge (MERGE_HEAD exists)
 ```
 git merge --abort
