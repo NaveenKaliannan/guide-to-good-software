@@ -161,7 +161,7 @@ When someone updated your branch and it is available in cloud, Wanna update the 
 ```
 git reset --hard origin/branch-name
 git pull
-``
+```
 error: You have not concluded your merge (MERGE_HEAD exists)
 ```
 git merge --abort
