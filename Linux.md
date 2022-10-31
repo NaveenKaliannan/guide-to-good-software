@@ -199,6 +199,7 @@ sed -i 's/old/new/g' file-name
 cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
 history | grep "info"
 ```
+* **diff** shows the difference between two files
 * **find** searches for file and directory
 ```
 find -name filename or folder name 
