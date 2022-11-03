@@ -13,7 +13,7 @@ pt cat --json filename.snappy.parquet | jq | tee filename.json
 ```
 Converting all the parquet files in folder into a single json file
 ```
-for i in * ; do pt cat -json $i >> filename.json ; done
+for i in * ; do pt cat -json $i | jq >> filename.json ; done
 ```
 Select numbers in the lines and sort them
 ```
