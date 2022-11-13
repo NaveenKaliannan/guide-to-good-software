@@ -1,8 +1,6 @@
-Difference between git and github
-```
-Git is a version control system
-GitHub is a cloud-based hosting service that helps to manage git repositories
-```
+# Github and Git
+GitHub is a cloud-based hosting service that helps to manage git repositories. Git is a version control system. 
+
 Configuring the SSH keys, which are important the access credential for the SSH network protocol. 
 This allows to you connect to remote repository. No need to type password
 ```
