@@ -193,11 +193,13 @@ The value should be taken from -20 (high priority) to 19 (lowest priority). Proc
 * **sed** performs editing operations
 ```
 sed -i 's/old/new/g' file-name
+for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
 ```
 * **grep** searches for expressions in a file
 ```
 cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
 history | grep "info"
+for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
 ```
 * **diff** shows the difference between two files
 * **find** searches for file and directory
@@ -285,6 +287,7 @@ for i in {1..5..2}; do commands; done
 for i in (( initializer; condition; step )); do commands; done
 for i in (( i=1; i<=5; i++ )); do commands; done
 for i in ((  ; ;  )); do commands; done ## ; ; means infinite loop
+for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
 ```
 * **while and if**
 ```
