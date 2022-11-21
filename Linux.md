@@ -194,6 +194,7 @@ The value should be taken from -20 (high priority) to 19 (lowest priority). Proc
 ```
 sed -i 's/old/new/g' file-name
 for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
+for i in $(vulture config/constants.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do  if [ *$(grep -nr "$i" | wc -l)* == *1* ] ; then echo $i ; fi   ; done
 ```
 * **grep** searches for expressions in a file
 ```
@@ -288,6 +289,7 @@ for i in (( initializer; condition; step )); do commands; done
 for i in (( i=1; i<=5; i++ )); do commands; done
 for i in ((  ; ;  )); do commands; done ## ; ; means infinite loop
 for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
+for i in $(vulture config/constants.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do  if [ *$(grep -nr "$i" | wc -l)* == *1* ] ; then echo $i ; fi   ; done
 ```
 * **while and if**
 ```
@@ -297,6 +299,7 @@ if  test -e $file ; then while IFS= read -r line ; do echo $line ; done < "$file
 if  test -e $file ; then while IFS= read -r f1 f2 ; do echo "field # 1 : $f1 ==> field #2 : $f2" ; done < "$file" ; fi
 file=/etc/passwd
 if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell ; do [ $uid -ge 500 ] && echo "User $user ($uid) assigned \"$home\" home directory with $shell shell." ; done < "$file" ; fi
+for i in $(vulture config/constants.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do  if [ *$(grep -nr "$i" | wc -l)* == *1* ] ; then echo $i ; fi   ; done
 ```
 * **until**
 * **select**
