@@ -17,9 +17,6 @@ Tools to format the source code: [Black](https://pypi.org/project/black/), [Pyli
 Tools to quickly build, test, deploy and run applications: [Docker](https://www.docker.com/)
 
 Tools to find the unused source code :  [Vulture](https://pypi.org/project/vulture/), [Pyflakes](https://pypi.org/project/pyflakes/), [Pylint](https://pypi.org/project/pylint/)
-```
-for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do  if [ *$(grep -nr "$i" | wc -l)* == *1* ] ; then echo $i ; fi   ; done
-```
 
 Tools to make good poster and nice graphical images: [scribus](https://www.scribus.net/), [GIMP](https://www.gimp.org/)
 
