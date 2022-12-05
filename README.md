@@ -20,6 +20,8 @@ Tools to find the unused source code :  [Vulture](https://pypi.org/project/vultu
 
 Tools to make good poster and nice graphical images: [scribus](https://www.scribus.net/), [GIMP](https://www.gimp.org/)
 
+Tools to format (add, insert, remove and rotate, split, merge or zip) pdf files: [pdftools](https://pypi.org/project/pdftools/1.0.6/)
+
 Read Parquet data : [parquet-tools](https://pypi.org/project/parquet-tools/) 
 
 Read Json data : [Python Pandas]() 
