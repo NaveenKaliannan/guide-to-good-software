@@ -70,6 +70,12 @@ ssh - secure shell to access a machine
 ```
 ip address host-name or user-defined-alias-name (alias name for the amazon.com is ama.com)
 ```
+* **/etc/xdg/pip/pip.conf** configuration file for pip installations. The pip file can located using the command `python3 -m pip config debug`
+```
+[global]
+index-url = artifactory website
+--extra-index-url = second artifactory website
+```
 * **/home/user/.netrc** contains login and initialization information used by the auto-login process.
 * **/home/user/.ssh/known_hosts** contains host keys and is located in the user's home directory
 * **/home/user/.bashrc** is a script file that's executed when a user logs in. This includes setting up or enabling: coloring, completion, shell history, command aliases, and more.
