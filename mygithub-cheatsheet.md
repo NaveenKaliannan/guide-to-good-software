@@ -170,6 +170,12 @@ git branch -v
 git reset --hard origin/branch-name
 git pull
 ```
+RPC error: TLS connection
+```
+git clone --depth 1 git-link
+cd git-name
+git fetch --unshallow
+```
 How to add note and warning in Github Readme.md file 
 
 > __Note__  
