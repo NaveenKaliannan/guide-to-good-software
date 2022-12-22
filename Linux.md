@@ -76,6 +76,7 @@ ip address host-name or user-defined-alias-name (alias name for the amazon.com i
 index-url = artifactory website
 --extra-index-url = second artifactory website
 ```
+* **/etc/apt/auth.conf** configuration file for login and initialization information used by the auto-login process.
 * **/home/user/.netrc** contains login and initialization information used by the auto-login process.
 * **/home/user/.ssh/known_hosts** contains host keys and is located in the user's home directory
 * **/home/user/.bashrc** is a script file that's executed when a user logs in. This includes setting up or enabling: coloring, completion, shell history, command aliases, and more.
