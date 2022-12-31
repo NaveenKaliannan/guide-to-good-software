@@ -19,7 +19,7 @@ set style fill noborder # no separate top/bottom lines
 
 set term png truecolor  # or "set term pngcairo"
 set terminal pdfcairo enhanced size 4.0in,1.8in
-set output 'salt-PA.pdf'
+set output 'cosine_total_ions.pdf'
 
 
 set size 1,1
