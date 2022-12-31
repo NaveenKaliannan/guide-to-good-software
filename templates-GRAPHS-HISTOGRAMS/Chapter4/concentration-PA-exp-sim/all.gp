@@ -46,7 +46,7 @@ f(x) = (x)**2
 #----------------
 
 # labels and axis
-set tmargin at screen 0.98; set bmargin at screen 0.745
+set tmargin at screen 0.965; set bmargin at screen 0.745
 set size 0.45, 1
 set origin -0.06, 0.0
 
@@ -61,7 +61,7 @@ set format y '%.1t'  # Format for 'y' values using mantissa
 set label "{/Symbol a}_{xx} - 0.5 ({/Symbol a}_{yy} + {/Symbol a}_{zz}) in [arb. unit]" offset 4,0,0 at -1.3,-0.027 rotate by 90 left font 'Arial,9'
 
 
-set title "TKE Experiments" font 'Arial,9'  offset 0.0,-0.5,0
+set title "TKE Experiments" font 'Arial,11'  offset 0.0,-0.5,0
 
 set xrange [0:3.1]
 set ytics offset 0.5,0,0
@@ -94,7 +94,7 @@ unset ytics
 #-  Second plot  -
 #-----------------
 
-set tmargin at screen 0.98; set bmargin at screen 0.745
+set tmargin at screen 0.965; set bmargin at screen 0.745
 set size 0.45, 1
 set origin 0.24,0.0
 set xrange [0:3.1]
@@ -102,7 +102,7 @@ unset ytics
 set ytics format " "
 set xtics format " "
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
-set title "PFFMD simulation (AMOEBA)" font 'Arial,9'  offset 0.0,-0.5,0
+set title "PFFMD (AMOEBA)" font 'Arial,11'  offset 0.0,-0.5,0
 set label "MgCl_2"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
 
 
@@ -124,7 +124,7 @@ unset title
 unset label 
 unset arrow 
 
-set tmargin at screen 0.98; set bmargin at screen 0.745
+set tmargin at screen 0.965; set bmargin at screen 0.745
 set size 0.45, 1
 set origin 0.54,0.0
 
@@ -132,7 +132,7 @@ set xrange [0:3.1]
 set key 
 set xtics format " "
 set label "MgCl_2"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
-set title "FFMD simulation (AMBER/SPC)" font 'Arial,9'   offset 0.0,-0.5,0
+set title "FFMD (AMBER/SPC)" font 'Arial,11'   offset 0.0,-0.5,0
 path_to_directory1="../FFMD-150000-trajectories-Starting-frames-long-NVT-trajectories-then-pulse-applied/with-damping"
 
 
@@ -348,7 +348,7 @@ unset arrow
 #----------------
 
 # labels and axis
-set tmargin at screen 0.27; set bmargin at screen 0.04
+set tmargin at screen 0.27; set bmargin at screen 0.06
 set size 0.45, 1
 set origin -0.06, 0.0
 
@@ -389,11 +389,11 @@ unset ytics
 #-  Second plot  -
 #-----------------
 
-set tmargin at screen 0.27; set bmargin at screen 0.04
+set tmargin at screen 0.27; set bmargin at screen 0.06
 set size 0.45, 1
 set origin 0.24,0.0
 set xrange [0:3.1]
-set xlabel "t (ps)" font 'Arial,9'  offset 0,1.5,0
+set xlabel "t (ps)" font 'Arial,11'  offset 0,1.2,0
 unset ytics
 set ytics format " "
 set xtics offset 0,0.5,0
@@ -417,7 +417,7 @@ unset xlabel
 unset label 
 unset arrow 
 
-set tmargin at screen 0.27; set bmargin at screen 0.04
+set tmargin at screen 0.27; set bmargin at screen 0.06
 set size 0.45, 1
 set origin 0.54,0.0
 
