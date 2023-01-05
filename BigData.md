@@ -6,4 +6,4 @@ Data is divided into three categories:
 2. Semi-structured (column field: **known**, column field data type: **unknown**) Example: CSV, JSON documents
 3. Unstructured (column field: **unknown**, column field data type: **unknown**) that doesnt exist like relational database table Example: weather data, plain text files, server logs
 ***********
-The process of transforming unstructured to structured is called ETL (Extract-Transform-Load)
+The process of transforming unstructured to structured is called ETL (Extract-Transform-Load). To achieve ETL quickly for a big data, one must go for large super computes, which has a distributed (own memory and own CPU) or shared (shared memory and own CPU) systems.
