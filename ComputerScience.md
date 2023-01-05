@@ -13,15 +13,30 @@
 8. a **Yottabyte** is 1,000 Zettabytes (10^24 bytes).
 ******************************
 
-### Read, Write Speed
+### To process anything in computer
+******************************
+1. CPU executes the commands from programs or applications. A few applications will keep running in the background. You can accelerate the speed by turning them off. The best indicator is the CPU clock speed or CPU frequency (unit GHz or billions of pulses per second), which shows how many cycles per second it can complete. Higher value means faster CPU is faster and applications are faster. For gaming 3.5 - 4.0 GHz is good. 
+2. Networking - exchange data and share resources with each other
+3. RAM - short term memory or temporary storage where data is stored as the processor needs it. RAM is soldered directly into the main board of the computer. Hence faster than anything. RAM write and read speed = 2-20GB/s.
+
+$$ t = { 1000  \over 20  }  =  50 seconds for 1 TB$$
+
+5. Hard disk is a permanent computer storage. Hard disk drives are mechanical devices that runs slowly than RAM. 
+
+$$ t = { 1048576 * 3600 \over 160 }  =  1.82 hours for 1 TB $$
+
+******************************
+
+
+### Read, Write Speed of storage devices
 ******************************
 1. HDDs, found in desktop computers, are either designed to read and write faster or to store data. Standard HDD reads and writes at typical rates typical 80MB/s to 160MB/s.
  
-$$ t = { 1048576 * 3600 \over 160 }  =  1.82 hours$$
+$$ t = { 1048576 * 3600 \over 160 }  =  1.82 hours for 1 TB $$
 
 3. SSDs are built for both short-term and long-term backups, they are more frequently used in applications that require speed.  SSD reads and writes data at a rate of between 200MB/s and 550MB/s.
 
-$$ t = { 1048576 * 3600 \over 550 }  = 0.529 hours$$
+$$ t = { 1048576 * 3600 \over 550 }  = 0.529 hours for 1 TB$$
 
 ******************************
 
