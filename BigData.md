@@ -1,6 +1,8 @@
 # Big Data
+Big Data is a Large data that are difficult to process with traditional tools. If one of the three criteria—Volume, Velocity, or Variety—becomes impossible to manage with traditional tools, data may be referred to as big data.
 
-Data is divided into three categories: 
+
+Data is basically divided into three categories: 
 ***********
 1. Structured (column field: **known**, column field data type: **known**) Example: Excel files or SQL databases
 2. Semi-structured (column field: **known**, column field data type: **unknown**) Example: CSV, JSON documents
