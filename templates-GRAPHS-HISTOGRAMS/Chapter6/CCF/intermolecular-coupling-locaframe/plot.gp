@@ -44,9 +44,9 @@ set tmargin at screen 0.94; set bmargin at screen 0.665
 set size 0.41, 1
 set origin -0.049, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "xx" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "xx" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
 unset ytics
@@ -68,9 +68,9 @@ set tmargin at screen 0.94; set bmargin at screen 0.665
 set size 0.41, 1
 set origin 0.2625, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "yy" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "yy" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
 unset ytics
@@ -89,9 +89,9 @@ set tmargin at screen 0.94; set bmargin at screen 0.665
 set size 0.41, 1
 set origin 0.575, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "zz" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "zz" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
 unset ytics
@@ -112,9 +112,9 @@ set tmargin at screen 0.66; set bmargin at screen 0.385
 set size 0.41, 1
 set origin -0.049, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "xy" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "xy" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 set ylabel "({/Symbol w}- v) CCF" offset 0,0,0 font 'Arial,14'
 unset xtics
 unset ytics
@@ -138,9 +138,9 @@ set tmargin at screen 0.66; set bmargin at screen 0.385
 set size 0.41, 1
 set origin 0.2625, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "xz" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "xz" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
 unset ytics
@@ -160,13 +160,15 @@ set tmargin at screen 0.66; set bmargin at screen 0.385
 set size 0.41, 1
 set origin 0.575, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "yx" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "yx" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
 unset ytics
 unset xlabel
+
+
 
 plot file1 using ($1*0.001):($9) title  "Field-free (ref)" with line ls 1 lc rgb "black" lw 0.4 dt 0,\
      file2 using ($1*0.001):($9) title  "Weak THz pulse" with line ls 1 lc rgb "red" lw 0.4 dt 1,\
@@ -183,14 +185,16 @@ set tmargin at screen 0.375; set bmargin at screen 0.09
 set size 0.41, 1
 set origin -0.049, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "yz" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "yz" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 #set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 set xtics
 set xlabel "t (ps)" font 'Arial,14'
 unset ytics
-set xtics 0,0.1,0.3
+set xtics 0,0.1,0.6
+
+set arrow 1 from 0.1, -0.004 to 0.1, -0.007 fill lc rgb "orange"
 
 plot file1 using ($1*0.001):($10) title  "Field-free (ref)" with line ls 1 lc rgb "black" lw 0.4 dt 0,\
      file2 using ($1*0.001):($10) title  "Weak THz pulse" with line ls 1 lc rgb "red" lw 0.4 dt 1,\
@@ -209,14 +213,14 @@ set tmargin at screen 0.375; set bmargin at screen 0.09
 set size 0.41, 1
 set origin 0.2625, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "zx" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "zx" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 set xtics
 set xlabel "t (ps)" font 'Arial,14'
 unset ytics
-set xtics 0,0.1,0.3
+set xtics 0,0.1,0.6
 
 plot file1 using ($1*0.001):($11) title  "Field-free (ref)" with line ls 1 lc rgb "black" lw 0.4 dt 0,\
      file2 using ($1*0.001):($11) title  "Weak THz pulse" with line ls 1 lc rgb "red" lw 0.4 dt 1,\
@@ -232,15 +236,17 @@ set tmargin at screen 0.375; set bmargin at screen 0.09
 set size 0.41, 1
 set origin 0.575, 0.0
 
-set xrange [0:0.35]
-set yrange [-0.48:0.2]
-set label "zy" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
+set xrange [0:0.65]
+set yrange [-0.008:0.008]
+set label "zy" at 0.45,0.0055  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 set xtics
 set xlabel "t (ps)" font 'Arial,14'
-set xtics 0,0.1,0.3
+set xtics 0,0.1,0.6
 unset ytics
 set key bottom right font 'Arial,8.5'
+
+set arrow 1 from 0.1, 0.004 to 0.1, 0.007 fill lc rgb "orange" 
 
 plot file1 using ($1*0.001):($12) title  "Field-free (ref)" with line ls 1 lc rgb "black" lw 0.4 dt 0,\
      file2 using ($1*0.001):($12) title  "Weak THz pulse" with line ls 1 lc rgb "red" lw 0.4 dt 1,\
