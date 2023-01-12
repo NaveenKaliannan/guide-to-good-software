@@ -44,6 +44,8 @@ how to set SUID flag
 chmod u+s filename
 it will change -rwxrw-rw-  to -rwsrw-rw-
 ```
+* **/etc/environment** file sets the variable permanently in the system. **~/.profile** is a similar file but belongs to each user. However, **/etc/profile** is a gloabl intialization file in the system. All are basically loading environmental variable. **bash_profile** file runs when login into the account. **bashrc** file runs when opening the terminal and set the variable.  
+* **/etc/systemd/system/docker.service.d/proxy.conf or http-proxy.conf** for setting proxy for  docker
 * **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
 * **/etc/inittab** configuration file which is to be used by initialization system. ```init``` create processes from this file.
