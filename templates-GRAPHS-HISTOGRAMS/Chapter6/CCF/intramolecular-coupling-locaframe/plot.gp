@@ -45,7 +45,7 @@ set size 0.41, 1
 set origin -0.049, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "xx" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
@@ -69,7 +69,7 @@ set size 0.41, 1
 set origin 0.2625, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "yy" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
@@ -90,7 +90,7 @@ set size 0.41, 1
 set origin 0.575, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "zz" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
@@ -113,7 +113,7 @@ set size 0.41, 1
 set origin -0.049, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "xy" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 set ylabel "({/Symbol w}- v) CCF" offset 0,0,0 font 'Arial,14'
 unset xtics
@@ -139,7 +139,7 @@ set size 0.41, 1
 set origin 0.2625, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "xz" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
@@ -161,7 +161,7 @@ set size 0.41, 1
 set origin 0.575, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "yx" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 unset xtics
@@ -184,7 +184,7 @@ set size 0.41, 1
 set origin -0.049, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "yz" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 #set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 set xtics
@@ -212,7 +212,7 @@ set size 0.41, 1
 set origin 0.2625, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "zx" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 set xtics
@@ -235,7 +235,7 @@ set size 0.41, 1
 set origin 0.575, 0.0
 
 set xrange [0:0.35]
-set yrange [-0.48:0.2]
+set yrange [-0.18:0.18]
 set label "zy" at 0.25,0.15  font 'Arial,12' textcolor rgb labelcolor
 ##set ylabel "({/Symbol w}- v) CCF" offset 0,0,0
 set xtics
