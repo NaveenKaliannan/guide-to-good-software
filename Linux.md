@@ -232,10 +232,9 @@ ln filename hardlink
 Both file `filename` and hardlink file will have same permission and same innode number. If the original file is removed. still the content in hardlink can be seen.
 If the original file is modified, it will also reflected in hard link. Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
 ```
-* **innode number** is a uniquely existing number for all the files
+* **innode number** is a uniquely existing number for all the files.  It basically gives the maximum number of files (2^32 or 4.3 billion files) can be stored in the computer. 
 ```
-ls -l
-first number in file permission is inode number (5 digit number). Sometime in between date and user
+df -i
 ```
 * **absolute and relative path**
 ```
