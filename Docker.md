@@ -1,4 +1,5 @@
-# [Docker](https://www.youtube.com/watch?v=3c-iBn73dDE)
+# [Docker]
+
 
 How to pull and remove images into local machine.
 ```
@@ -21,7 +22,7 @@ docker network ls
 env - to see all the environmental variables
 ```
 
-Docker containers - software package that contain all the dependencies and configurations to run an application. The package is portable. Containers stored in contained repository. [public reopsitory for docker container](https://hub.docker.com/) .
+Docker containers - software package that contain all the dependencies and configurations to run an application. The package is portable. Containers stored in contained repository. [public reopsitory for docker container](https://hub.docker.com/).
 
 without Docker- Every body has to install or compile all dependencies to run a source code in local environment. Artifacts with requirements.txt file
 with Docker, No need for any installation. Has its own operating layer. No environemnt configuraion
