@@ -24,6 +24,8 @@ Tools to make good poster and nice graphical images: [scribus](https://www.scrib
 
 Tools to format (add, insert, remove and rotate, split, merge or zip) pdf files: [pdftools](https://pypi.org/project/pdftools/1.0.6/)
 
+Tools to maintian databases : [SQL](), [Python Pandas]() 
+
 Read Parquet data : [parquet-tools](https://pypi.org/project/parquet-tools/) 
 
 Read Json data : [Python Pandas]() 
