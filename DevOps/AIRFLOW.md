@@ -20,6 +20,16 @@ AirFlow DAG is a series of tasks with directional dependencies, hence easily to 
 2. Operator - It helps to carry out tasks/execution. PythonOperator can employed to run python script. For each operation, one can employ respetive operators.
 ******************************
 
+### Architechture of AirFLow
+******************************
+1. [MetaData](https://selectfrom.dev/airflow-metadata-how-to-gather-key-runtime-statistics-in-real-time-5575d8740621) (is a relational database) -  contains the recods of dag runs, task status,schedule_interval, last_run, next_run,start and end time, duration, task state, historial runs of DAG runs. 
+2. Scheduler - triggers the tasks at the right time and in the strucutred way. It decides which taskes needed to be executed and when they should run, and execution prority. Master node handles it. Scheduler always running and keeps checking any DAGS needs to be executed, and the starts the DAG run. 
+3. Webserver/UI - monitor all the scheduled workflows. Can be viewed all the info. Webserver runs and communicates with the metadata. Master node handles it.
+4. Executor -  performs the task at the ground level. Executor recieves info from Scheduler when to trigger. Then once the task is failed/success, then sends info to MetaData. Different types of executor: sequential, Kubernetes, local, one single node, multile node executor. If you use single node, then master node handles it, otherwise multiple node handles it. Chose always single or multiple node depending on the size of the problem. 
+5. Queuing system (only distributed system) - tasks from scheduler
+******************************
+
+
 
 
 ### Task/Operator 
