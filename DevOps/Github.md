@@ -148,6 +148,9 @@ inside the file
 *.log, .xyz, .o
 # ignore ALL files in ANY directory named temp
 temp/
+# igonore all files except test.xyz
+*.xyz
+!test.xyz
 ```
 To see the git root directory or branch hsa values 
 ```
