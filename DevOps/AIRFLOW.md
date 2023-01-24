@@ -1,36 +1,33 @@
 # APACHE AirFlow 
 
-AirFlow DAG is a series of tasks with directional dependencies, hence easily to schedule and monitor workflows. It basically contains series of tasks. Each task has an executable and depends on nearest tasks. The dependencies here basically means which task will run first and which tasks are dependent. The flow is written in DAGS. The advantage of DAG is that it is easy to manage, colloborate and test. The DAGs are written in python. The best places where it can be used are ETL, backups, data pipelines, ML pipelines
+AirFlow DAG is a collection of tasks with directional dependencies, making workflows simple to schedule and track. Basically, it consists of a list of tasks/executions. Each tasks depends on tasks that are closer to it and has an executable. Dependencies in this context essentially refer to which task will execute first and which tasks are interdependent. DAG has the benefit of being simple to manage, collaborate with, automate and test. Python language is used to write the AirFlow DAGs. The best applications of AirFlow DAGS are in ETL, backups, data pipelines, and ML pipelines.
 
-### Advantages
+### Advantages of AirFLow
 ******************************
-1. It offers number of opertaors and executors to support task executions. 
-2. Parallelize tasks. 
-3. Own opertaor or executor can also created. 
-4. User friendly by providing GUI (duration, fail/success/current status, number of runs, retry to execute tasks, and .. etc)
+1. It provides a variety of operators and executors to assist with job executions.
+2. Run tasks in parallel.
+3. You can also construct your own operator or executor.
+4. User-friendly by offering a GUI with information on duration, fail/success/current state, number of runs, retrying jobs, etc.
 5. Highly configuratble
-6. It can be made dynamic by setting the variables and connections. 
-7. Better scaling
-8. Big community, strong development.
+6. By adjusting the variables and connections, it can be made dynamic.
+7. Improved scaling
+8. Large community, significant growth.
 ******************************
 
 ### Terminology 
 ******************************
-1. DAGS - directed acyclic graph. The graph contain series of nodes and they are connected. Each node is a task, and depends on other tasks. Everthing is organized in a perfect way. As a programmer, one needs to think which tasks should be running in parallel and in series. It will save lot of time.
-2. Operator - It helps to carry out tasks/execution. PythonOperator can employed to run python script. For each operation, one can employ respetive operators.
+1. DAGS - The graph is composed of a series of linked nodes. Every node is an activity that relies on other tasks to run. Everything has been carefully arranged. Which operations should be carried out in parallel and in series is a decision that programmers must make. Significant time will be saved.
+2. Operator - It assists with the execution of tasks. PythonOperator can be used to execute Python scripts. For each operation, responsive operators can be selected and used.
 ******************************
 
 ### Architechture of AirFLow
 ******************************
-1. [MetaData](https://selectfrom.dev/airflow-metadata-how-to-gather-key-runtime-statistics-in-real-time-5575d8740621) (is a relational database) -  contains the recods of dag runs, task status,schedule_interval, last_run, next_run,start and end time, duration, task state, historial runs of DAG runs. 
-2. Scheduler - triggers the tasks at the right time and in the strucutred way. It decides which taskes needed to be executed and when they should run, and execution prority. Master node handles it. Scheduler always running and keeps checking any DAGS needs to be executed, and the starts the DAG run. 
-3. Webserver/UI/HTTP interface - all the workflows can be monitored. Can be viewed all the info. Webserver runs and communicates with the metadata. Master node handles it.
-4. Executor -  performs the task at the ground level. Executor recieves info from Scheduler when to trigger. Then once the task is failed/success, then sends info to MetaData. Different types of executor: sequential, Kubernetes, local, one single node, multile node executor. If you use single node, then master node handles it, otherwise multiple node handles it. Chose always single or multiple node depending on the size of the problem. 
-5. Queuing system (only distributed system) - tasks from scheduler
+1. [MetaData](https://selectfrom.dev/airflow-metadata-how-to-gather-key-runtime-statistics-in-real-time-5575d8740621) (a relational database) - holds the records of DAG runs, task status, schedule interval, previous and subsequent runs, start and end times, duration, task state, and historical DAG runs.
+2. Scheduler - triggers the tasks at the appropriate time and in the planned manner. It determines which tasks must be completed, when they must be completed, and their priority for completion. It is managed by master node. The scheduler is continuously running and checks to see if any DAGS need to be run before beginning the DAG run.
+3. Webserver/UI/HTTP interface, which allows for full workflow monitoring. can be viewed completely. Webserver runs and communicates with the metadata. It is managed by master node.
+4. Executor -  execute tasks at the bottom. Executors receive information from the scheduler when to execute tasks. Once the task fails/success/all status, the information is sent to metadata. Different types of executor: sequential, Kubernetes, local, single-node, multi-node runners. If you use a single node, it is managed by the master node, otherwise by multiple nodes. Always choose one or more nodes depending on the size of the problem
+6. Queuing system (only distributed system/many executors) - tasks from scheduler
 ******************************
-
-
-
 
 ### Task/Operator 
 It has dependencies on other tasks (Upstream). Other tasks depend on it (Downstream). **Task dependencies** are defined as follows:
