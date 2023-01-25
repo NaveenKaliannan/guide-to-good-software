@@ -287,6 +287,8 @@ Example if  test -e $file ; then echo $file exists ; fi
 declare -i x=1 ## declares integer
 declare -i y=1 ## declares integer
 z=$(( x + y ))
+declare -a bool=([1]=true [0]=false)
+echo ${bool[ (($no_of_string_in_calculated_key == $no_of_string_in_expected_key )) ]}
 ```
 * **for**
 ```
