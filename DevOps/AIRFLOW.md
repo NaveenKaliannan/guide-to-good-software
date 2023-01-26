@@ -1,4 +1,4 @@
-# APACHE AirFlow 
+# [APACHE AirFlow](https://www.udemy.com/course/apache-airflow/)
 
 AirFlow DAG is a collection of tasks with directional dependencies, making workflows simple to schedule and track. Basically, it consists of a list of tasks/executions. Each tasks depends on tasks that are closer to it and has an executable. Dependencies in this context essentially refer to which task will execute first and which tasks are interdependent. DAG has the benefit of being simple to manage, collaborate with, automate and test. Python language is used to write the AirFlow DAGs. The best applications of AirFlow DAGS are in ETL, backups, data pipelines, and ML pipelines.
 
@@ -20,13 +20,19 @@ AirFlow DAG is a collection of tasks with directional dependencies, making workf
 2. Operator - It assists with the execution of tasks. PythonOperator can be used to execute Python scripts. For each operation, responsive operators can be selected and used.
 ******************************
 
-### Architechture of AirFLow
+### Core Compoenents of AirFLow
 ******************************
 1. [MetaData](https://selectfrom.dev/airflow-metadata-how-to-gather-key-runtime-statistics-in-real-time-5575d8740621) (a relational database) - holds the records of DAG runs, task status, schedule interval, previous and subsequent runs, start and end times, duration, task state, and historical DAG runs.
 2. Scheduler - triggers the tasks at the appropriate time and in the planned manner. It determines which tasks must be completed, when they must be completed, and their priority for completion. It is managed by master node. The scheduler is continuously running and checks to see if any DAGS need to be run before beginning the DAG run.
 3. Webserver/UI/HTTP interface, which allows for full workflow monitoring. can be viewed completely. Webserver runs and communicates with the metadata. It is managed by master node.
 4. Executor -  execute tasks at the bottom. Executors receive information from the scheduler when to execute tasks. Once the task fails/success/all status, the information is sent to metadata. Different types of executor: sequential, Kubernetes, local, single-node, multi-node runners. If you use a single node, it is managed by the master node, otherwise by multiple nodes. Always choose one or more nodes depending on the size of the problem
 6. Queuing system (only distributed system/many executors) - tasks from scheduler
+******************************
+
+### How to install Apache AirFlow
+******************************
+1. Via Docker: [docker pull apache/airflow](https://hub.docker.com/r/apache/airflow)
+2. Via PIP installation: [pip3 install apache-airflow[all]](https://airflow.readthedocs.io/en/1.9.0/installation.html)
 ******************************
 
 ### Task/Operator 
