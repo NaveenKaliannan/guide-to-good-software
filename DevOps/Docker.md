@@ -1,18 +1,15 @@
 # [Docker]
 
+***docker pull software-name:version*** pulls the docker image of the software for the given version Example python:latest
+***docker image ls*** lists all the docker images in local machine
+***docker rmi -f hello-world*** removes the docker images forcefully (***-f***)
+***docker image rm -f IMAGEID*** remove the docker images forcefully (***-f***)
+***docker ps*** shows the running containers
+
 docker handles single containers
-
 docker-compose handles multiple container applications
-
 docker file
 
-
-How to pull and remove images into local machine.
-```
-docker pull software-name:version Example python:latest
-docker image ls
-docker image rm image-ID
-docker ps
 ```
 How to run Docker or create a container
 ```
