@@ -1,10 +1,10 @@
 # [Docker]
 
-***docker pull software-name:version*** pulls the docker image of the software for the given version Example python:latest
-***docker image ls*** lists all the docker images in local machine
-***docker rmi -f hello-world*** removes the docker images forcefully (***-f***)
-***docker image rm -f IMAGEID*** remove the docker images forcefully (***-f***)
-***docker ps*** shows the running containers
+* **docker pull software-name:version** pulls the docker image of the software for the given version Example python:latest
+* **docker image ls** lists all the docker images in local machine
+* **docker rmi -f hello-world** removes the docker images forcefully (**-f**)
+* **docker image rm -f IMAGEID** remove the docker images forcefully (**-f**)
+* **docker ps** shows the running containers
 
 docker handles single containers
 docker-compose handles multiple container applications
