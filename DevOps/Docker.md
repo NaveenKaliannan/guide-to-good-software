@@ -1,5 +1,11 @@
 # [Docker]
 
+docker handles single containers
+
+docker-compose handles multiple container applications
+
+docker file
+
 
 How to pull and remove images into local machine.
 ```
