@@ -1,10 +1,30 @@
-# [Docker]
+# [Docker]()
+
+##  Docker, Virtual Machine and host machine.
+******************************
+1. **Host computer or local machine** controls all the program and file.  It has an Operating System (OS), which has two layer OS kernel (layer 1) and application layer (layer 2 and top layer). The kernel communicates with hardware such as cpu, mouse and etc.  The applications run on the kernel layer. All linux OS looks different becuase they use different application layer  but on same OS kernal.
+2. **Virtual Machine** virtualize OS kernel and application layer.
+3. **Docker** virualizae application layer and borrows the OS kernel from host machine. Docker occupys less space compared to VM becuase it doesnt virtualize OS kernel. The other advantages are: Faster boot time, Easy to scale up, Reproduciability, Developer and tester can run the same code and get the same results even thought the machines are different.
+******************************
+
+### Terminology 
+******************************
+1. **Docker image** is read only templates and contains all dependencies and information to build and run a docker container. 
+2. **Docker container** is a runtime instance of a Docker image. It can be realized via **docker run docker-image-name**. Docker container doesnt have the OS within it. It borrows the OS from the host machine and share the host kernel with other containers. In the case of VM, each VM has its own OS. Containers are portable.
+3. However, new **Docker image** can also be created from a running container. It can be created via **docker commit container-info**
+4. **Docker engine** is a software that creates and runs containers
+******************************
+
 
 * **docker pull software-name:version** pulls the docker image of the software for the given version Example python:latest
 * **docker image ls** lists all the docker images in local machine
 * **docker rmi -f hello-world** removes the docker images forcefully (**-f**)
 * **docker image rm -f IMAGEID** remove the docker images forcefully (**-f**)
 * **docker ps** shows the running containers
+
+
+[Docker port binding](https://betterprogramming.pub/how-does-docker-port-binding-work-b089f23ca4c8) - Docker port and Host port
+
 
 docker handles single containers
 docker-compose handles multiple container applications
@@ -25,8 +45,6 @@ docker network ls
 env - to see all the environmental variables
 ```
 
-Docker containers - software package that contain all the dependencies and configurations to run an application. The package is portable. Containers stored in contained repository. [public reopsitory for docker container](https://hub.docker.com/).
-
 without Docker- Every body has to install or compile all dependencies to run a source code in local environment. Artifacts with requirements.txt file
 with Docker, No need for any installation. Has its own operating layer. No environemnt configuraion
 
@@ -34,21 +52,6 @@ Container is made up of images. The base is Linux Base image (Alpine or linux di
 
 Docker container (running, container environment is created) and Docker image (actual package, artifact that move around, not running). Container is the running environment of image.  Docker image can be pulled or pused.
 
-## Difference between docker, VM and host machine.
-Operating system has two layer OS kernel (layer 1) and application layer (layer 2 and top layer). The kernel communicates with hardware such as cpu, mouse and etc. The applications run on the kernel layer. All linux OS looks different becuase they use different application layer  but on same OS kernal.
-
-VM virtualize OS kernel and application layer. Docker virualizae application layer. 
-Host machnie is local machine. 
-
-Docker occupys less space compared to VM. 
-Faster boot time
-Containers have a better performance and consistent
-Easy to scale up
-High efficieny
-Reproduciability
-Developer and tester can run the same code and get the same results even thought the machines are different
-
-[Docker port binding](https://betterprogramming.pub/how-does-docker-port-binding-work-b089f23ca4c8) - Docker port and Host port
 
 
 Docker file - copy the contents of application into dockerfile. The docker file is from image. 
