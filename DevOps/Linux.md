@@ -16,6 +16,7 @@ Linux directory structure starts with /, the root directory. <br />
 * **/lib (users)** contains libraries and kernel modules
 * **/mnt (users)** contains mount files for temporary filesystems 
 * **/proc (users)** - process and kernel information files 
+* **/opt (users)** - allocated for the installation of additional application software packages 
 * **/root (users)** - home directory of the root user <br />
 ![alt tag](https://helpdeskgeek.com/wp-content/pictures/2020/02/file-directory.png)
 *The structure of typical Linux directory 
