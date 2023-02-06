@@ -15,12 +15,16 @@
 4. **Docker engine** is a software that creates and runs containers
 ******************************
 
-
+### Docker commands 
+******************************
+* **docker info** displays all the information about docker installation, configuration and networking.
 * **docker pull software-name:version** pulls the docker image of the software for the given version Example python:latest
 * **docker image ls** lists all the docker images in local machine
 * **docker rmi -f hello-world** removes the docker images forcefully (**-f**)
 * **docker image rm -f IMAGEID** remove the docker images forcefully (**-f**)
 * **docker ps** shows the running containers
+* **docker run software-name:version** takes a docker image and creates a new container, run the container
+******************************
 
 
 [Docker port binding](https://betterprogramming.pub/how-does-docker-port-binding-work-b089f23ca4c8) - Docker port and Host port
@@ -33,8 +37,6 @@ docker file
 ```
 How to run Docker or create a container
 ```
-docker run software-name:version - takes an image and creates a new container
-docker run -d software-name:version
 docker run -p6000:6379  software-name:version
 docker stop container-ID
 docker start container-ID - working with containers not with images
