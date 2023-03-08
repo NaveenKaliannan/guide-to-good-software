@@ -139,6 +139,14 @@ cat .git/HEAD
 HEAD in git is used to keep track tip of the branch. When new commits are made, the pointer  point to the new commit.
 git checkout specific commit will make the head points to specific commit. not the new commit anymore. 
 ```
+
+How to fix git conflict
+```
+git rebase -i master
+if there is an conflict, then make changes and git add the files
+git add files
+git rebse --continue
+```
 How to igonre or exclude files For example, binaries, inputs of large size, external libraries 
 ```
 go to root of your local git (repository-name/.gitigonre) and create gitignore file
