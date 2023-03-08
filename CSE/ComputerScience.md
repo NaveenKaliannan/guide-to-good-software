@@ -41,7 +41,7 @@ $$ t = { 1048576 * 3600 \over 550 }  = 0.529 hours for 1 Petabyte$$
 ******************************
 
 ### Memory consumption of an application 
-[Massif](https://courses.cs.washington.edu/courses/cse326/05wi/valgrind-doc/ms_main.html) displays how much a program or process uses memory (includes both virtual and resident memory)
+[Massif](https://courses.cs.washington.edu/courses/cse326/05wi/valgrind-doc/ms_main.html) displays how much a program or process uses memory (includes both virtual (Hard Disk Swapped) and resident (RAM) memory)
 ```
 valgrind --tool=massif --time-unit=ms --pages-as-heap=yes executable
 ms_print massif.out |less 
