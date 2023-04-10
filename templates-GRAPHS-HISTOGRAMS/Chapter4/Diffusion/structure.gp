@@ -75,8 +75,8 @@ shift_n(x) = @shift
 
 # labels and axis
 set tmargin at screen 0.88; set bmargin at screen 0.15
-set size 0.35, 1
-set origin -0.01, 0.0
+set size 0.40, 1
+set origin 0.08, 0.0
 
 #set xrange [0:3.1]
 #set ytics -0.010, 0.002, 0.006
@@ -104,8 +104,8 @@ plot "MSD/AMOEBA_water.csv" using ($1):($2/c) title       " Water (AMOEBA)" with
 #-----------------
 
 set tmargin at screen 0.88; set bmargin at screen 0.15
-set size 0.37, 1
-set origin 0.31,0.0
+set size 0.40, 1
+set origin 0.47,0.0
 set title "O-H vector orientation"  font 'Arial,8' 
 set xlabel "t (ps)"
 set xrange [0:1.5]
@@ -119,27 +119,6 @@ plot "rotation/PFFMD_water" using ($1*0.001):2 title       " Water (AMOEBA)" wit
      "rotation/FFMD_mgcl2_4mol" using ($1*0.001):2 title "4M MgCl_2 (AMBER/SPC)"   with line ls 1 lc rgb "red" lw 0.5,\
 
 
-set tmargin at screen 0.88; set bmargin at screen 0.15
-set size 0.37, 1
-set origin 0.64,0.0
-set yrange [0:3.8]
-set ytics 0,1,5
-set xrange [2.4:5]
-set xlabel "r (Å)"
-set key 
-set title "Radial distribution function" font 'Arial,8'  
-set ylabel "g_{O-O}(r)" offset 1.2,0,0
-
-set key
-plot "rdf/AMOEBA_rdf_water.dat" using 1:2 title       "Water (AMOEBA)" with line ls 1 lc rgb "black" lw 0.2 dt 0,\
-     "rdf/AMBER_rdf_water.dat" using 1:2 title    "Water (SPC)" with line ls 1 lc rgb "black" lw 0.5,\
-     "rdf_waterspecies/AMOEBA_water_around_mg" using 1:(0.2*$2+0.85*$4) title "H_2O around Mg^{2+} (AMOEBA)"   with line ls 1 lc rgb "red" lw 0.5 dt 0,\
-     "rdf_waterspecies/AMBER_water_around_mg" using 1:(0.2*$2+0.85*$4) title "H_2O around Mg^{2+} (AMBER/SPC)"   with line ls 1 lc rgb "red" lw 0.5 ,\
-
-#plot "rdf/AMOEBA_rdf_water.dat" using 1:2 title       "Water (AMOEBA)" with line ls 1 lc rgb "black" lw 0.2 dt 0,\
-#     "rdf/AMBER_rdf_water.dat" using 1:2 title    "Water (SPC)" with line ls 1 lc rgb "black" lw 0.5,\
-#     "rdf/AMOEBA_rdf_mgcl2-4mol.dat" using 1:2 title "4M MgCl_2 (AMOEBA)"   with line ls 1 lc rgb "red" lw 0.5 dt 0,\
-#     "rdf/AMBER_rdf_mgcl2-4mol.dat" using 1:2 title "4M MgCl_2 (AMBER-SPC)"   with line ls 1 lc rgb "red" lw 0.5 ,\
 
 
 unset multiplot

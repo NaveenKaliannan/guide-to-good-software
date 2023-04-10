@@ -91,18 +91,19 @@ set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.45, 1
 set origin 0.24,0.0
 set xrange [0:1100] 
-set yrange [0:0.004]
+set yrange [0:0.1]
 set xlabel "{/Symbol w} (cm^{-1})" font 'Arial,9'  offset 0,1,0
 unset ytics
 set ytics format " "
 
 path_to_directory1="/home/naveenk/data/PFFMD-57000-trajectories-Starting-frames-Long-NVT-trajectrories-then-pulse-applied/polarizabilityanistropy"
 
-set title "v_{COM}(0).v_{COM}(t)"  font 'Arial,10'  textcolor rgb "blue"
+set title "{/Symbol w}(0).{/Symbol w}(t)" font 'Arial,10'  textcolor rgb "blue"
 c=1
-plot "nopulse.dat" using ($1):($4) notitle      "Field-Free conditions" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
-     '10-times.dat' using ($1):($4) notitle "Weak THz pulse"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
-     "24-times.dat" using ($1):($4) notitle "Strong THz pulse"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
+plot "nopulse.dat" using ($1):($6) notitle with line ls 1 lc rgb "black" lw 0.2 dt 4,\
+     '10-times.dat' using ($1):($6) notitle "Weak THz pulse"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
+     "24-times.dat" using ($1):($6) notitle "Strong THz pulse"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
+
 
 
 unset label 
@@ -115,14 +116,14 @@ set origin 0.54,0.0
 set xrange [0:1100] 
 set xlabel "{/Symbol w} (cm^{-1})" font 'Arial,9'  offset 0,1,0
 set key 
-set title "{/Symbol w}(0).{/Symbol w}(t)" font 'Arial,10'  textcolor rgb "blue"
-set yrange [0:0.1]
 
+set yrange [0:0.004]
+set title "v_{COM}(0).v_{COM}(t)"  font 'Arial,10'  textcolor rgb "blue"
 set key
 c=1
-plot "nopulse.dat" using ($1):($6) notitle with line ls 1 lc rgb "black" lw 0.2 dt 4,\
-     '10-times.dat' using ($1):($6) notitle "Weak THz pulse"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
-     "24-times.dat" using ($1):($6) notitle "Strong THz pulse"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
+plot "nopulse.dat" using ($1):($4) notitle      "Field-Free conditions" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
+     '10-times.dat' using ($1):($4) notitle "Weak THz pulse"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
+     "24-times.dat" using ($1):($4) notitle "Strong THz pulse"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
 
 
 unset multiplot
