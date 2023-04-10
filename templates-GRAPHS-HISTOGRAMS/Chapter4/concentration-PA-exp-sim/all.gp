@@ -80,10 +80,10 @@ set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown"
 
 c=1
 c=0.4
-plot "../experiment/H2O.dat" using ($1+1.15):($2*c) title       "H_2O" with line ls 1 lc rgb "black" lw 1.5 dt 1,\
-     "../experiment/MgCl2_1M.dat" using ($1+1.15):($2*c) title    "1 M" with line ls 1 lc rgb "green" lw 1.5,\
-     "../experiment/MgCl2_2M.dat" using ($1+1.15):($2*c) title    "2 M" with line ls 1 lc rgb "blue" lw 1.5,\
-     "../experiment/MgCl2_4M.dat" using ($1+1.15):($2*c) title "4 M"   with line ls 1 lc rgb "red" lw 1.5,\
+plot "../experiment/H2O.dat" using ($1+1.15):($2*c) title       "H_2O" with line ls 1 lc rgb "black" lw 1.5 dt 4,\
+     "../experiment/MgCl2_1M.dat" using ($1+1.15):($2*c) title    "1 M" with line ls 1 lc rgb "green" lw 1.5 dt 4,\
+     "../experiment/MgCl2_2M.dat" using ($1+1.15):($2*c) title    "2 M" with line ls 1 lc rgb "blue" lw 1.5 dt 4,\
+     "../experiment/MgCl2_4M.dat" using ($1+1.15):($2*c) title "4 M"   with line ls 1 lc rgb "red" lw 1.5 dt 4,\
 
 
 unset label 
@@ -104,20 +104,20 @@ set xtics format " "
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 set title "PFFMD (AMOEBA)" font 'Arial,11'  offset 0.0,-0.5,0
 set label "MgCl_2"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
-
+unset label
 
 set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 c=1
 c=2.5
 unset key
-plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
+plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
-     path_to_directory1."/mgcl2-1mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title    "1 M" with line ls 1 lc rgb "green" lw 0.5,\
+     path_to_directory1."/mgcl2-1mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title    "1 M" with line ls 1 lc rgb "green" lw 0.5 dt 4,\
      path_to_directory1."/mgcl2-1mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "green" notitle,\
-     path_to_directory1."/mgcl2-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "2 M"   with line ls 1 lc rgb "blue" lw 0.5,\
+     path_to_directory1."/mgcl2-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "2 M"   with line ls 1 lc rgb "blue" lw 0.5 dt 4,\
      path_to_directory1."/mgcl2-2mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "blue" notitle,\
-     path_to_directory1."/mgcl2-4mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0 ) title   "4 M"   with line ls 1 lc rgb "red" lw 0.2,\
+     path_to_directory1."/mgcl2-4mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0 ) title   "4 M"   with line ls 1 lc rgb "red" lw 0.2 dt 4,\
      path_to_directory1."/mgcl2-4mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "red" notitle,\
 
 unset title
@@ -132,6 +132,7 @@ set xrange [0:3.1]
 set key 
 set xtics format " "
 set label "MgCl_2"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
+unset label
 set title "FFMD (AMBER/SPC)" font 'Arial,11'   offset 0.0,-0.5,0
 path_to_directory1="../FFMD-150000-trajectories-Starting-frames-long-NVT-trajectories-then-pulse-applied/with-damping"
 
@@ -140,13 +141,13 @@ set arrow 1 from 2, -0.004  to 2, -0.0025 fill lc rgb "brown"
 
 set key bottom font 'Arial,8'
 c=1
-plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
+plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
-     path_to_directory1."/mgcl2-1mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title    "1 M" with line ls 1 lc rgb "green" lw 0.5,\
+     path_to_directory1."/mgcl2-1mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title    "1 M" with line ls 1 lc rgb "green" lw 0.5 dt 4,\
      path_to_directory1."/mgcl2-1mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "green" notitle,\
-     path_to_directory1."/mgcl2-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "2 M"   with line ls 1 lc rgb "blue" lw 0.5,\
+     path_to_directory1."/mgcl2-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "2 M"   with line ls 1 lc rgb "blue" lw 0.5 dt 4,\
      path_to_directory1."/mgcl2-2mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "blue" notitle,\
-     path_to_directory1."/mgcl2-4mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0 ) title   "4 M"   with line ls 1 lc rgb "red" lw 0.2,\
+     path_to_directory1."/mgcl2-4mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0 ) title   "4 M"   with line ls 1 lc rgb "red" lw 0.2 dt 4,\
      path_to_directory1."/mgcl2-4mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "red" notitle,\
 
 unset title
@@ -185,8 +186,8 @@ set arrow 1 from  2, -0.004  to 2, -0.0025 fill lc rgb "brown"
 set key bottom
 c=1
 c=0.4
-plot "../experiment/H2O.dat" using ($1+1.15):($2*c) title       "H_2O" with line ls 1 lc rgb "black" lw 2 dt 1,\
-     "../experiment/Fig2_Fig3_Na2SO4.txt" using ($1+1.15):($2*c) title    "0.75 M" with line ls 1 lc rgb "green" lw 2,\
+plot "../experiment/H2O.dat" using ($1+1.15):($2*c) title       "H_2O" with line ls 1 lc rgb "black" lw 2 dt 4,\
+     "../experiment/Fig2_Fig3_Na2SO4.txt" using ($1+1.15):($2*c) title    "0.75 M" with line ls 1 lc rgb "green" lw 2 dt 4,\
 
 
 unset label 
@@ -207,7 +208,7 @@ set ytics format " "
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 set xtics format " "
 set label "Na_2SO_4"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
-
+unset label
 
 
 set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
@@ -215,11 +216,11 @@ set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown"
 c=1
 c=2.5
 unset key
-plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
+plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
-     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "1 M"   with line ls 1 lc rgb "green" lw 0.5,\
+     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "1 M"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
      path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "green" notitle,\
-     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c -  0  ) title "1 M"   with line ls 1 lc rgb "red" lw 0.5 dt 7,\
+     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c -  0  ) title "1 M"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
      path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c + 0.00012):($4*c - 0.00012) with filledcurves lc "red" notitle,\
 
 unset label 
@@ -233,7 +234,7 @@ set xrange [0:3.1]
 set key 
 
 set label "Na_2SO_4"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
-
+unset label
 path_to_directory1="../FFMD-150000-trajectories-Starting-frames-long-NVT-trajectories-then-pulse-applied/with-damping"
 set xtics format " "
 set key bottom font 'Arial,8'
@@ -242,11 +243,11 @@ set key bottom font 'Arial,8'
 set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 c=1
-plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
+plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
-     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "1 M"   with line ls 1 lc rgb "green" lw 0.5,\
+     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "1 M"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
      path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "green" notitle,\
-     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c -  0  ) title "H_2O around SO_4^{2-}"   with line ls 1 lc rgb "red" lw 0.5 dt 7,\
+     path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c -  0  ) title "H_2O around SO_4^{2-}"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
      path_to_directory1."/na2so4-1mol/EDIDsecond.dat" using ($1*0.001):($4*c + 0.00012):($4*c - 0.00012) with filledcurves lc "red" notitle,\
 
 unset label 
@@ -285,8 +286,8 @@ set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown"
 set key bottom
 c=1
 c=0.4
-plot "../experiment/H2O.dat" using ($1+1.15):($2*c) title       "H_2O" with line ls 1 lc rgb "black" lw 2 dt 1,\
-     "../experiment/Fig2_Fig3_MgSO4.txt" using ($3+1.15):($4*c) title    "2 M" with line ls 1 lc rgb "blue" lw 2,\
+plot "../experiment/H2O.dat" using ($1+1.15):($2*c) title       "H_2O" with line ls 1 lc rgb "black" lw 2 dt 4,\
+     "../experiment/Fig2_Fig3_MgSO4.txt" using ($3+1.15):($4*c) title    "2 M" with line ls 1 lc rgb "blue" lw 2 dt 4,\
 
 
 unset label 
@@ -309,12 +310,13 @@ set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown"
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 set xtics format " "
 set label "MgSO_4"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
+unset label
 c=1
 c=2.5
 unset key
-plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
+plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
-     path_to_directory1."/mgso4-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "MgSO_4 (2 mol/L)"   with line ls 1 lc rgb "blue" lw 0.5,\
+     path_to_directory1."/mgso4-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "MgSO_4 (2 mol/L)"   with line ls 1 lc rgb "blue" lw 0.5 dt 4,\
      path_to_directory1."/mgso4-2mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "blue" notitle,\
 
 
@@ -329,6 +331,7 @@ set xrange [0:3.1]
 set key 
 
 set label "MgSO_4"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
+unset label
 set xtics format " "
 path_to_directory1="../FFMD-150000-trajectories-Starting-frames-long-NVT-trajectories-then-pulse-applied/with-damping"
 
@@ -336,9 +339,9 @@ set arrow 1 from 2, -0.004  to 2, -0.0025 fill lc rgb "brown"
 
 set key bottom font 'Arial,8'
 c=1
-plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
+plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
-     path_to_directory1."/mgso4-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "2 M"   with line ls 1 lc rgb "blue" lw 0.5,\
+     path_to_directory1."/mgso4-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "2 M"   with line ls 1 lc rgb "blue" lw 0.5 dt 4,\
      path_to_directory1."/mgso4-2mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "blue" notitle,\
 
 unset label 
@@ -376,9 +379,9 @@ set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown"
 set key bottom
 c=1
 c=0.4
-plot "../experiment/H2O.dat" using ($1+1.15):($2*c) title       "H_2O" with line ls 1 lc rgb "black" lw 2 dt 1,\
-     "../experiment/Fig2_Fig3_NaCl.txt" using ($3+1.15):($4*c) title    "2 M" with line ls 1 lc rgb "blue" lw 2,\
-     "../experiment/Fig2_Fig3_NaCl.txt" using ($1+1.15):($2*c) title "4 M"   with line ls 1 lc rgb "red" lw 2,\
+plot "../experiment/H2O.dat" using ($1+1.15):($2*c) title       "H_2O" with line ls 1 lc rgb "black" lw 2 dt 4,\
+     "../experiment/Fig2_Fig3_NaCl.txt" using ($3+1.15):($4*c) title    "2 M" with line ls 1 lc rgb "blue" lw 2 dt 4,\
+     "../experiment/Fig2_Fig3_NaCl.txt" using ($1+1.15):($2*c) title "4 M"   with line ls 1 lc rgb "red" lw 2 dt 4,\
 
 
 unset label 
@@ -400,17 +403,17 @@ set xtics offset 0,0.5,0
 path_to_directory1="../with-and-witout-damping-function-PFFMD/with"
 
 set label "NaCl"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
-
+unset label
 set arrow 1 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 c=1
 c=2.5
 unset key
-plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
+plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
-     path_to_directory1."/nacl-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "Nacl (2 mol/L)"   with line ls 1 lc rgb "blue" lw 0.5,\
+     path_to_directory1."/nacl-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "Nacl (2 mol/L)"   with line ls 1 lc rgb "blue" lw 0.5 dt 4,\
      path_to_directory1."/nacl-2mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "blue" notitle,\
-     path_to_directory1."/nacl-4mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0 ) title   "Nacl (4 mol/L)"   with line ls 1 lc rgb "red" lw 0.2,\
+     path_to_directory1."/nacl-4mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0 ) title   "Nacl (4 mol/L)"   with line ls 1 lc rgb "red" lw 0.2 dt 4,\
      path_to_directory1."/nacl-4mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "red" notitle,\
 
 unset xlabel
@@ -426,18 +429,18 @@ set key
 set xtics offset 0,0.5,0
 
 set label "NaCl"  at 0.2,0.002 font 'Arial,9'  textcolor rgb "blue"
-
+unset label
 path_to_directory1="../FFMD-150000-trajectories-Starting-frames-long-NVT-trajectories-then-pulse-applied/with-damping"
 
 set arrow 2 from 2, -0.0025 to 2, -0.004 fill lc rgb "brown" 
 
 set key bottom font 'Arial,8'
 c=1
-plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 1,\
+plot path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c - 0) title       "H_2O" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
      path_to_directory1."/pureliquidwater/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "black" notitle,\
-     path_to_directory1."/nacl-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "2 M"   with line ls 1 lc rgb "blue" lw 0.5,\
+     path_to_directory1."/nacl-2mol/EDIDsecond.dat" using ($1*0.001):($2*c -  0  ) title "2 M"   with line ls 1 lc rgb "blue" lw 0.5 dt 4,\
      path_to_directory1."/nacl-2mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "blue" notitle,\
-     path_to_directory1."/nacl-4mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0 ) title   "4 M"   with line ls 1 lc rgb "red" lw 0.2,\
+     path_to_directory1."/nacl-4mol/EDIDsecond.dat" using ($1*0.001):($2*c - 0 ) title   "4 M"   with line ls 1 lc rgb "red" lw 0.2 dt 4,\
      path_to_directory1."/nacl-4mol/EDIDsecond.dat" using ($1*0.001):($2*c + 0.00012):($2*c - 0.00012) with filledcurves lc "red" notitle,\
 
 unset multiplot

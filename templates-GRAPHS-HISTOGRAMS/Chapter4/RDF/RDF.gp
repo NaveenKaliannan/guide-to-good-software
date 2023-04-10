@@ -10,7 +10,7 @@ set key right top
 
 
 set terminal postscript eps enhanced size 4.0in,1.8in
-set output 'Spectra.eps'
+set output 'waterspectra.eps'
 
 
 set style fill transparent solid 0.25 # partial transparency
@@ -19,7 +19,7 @@ set style fill noborder # no separate top/bottom lines
 
 set term png truecolor  # or "set term pngcairo"
 set terminal pdfcairo enhanced size 4.0in,1.8in
-set output 'Spectra.pdf'
+set output 'OO_RDF.pdf'
 
 
 set size 1,1
@@ -52,31 +52,31 @@ set origin -0.06, 0.0
 
 
 set xrange [0:3.1]
-set yrange [0:0.007]
+set yrange [0:5]
 
 
 set format y '%.1t'  # Format for 'y' values using mantissa  
 
 
-set ylabel "Power Spectra (arb. units.)" offset 4,0,0 font 'Arial,9'
+set ylabel "g_{O-O} (r)" offset 3,0,0 font 'Arial,9'
 
 
-set xrange [0:1100] 
+set xrange [2:6] 
 set ytics offset 0.5,0,0
-set ytics 0, 0.2, 0.6 font 'Arial,6 
+set ytics 0, 2, 6 font 'Arial,6 
 set xtics offset 0,0.5,0
 
 set xtics font 'Arial,9'
-set title "v(0).v(t)"   font 'Arial,10' offset 0,-0.5,0  textcolor rgb "blue"
+set title "Pure liquid water"   font 'Arial,10' offset 0,-0.5,0  textcolor rgb "blue"
 
 path_to_directory1="/home/naveenk/data/with-and-witout-damping-function-PFFMD/with"
 
 set key
 c=1
-set xlabel "{/Symbol w} (cm^{-1})" font 'Arial,9'  offset 0,1.,0
-plot "nopulse.dat" using ($1):($2) title      "Field-Free conditions" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
-     '10-times.dat' using ($1):($2) title "Weak THz pulse"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
-     "24-times.dat" using ($1):($2) title "Strong THz pulse"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
+set xlabel "r_{ij} (Å)" font 'Arial,9'  offset 0,1.,0
+plot "AIMD_water" using ($1):($2) title      "AIMD" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
+     'AMOEBA_water' using ($1):($2) title "AMOEBA"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
+     "AMBER_water" using ($1):($2) title "SPC"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
 
 
 unset label 
@@ -90,20 +90,19 @@ unset ytics
 set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.45, 1
 set origin 0.24,0.0
-set xrange [0:1100] 
-set yrange [0:0.1]
-set xlabel "{/Symbol w} (cm^{-1})" font 'Arial,9'  offset 0,1,0
+set xrange [2:6] 
+set yrange [0:5]
+set xlabel "r_{ij} (Å)" font 'Arial,9'  offset 0,1.,0
 unset ytics
 set ytics format " "
 
 path_to_directory1="/home/naveenk/data/PFFMD-57000-trajectories-Starting-frames-Long-NVT-trajectrories-then-pulse-applied/polarizabilityanistropy"
 
-set title "{/Symbol w}(0).{/Symbol w}(t)" font 'Arial,10'  textcolor rgb "blue"
+set title "MgCl_2 [2 M]"  font 'Arial,10'  textcolor rgb "blue"
 c=1
-plot "nopulse.dat" using ($1):($6) notitle with line ls 1 lc rgb "black" lw 0.2 dt 4,\
-     '10-times.dat' using ($1):($6) notitle "Weak THz pulse"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
-     "24-times.dat" using ($1):($6) notitle "Strong THz pulse"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
-
+plot "AIMD_mgcl2" using ($1):($2) title      "AIMD" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
+     'AMOEBA_mgcl2' using ($1):($2) title "AMOEBA"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
+     "AMBER_mgcl2" using ($1):($2) title "AMBER/SPC"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
 
 
 unset label 
@@ -113,17 +112,16 @@ set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.45, 1
 set origin 0.54,0.0
 
-set xrange [0:1100] 
-set xlabel "{/Symbol w} (cm^{-1})" font 'Arial,9'  offset 0,1,0
+set xrange [2:6] 
+set xlabel "r_{ij} (Å)" font 'Arial,9'  offset 0,1.,0
 set key 
+set title "Solvation water of Mg^{2+}" font 'Arial,10'  textcolor rgb "blue"
+set yrange [0:5]
 
-set yrange [0:0.004]
-set title "v_{COM}(0).v_{COM}(t)"  font 'Arial,10'  textcolor rgb "blue"
 set key
 c=1
-plot "nopulse.dat" using ($1):($4) notitle      "Field-Free conditions" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
-     '10-times.dat' using ($1):($4) notitle "Weak THz pulse"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
-     "24-times.dat" using ($1):($4) notitle "Strong THz pulse"   with line ls 1 lc rgb "green" lw 0.5 dt 4,\
+plot "rdf_waterspecies/AMOEBA_water_around_mg" using 1:(0.2*$2+0.85*$4) title "AMOEBA" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
+     'rdf_waterspecies/AMBER_water_around_mg' using 1:(0.2*$2+0.85*$4) title "AMBER/SPC"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
 
 
 unset multiplot
