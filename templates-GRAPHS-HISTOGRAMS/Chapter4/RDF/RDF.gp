@@ -48,7 +48,11 @@ f(x) = (x)**2
 # labels and axis
 set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.45, 1
+<<<<<<< HEAD
 set origin .08, 0.0
+=======
+set origin -0.06, 0.0
+>>>>>>> 32dae16e9005d7e97bfef283a274f38fb7c1e2f7
 
 
 set xrange [0:3.1]
@@ -89,7 +93,11 @@ unset ytics
 
 set tmargin at screen 0.88; set bmargin at screen 0.15
 set size 0.45, 1
+<<<<<<< HEAD
 set origin 0.40,0.0
+=======
+set origin 0.24,0.0
+>>>>>>> 32dae16e9005d7e97bfef283a274f38fb7c1e2f7
 set xrange [2:6] 
 set yrange [0:5]
 set xlabel "r_{ij} (Å)" font 'Arial,9'  offset 0,1.,0
@@ -108,6 +116,25 @@ plot "AIMD_mgcl2" using ($1):($2) title      "AIMD" with line ls 1 lc rgb "black
 unset label 
 unset arrow 
 
+<<<<<<< HEAD
+=======
+set tmargin at screen 0.88; set bmargin at screen 0.15
+set size 0.45, 1
+set origin 0.54,0.0
+
+set xrange [2:6] 
+set xlabel "r_{ij} (Å)" font 'Arial,9'  offset 0,1.,0
+set key 
+set title "Solvation water of Mg^{2+}" font 'Arial,10'  textcolor rgb "blue"
+set yrange [0:5]
+
+set key
+c=1
+plot "rdf_waterspecies/AMOEBA_water_around_mg" using 1:(0.2*$2+0.85*$4) title "AMOEBA" with line ls 1 lc rgb "black" lw 0.2 dt 4,\
+     'rdf_waterspecies/AMBER_water_around_mg' using 1:(0.2*$2+0.85*$4) title "AMBER/SPC"   with line ls 1 lc rgb "red" lw 0.5 dt 4,\
+
+
+>>>>>>> 32dae16e9005d7e97bfef283a274f38fb7c1e2f7
 unset multiplot
 unset output
 
