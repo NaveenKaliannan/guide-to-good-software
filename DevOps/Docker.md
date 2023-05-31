@@ -24,8 +24,13 @@
 * **docker image rm -f IMAGEID** remove the docker images forcefully (**-f**)
 * **docker ps** shows the running containers
 * **docker run software-name:version** takes a docker image and creates a new container, run the container
+* **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
 ******************************
 
+### Important Docker Files You Should Know About
+******************************
+1. **Dockerfile** is a text file that contains instruction to build the docker image. 
+******************************
 
 [Docker port binding](https://betterprogramming.pub/how-does-docker-port-binding-work-b089f23ca4c8) - Docker port and Host port
 
