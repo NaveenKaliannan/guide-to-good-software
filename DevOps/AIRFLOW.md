@@ -35,7 +35,14 @@ AirFlow DAG is a collection of tasks with directional dependencies, making workf
 2. Via PIP installation: [pip3 install apache-airflow[all]](https://airflow.readthedocs.io/en/1.9.0/installation.html)
 ******************************
 
-### Task/Operator 
+### Task/Operator
+**Operator**: A template class for doing some work. The (PythonOperator, BashOperator, KubernetesPodOperator) operators execute (Python functions, bash commands, Docker image in a Kubernetes Pod). Note that the abstract BaseOperator class is what all operators inherited from.
+
+**Task**: Defines a work by instantiating an operator.
+
+**Task Instance**: An instance of a task.
+
+## Operator - instantes the tasks
 It has dependencies on other tasks (Upstream). Other tasks depend on it (Downstream). **Task dependencies** are defined as follows:
 ```
 A >> B or B.set_downstream(A) -----> A->B
