@@ -29,6 +29,17 @@ AirFlow DAG is a collection of tasks with directional dependencies, making workf
 6. Queuing system (only distributed system/many executors) - tasks from scheduler
 ******************************
 
+### Important AIRFLOW Files You Should Know About
+******************************
+1. **docker-compose** is used to get Airflow up and running online or in local machine. A simple file is given below. The version : '3.7' in the first line is the dockor Compose file format specification. 
+```
+version: '3.7'
+services:
+    python:
+        image: python
+```
+******************************
+
 ### How to install Apache AirFlow
 ******************************
 1. Via Docker: [docker pull apache/airflow](https://hub.docker.com/r/apache/airflow)
