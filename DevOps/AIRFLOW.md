@@ -31,13 +31,14 @@ AirFlow DAG is a collection of tasks with directional dependencies, making workf
 
 ### Important AIRFLOW Files You Should Know About
 ******************************
-1. **docker-compose** is used to get Airflow up and running online or in local machine. A simple file is given below. The version : '3.7' in the first line is the dockor Compose file format specification. 
+1. **docker-compose** gets the Airflow up and running. It contain various information such as services, networks, environment variables, volumes, software name, software verson and etc. A simple file is given below. 
 ```
 version: '3.7'
 services:
     python:
         image: python
 ```
+The version : '3.7' in the first line is the dockor Compose file format specification. 
 ******************************
 
 ### How to install Apache AirFlow
