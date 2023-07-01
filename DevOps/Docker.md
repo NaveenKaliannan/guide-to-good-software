@@ -22,8 +22,9 @@
 * **docker image ls** lists all the docker images in local machine
 * **docker rmi -f hello-world** removes the docker images forcefully (**-f**)
 * **docker image rm -f IMAGEID** remove the docker images forcefully (**-f**)
-* **docker ps** shows the running containers
-* **docker run software-name:version** takes a docker image and creates a new container, run the container
+* **docker ps** or **docker ps -a** shows the running containers or the records of running containers. It displays container IDs, status, ports and etc.
+* **docker stop Name** stops the running containers 
+* **docker run software-name:version** takes a docker image and creates a new container, run the container. 
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
 ******************************
 
