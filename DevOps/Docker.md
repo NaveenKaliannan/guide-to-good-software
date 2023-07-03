@@ -12,7 +12,9 @@
 1. **Docker image** is read only templates and contains all dependencies and information to build and run a docker container. 
 2. **Docker container** is a runtime instance of a Docker image. It can be realized via **docker run docker-image-name**. Docker container doesnt have the OS within it. It borrows the OS from the host machine and share the host kernel with other containers. In the case of VM, each VM has its own OS. Containers are portable.
 3. However, new **Docker image** can also be created from a running container. It can be created via **docker commit container-info**
-4. **Docker engine** is a software that creates and runs containers
+4. **Docker engine** is a software that creates and runs containers, as well as interact with the host OS. It consists of docker CLI (user interface),  API (for communication), Daemon (for processing the commands from docker client)
+5. **Docker host** is a server or machine in which docker runs
+6. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
 ******************************
 
 ### Docker commands 
@@ -23,9 +25,13 @@
 * **docker rmi -f hello-world** removes the docker images forcefully (**-f**)
 * **docker image rm -f IMAGEID** remove the docker images forcefully (**-f**)
 * **docker ps** or **docker ps -a** shows the running containers or the records of running containers. It displays container IDs, status, ports and etc.
-* **docker stop Name** stops the running containers 
-* **docker run software-name:version** takes a docker image and creates a new container, run the container. 
+* **docker stop Name** stops the running containers
+* **docker run software-name** takes a default (latest tag or version) docker image and creates a new container, run the container. 
+* **docker run software-name:version** takes a docker image and creates a new container, run the container. Version is also called as tag.
+* **docker run -it software-name:version** runs the container in both interactive and terminal modes.
+* **docker run -p number:number software-name:version** runs the container in specified ports.
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
+* **docker inspect image-name** returns all the information about docker runs including volume, state information, network information, metadata.
 ******************************
 
 ### Important Docker Files You Should Know About
