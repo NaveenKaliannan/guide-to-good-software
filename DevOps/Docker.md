@@ -30,6 +30,8 @@
 * **docker run software-name:version** takes a docker image and creates a new container, run the container. Version is also called as tag.
 * **docker run -it software-name:version** runs the container in both interactive and terminal modes.
 * **docker run -p number:number software-name:version** runs the container in specified ports.
+* **docker run -d software-name** runs the container in background. To bring it to the front end, **docker attach ContainerID**
+* **docker exec** executes a command on the running container, whereas **docker run** just creates a container, runs it and stop when done. 
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
 * **docker inspect image-name** returns all the information about docker runs including volume, state information, network information, metadata.
 ******************************
