@@ -31,46 +31,28 @@
 * **docker run -it software-name:version** runs the container in both interactive and terminal modes.
 * **docker run -p number:number software-name:version** runs the container in specified ports.
 * **docker run -d software-name** runs the container in background. To bring it to the front end, **docker attach ContainerID**
-* **docker exec** executes a command on the running container, whereas **docker run** just creates a container, runs it and stop when done. 
+* **docker exec** executes a command on the running container, whereas **docker run** just creates a container, runs it and stop when done.
+* **docker exec -it container-ID /bin/bash** shows the virutal file system inside a container
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
 * **docker inspect image-name** returns all the information about docker runs including volume, state information, network information, metadata.
+* **docker logs container-ID**
+* **docker start container-ID**
+* **docker network ls**
 ******************************
 
 ### Important Docker Files You Should Know About
 ******************************
-1. **Dockerfile** is a text file that contains instruction to build the docker image. 
+1. **docker** file handles single containers, while the **docker-compose** file handles multiple container applications
+2. **Dockerfile** is a text file that contains instruction to build the docker image.
+```
+``` 
 ******************************
-
-[Docker port binding](https://betterprogramming.pub/how-does-docker-port-binding-work-b089f23ca4c8) - Docker port and Host port
-
-
-docker handles single containers
-docker-compose handles multiple container applications
-docker file
-
-```
-How to run Docker or create a container
-```
-docker run -p6000:6379  software-name:version
-docker stop container-ID
-docker start container-ID - working with containers not with images
-docker ps -a
-docker logs container-ID
-docker exec -it container-ID /bin/bash - virutal file system inside a container
-docker network ls
-env - to see all the environmental variables
-```
 
 without Docker- Every body has to install or compile all dependencies to run a source code in local environment. Artifacts with requirements.txt file
 with Docker, No need for any installation. Has its own operating layer. No environemnt configuraion
 
 Container is made up of images. The base is Linux Base image (Alpine or linux distributions). The top is application image.
 
-Docker container (running, container environment is created) and Docker image (actual package, artifact that move around, not running). Container is the running environment of image.  Docker image can be pulled or pused.
-
-
-
-Docker file - copy the contents of application into dockerfile. The docker file is from image. 
 
 ## How to build a Docker image (template) and run Docker containers (running instance)
 
