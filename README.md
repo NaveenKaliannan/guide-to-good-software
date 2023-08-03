@@ -16,7 +16,7 @@ Tools that offers version control for the source code or mainting source codes :
 
 Tools that offers version control for the Binaries or Executables : [JFrog Artifactory](https://jfrog.com/solution-sheet/jfrog-artifactory-de/?utm_source=google&utm_medium=cpc&utm_campaign=Search|DSK|DACH|DSA&utm_term=&utm_network=g&cq_plac=&cq_plt=gp&utm_content=u-bin&gclid=EAIaIQobChMI4uqgx_PV-QIVyPZRCh26Yg6lEAAYASAAEgLOA_D_BwE)
 
-Tools to format the source code: [Black for Python](https://pypi.org/project/black/), [Pylint for Python](https://pypi.org/project/pylint/), [shfmt for shell script](https://webinstall.dev/shfmt/), [autopep8](https://pypi.org/project/autopep8/)
+Tools to format the source code: [Black for Python](https://pypi.org/project/black/), [Pylint for Python](https://pypi.org/project/pylint/), [shfmt for shell script](https://webinstall.dev/shfmt/), [autopep8](https://pypi.org/project/autopep8/), [Scalafmt for Scala](https://scalameta.org/scalafmt/docs/installation.html#arch-linux)
 
 Tools to quickly build, test, deploy and run applications: [Docker](https://www.docker.com/)
 
