@@ -10,11 +10,12 @@ parquet-tools cat -j filename.parquet | jq -r '.value' | jq '.whatever' (the -r 
 ```
 Converting parquet to json file
 ```
+pt cat -json *.parquet >> filename.json (easy for handling in python)
 pt cat --json filename.snappy.parquet | jq | tee filename.json
 ```
 Converting all the parquet files in folder into a single json file
 ```
-for i in * ; do pt cat -json $i | jq >> filename.json ; done
+for i in *.parquet ; do pt cat -json $i | jq >> filename.json ; done
 ```
 Select numbers in the lines and sort them
 ```
@@ -35,4 +36,19 @@ LASER_MSG = b.message_by_topic('topic')
 LASER_MSG
 df_laser = pd.read_csv(LASER_MSG)
 print(df_laser)
+```
+### json file to parquet
+```
+from pyspark.sql import SparkSession
+
+spark = SparkSession \
+    .builder \
+    .appName("JsonToParquetPysparkExample") \
+    .getOrCreate()
+
+#json_df = spark.read.json("test/*.json", multiLine=True,) 
+json_df = spark.read.option("multiline","true").json("test/*.json")
+json_df.printSchema()
+json_df.show()
+json_df.repartition(1).write.mode("append").parquet("output.parquet")
 ```
