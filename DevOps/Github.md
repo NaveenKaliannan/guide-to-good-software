@@ -215,4 +215,5 @@ How to add note and warning in Github Readme.md file
 | :zap:        content   |
 |-----------------------------------------|
 
+ ##### Note that the &check; ( means Passed), &cross; (means not checked yet) and &cross; ( means Failed)
 
