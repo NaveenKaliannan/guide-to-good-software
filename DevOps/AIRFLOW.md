@@ -67,3 +67,49 @@ xcom_push and xcom_pull
 task_instance.xcom_pull(task_ids='task_name')
 task_instance.xcom_push(task_ids='task_name')
 ```
+## Plugins
+Note that to create a plugin, a creation of derived class using the airflow.plugins_manager.AirflowPlugin as an base class is mandatory, and refer the object that we want to plug into airflow. A simple example is shown below:
+```
+from airflow.models.baseoperator import BaseOperator, BaseOperatorLink
+from airflow.plugins_manager import AirflowPlugin
+
+
+class MyDashboardLink(BaseOperatorLink):
+    name = "Google"
+
+    def get_link(self, operator: BaseOperator, *, ti_key: TaskInstanceKey):
+        return "https://www.google.com"
+
+class MyDashboardLink2(BaseOperatorLink):
+    name = "Google"
+
+    def get_link(self, operator: BaseOperator, *, ti_key: TaskInstanceKey):
+        return "https://www.fb.com"
+
+class MyFirstOperator(BaseOperator):
+
+    operator_extra_links = (GoogleLink(),)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def execute(self, context):
+        self.log.info("Hello World!")
+
+def test_function():
+    operator = MyFirstOperator()
+    operator.operator_extra_links = MyDashboardLink2()
+
+# Defining the plugin class
+class MyDashboardExtraLinkPlugin(AirflowPlugin):
+    name = "extra_link_plugin"
+    operator_extra_links = [
+        MyDashboardLink(),
+    ]
+
+class MyDashboard2ExtraLinkPlugin(AirflowPlugin):
+    name = "extra_link_plugin"
+    operator_extra_links = [
+        MyDashboardLink2(),
+    ]
+```
