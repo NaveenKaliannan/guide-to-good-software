@@ -44,7 +44,7 @@ from IPython.display import display
 pd.set_option('display.max_columns', None)  # or 1000
 pd.set_option('display.max_rows', None)  # or 1000
 pd.set_option('display.max_colwidth', None)  # or 199
-parquet_file = "part-00000-e847b0d0-27b2-41ef-a0f7-5bba23e39277-c000.snappy.parquet"
+parquet_file = "filename.snappy.parquet"
 df = pd.read_parquet(parquet_file, engine='pyarrow')
 for i in range(4):
     df.drop(index=df.index[0], axis=0, inplace=True)
@@ -65,6 +65,7 @@ df = spark.read.parquet("filename.snappy.parquet")
 df.show()
 df1 = df.limit(3)
 df.write.parquet("test.parquet")
+df.repartition(4).write.parquet("my_files/")
 #print(df.columns)
 #df = df.dropDuplicates()
 #df.write.parquet("test.parquet")
