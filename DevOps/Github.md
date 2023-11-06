@@ -187,6 +187,10 @@ git clone --depth 1 git-link
 cd git-name
 git fetch --unshallow
 ```
+The following untracked working tree files would be overwritten by checkout
+```
+git clean  -d  -f .
+```
 How to add note and warning in Github Readme.md file 
 
 > __Note__  
