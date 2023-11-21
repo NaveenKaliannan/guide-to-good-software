@@ -437,6 +437,31 @@ copy (paste) to terminal
 ctrl-shift-c (v)
 ```
 
+# My Bashrc file 
+```
+sourcebashrc /home/naveenk/.bashrc
 
+export USER_ID="naveenk"
+export USER_PW="12***89"
+
+alias sshcluster='ssh naveenk@hostname.de'
+alias scpcluster='{read -r a1 a2; echo "$a1"; echo "$a2"; sshpass -p '12***89' scp  -r naveenk@hostname.de:$a1 $a2; }  <<<'
+
+unused_variable()
+{
+        for i in $(vulture $1 | awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do  if [ *$(grep -nr "$i" | wc -l)* == *1* ] ; then echo "Unused variable or function ->" $i " in " $1 ; fi; done
+}
+
+find_files_with()
+{
+        for i in $(ls -ltr $(find . -type f )) ; do FILE=$i ; FILENAME=$(echo "$FILE" | sed 's/\.[^.]*$//') ; EXTENSION=$(echo "$FILE" | sed 's/^.*\.//') ;   if [ $FILE != ".:" ]; then  if [ $EXTENSION == "py" ] ; then echo "FILENAME ->" $FILE ; fi ; fi  ; done
+}
+
+find_unsued_variable_in_a_directory()
+{
+        for i in $(ls -ltr $(find . -type f )) ; do FILE=$i ; FILENAME=$(echo "$FILE" | sed 's/\.[^.]*$//') ; EXTENSION=$(echo "$FILE" | sed 's/^.*\.//') ;   if [ $FILE != ".:" ]; then  if [ $EXTENSION == "py" ] ; then unused_variable $FILE ; fi ; fi  ; done
+}
+
+```
 
 
