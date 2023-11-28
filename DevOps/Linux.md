@@ -437,6 +437,25 @@ copy (paste) to terminal
 ctrl-shift-c (v)
 ```
 
+# vim editor
+* **esc+:/search-keywors** search the keyword
+* **Comment the sourcecode**
+```
+Press Ctrl and V
+Select until the line of interest
+Press Shift and I
+Add  # or Delete #
+Click esc
+```
+* **Uncomment the sourcecode**
+```
+Press Ctrl and V
+Select until the line of interest
+Press x
+Click esc
+```
+
+
 # My Bashrc file 
 ```
 sourcebashrc /home/naveenk/.bashrc
