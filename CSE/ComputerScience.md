@@ -40,6 +40,16 @@ $$ t = { 1048576 * 3600 \over 550 }  = 0.529 hours for 1 Petabyte$$
 
 ******************************
 
+### Computer Basics
+******************************
+1. Operating system manages the computer hardware and software and acts a middle man between hardware and user.
+Desktop OS - Windows, MAC OS, Ubuntu
+Server OS - Windows server, Centos, Red hat linx distribution
+Mobile OS - Android, MAC
+Embedded OS - router, TV, automobiles.
+Real time OS - medical device, aerospace
+******************************
+
 ### Memory consumption of an application 
 [Massif](https://courses.cs.washington.edu/courses/cse326/05wi/valgrind-doc/ms_main.html) displays how much a program or process uses memory (includes both virtual (Hard Disk Swapped) and resident (RAM) memory)
 ```
