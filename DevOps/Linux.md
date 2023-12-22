@@ -31,21 +31,29 @@ For accelerated graphics features, VMware recommends two virtual CPUs and 4 GB o
 - Remote via PUTTY, WISCP
 - Terminal
 
-### Root
+### Root 
+User account that has access to all the commands, files, folders, and etc. 
+* **whoami** provide the user details
+* **hostname** provide the hostname
+/ - Root directory.
+/root - Root home directory
+* **passwd userid** change the password. It will ask you for the old and new password
 
 ### Linux directory structure 
+Filesystem is a system that manages the files in OS. OS stores files in organized way.
 Linux directory structure starts with /, the root directory. <br />
-* **/bin/ (root)** contains executable or binary files such as cp, mv, bash, ps, pwd etc.
-* **/etc (root)** has the system configuration file
-* **/sbin/ (root)** has the system binaries such as fdisk, ifconfig, reboot, root, init, getty, fsck, mkfs, mkswap, halt, and etc
+* **/etc (root)** has the system configuration file  :exclamation:
+* **/sbin/ (root)** has the system binaries such as fdisk, ifconfig, reboot, root, init, getty, fsck, mkfs, mkswap, halt, and etc :exclamation:
+* **/bin/ (root)** contains executable or binary files such as cp, mv, bash, ps, pwd etc. :exclamation:
+* **/opt (users)** - allocated for the installation of additional application software packages :exclamation:
+* **/boot** cotains the file used by boot loader (grub.cfg). It tells the computer which OS is stored.
 * **/usr/ (users)** has read only applications, data and binaries. It has many sub folders: bin, include, lib, local, share.
 * **/var/ (users)** has variable data files such as cache, lock files, log files, tmp files. 
 * **/dev (users)**  contains device files (USB drive, mouse, keyboard, hard drives)
 * **/home (users)**  contains home and user, group directory
 * **/lib (users)** contains libraries and kernel modules
 * **/mnt (users)** contains mount files for temporary filesystems 
-* **/proc (users)** - process and kernel information files 
-* **/opt (users)** - allocated for the installation of additional application software packages 
+* **/proc (users)** - process and kernel information files. Only exists if there is something running. When computer turned off, there will be nothing.  
 * **/root (users)** - home directory of the root user <br />
 ![alt tag](https://helpdeskgeek.com/wp-content/pictures/2020/02/file-directory.png)
 *The structure of typical Linux directory 
@@ -164,18 +172,25 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64:
 * **cat, less, more, head, tail** diplays the content of file as output
 * **Notation in linux**
 ```
+Anything that starts with a '-' is a file
 s - special permission for the user (represent SUID) and it is used instead of x (executable) (-rwsrwxr--)
 t - sticky bit. The sticky bit is only for directory. When it is set for a directory, all files in the directory can only be deleted or renamed by file owners or root. Example: tmp foler. user cannot delete temp file created by other users but root can delete.
 b - block special file for storage, drives, usb. Can be mounted. 
 c - character device file  ex. mouse, keyboard
 d - directory
 l -  links
+s -  socket
+p - named pipe
 r - read
 w - write 
 x - executable
 + - add permission
 - - removes the permission
 = - ignore all permissions
+```
+* **Linux file or directory information**
+```
+filetype-filepermission #number_of_links owner group memory date time Name_of_file
 ```
 * **Linux file permission**
 ```
@@ -243,17 +258,19 @@ history | grep "info"
 for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
 ```
 * **diff** shows the difference between two files
-* **find** searches for file and directory
+* **find** searches for file and directory iteratively
 ```
 find -name filename or folder name 
 find * -perm /4000
 ```
+* **locate** locates the files. It uses pre built database to find it. It provide the false info if the database is not updated.
+* **updatedb** updates the databases
 * **env** prints the environment variables
 * **cp** is used to copy the files or folder
 * **mv** moves the files or folder
-* **mkdir** creates a directory or directories
+* **mkdir** creates a directory or directories Example mkdir {1..3}{1..3} creates 9 directory with all the pairs of 1 to 3.
 * **ls** lists the files or folder in the current directory
-* **pwd** diplays the relative path of your current directory
+* **pwd** diplays the absolute path of your current directory. Print Working Directory
 * **ln -s and ln** create the soft (s) and hard symbolic links. 
 ```
 ln -s filename softlink
@@ -272,6 +289,15 @@ abs path = /home/username/.../../document
 relative path = document/
 ```
 ### Shell scripting
+* **wildcard**
+```
+* - zero or more characters Eg., ls na*n.py shows the naveen.py
+? - single character Eg., ls na?een.py shows the naveen.py
+[] - range of character Eg., ls *[zy]* shows the file that has a name with word y or z
+\ - escape character
+^ - beginning of the line
+$ - dollar sign
+```
 * **Operator**
 ```
 **Arithmetic Operators**
@@ -429,6 +455,11 @@ ip domain name
 
 
 ### File systems in linux
+
+Filesystem is a system that manages the files in OS. OS stores files in organized way.
+
+Linux file system type = ext2, ext3, nfs
+
 information about /dev/sd - https://www.baeldung.com/linux/dev-sda
 ```
 /dev  contains device files
