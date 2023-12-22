@@ -15,9 +15,10 @@
 
 ### To process anything in computer
 ******************************
-1. CPU executes the commands from programs or applications. A few applications will keep running in the background. You can accelerate the speed by turning them off. The best indicator is the CPU clock speed or CPU frequency (unit GHz or billions of pulses per second), which shows how many cycles per second it can complete. Higher value means faster CPU is faster and applications are faster. For gaming 3.5 - 4.0 GHz is good. 
-2. Networking - exchange data and share resources with each other
-3. RAM - short term memory or temporary storage where data is stored as the processor needs it. RAM is soldered directly into the main board of the computer. Hence faster than anything. RAM write and read speed = 2-20GB/s.
+1. CPU executes the commands from programs or applications. A few applications will keep running in the background. You can accelerate the speed by turning them off. The best indicator is the CPU clock speed or CPU frequency (unit GHz or billions of pulses per second), which shows how many cycles per second it can complete. Higher value means faster CPU is faster and applications are faster. For gaming 3.5 - 4.0 GHz is good. A single CPU can execute n tasks (= n cores). CPU contains controller (memory accessing and data I/O), cores, cache (shared with all cores). CPU estaibles the communication btwn cores and system
+2. Cores actually processes the tasks. CPU controls the Cores. Uni processor 1 CPU = 1 Core. Multi processor 1 CPU. Core contains control unit (communication of core/hardware), Arithmetic logic unit (executes the A/L operations), memory (registers - keep addresses, instructions, and results of calculations and cache -high-speed random access memory that holds data that the core probably will (re)use). Core cahche memory is smaller, faster to access when compard to RAM. This memory caching improves the performance. Cache Memory Is Much Faster Than RAM. Memory path: Hard distk -> RAM -> Cache memory of CPU. Cache memory operates with a higher clock speed and lower access latency, resulting in faster data retrieval
+3. Networking - exchange data and share resources with each other
+4. RAM - short term memory or temporary storage where data is stored as the processor needs it. RAM is soldered directly into the main board of the computer. Hence faster than anything. RAM write and read speed = 2-20GB/s.
 
 $$ t = { 1000  \over 20  }  =  50 seconds for 1 Petabyte$$
 
