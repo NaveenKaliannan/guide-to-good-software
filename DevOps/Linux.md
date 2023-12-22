@@ -198,6 +198,7 @@ filetype-filepermission #number_of_links owner group memory date time Name_of_fi
 first character defines the directory (d), files (-), links (l)
 the latter are user rights, group rights, other rights
 ```
+* **chgrp** modify the group ownership of the file.
 * **chmod** modify the file permission or directory.
 ```
 Read (r) = 4, Write (w) = 2, eXecute (x) = 1 SUID (s) - 4 for adding and 0 for removing, Sticky bit (t)
