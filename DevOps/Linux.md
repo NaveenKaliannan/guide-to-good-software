@@ -27,6 +27,10 @@ The RAM depends on the applications that we gonna work on.
 For accelerated graphics features, VMware recommends two virtual CPUs and 4 GB of RAM. 
 - Under Customize Hardware : Memory= 4-8GB, Processors = 4-8, Virtualization engine = activate "VT-x" and "IOMMU", Number of monitors= 2-4
 
+## How to connect to Linux Machine
+- Remote via PUTTY, WISCP
+- Terminal
+
 ### Root
 
 ### Linux directory structure 
