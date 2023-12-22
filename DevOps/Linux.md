@@ -4,6 +4,31 @@ Linux is a UNIX-like operating system that is quicker, lighter, more secure (can
 The internal core of the Linux architecture contains the hardware, the central core is the kernel (machine code written in C and the assembled language both manage the hardware), the external layer is the application layer. Between the kernel and the application layer are these shell commands (cp, grep, ls, pwd, shell manage the user). The shell interprets the command entered by user and sends it to the kernel for execution. This is done by first validating the command, sending it to the kernel using the hardware, and finally executing or showing the output. The kernel manages memory, resources, device management and system calls (function that allows a process to communicate with the Linux kernel)<br />
 ![alt tag](https://static.javatpoint.com/linux/images/architecture-of-linux.png)
 *The structure of Linux architecture. This image was taken from the static.javatpoint.com site*
+
+**Linux** can be installed via VMWare/Oracle Virtual BOX (virthualization software)/could services (google/AWS) on Windows/MAC.
+
+[Oracle Virtual BOX](https://www.virtualbox.org/wiki/Downloads) and [VMWare workstation player](https://www.vmware.com/de/products/workstation-pro/workstation-pro-evaluation.html) are free.
+Always take a snapshot.
+
+### VMWARE workstation set up
+The Ubuntu image can be downloaded from [Ubuntu site](https://releases.ubuntu.com/)
+- Create a New VM
+- Typical
+- Installer disc image file
+- Full name
+- User name
+- Password
+- Location
+- Maximum disk size = 1.9 TB. 1.9 TB is the max size VMWare can handle. 
+- Select = Store virtual disk as a single file
+4GB RAM is minimum system requirements space for running VMware. 
+8GB RAM or more is recommended for the host computers that runs VMware.
+The RAM depends on the applications that we gonna work on.
+For accelerated graphics features, VMware recommends two virtual CPUs and 4 GB of RAM. 
+- Under Customize Hardware : Memory= 4-8GB, Processors = 4-8, Virtualization engine = activate "VT-x" and "IOMMU", Number of monitors= 2-4
+
+### Root
+
 ### Linux directory structure 
 Linux directory structure starts with /, the root directory. <br />
 * **/bin/ (root)** contains executable or binary files such as cp, mv, bash, ps, pwd etc.
