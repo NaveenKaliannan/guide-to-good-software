@@ -165,11 +165,41 @@ export PATH=$PATH:/home/user/dipole/bin/
 * **LD_LIBRARY_PATH** This variable specifies the search paths for shared libraries. By setting the path, we will be calling the corresponding header files.
 ```
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64:
-``` 
+```
+### Help commands
+
+* **man** 
+* **whatis** 
+* **--help**
+
+### Input and Output 
+
+* **echo** prints the given string
+* **echo "Hello" >> or > Filename.txt** prints the given string in a txt file. > overwrites the files but >> appends into txt file
+* **<** is stdin for command
+* **2> errorfile** storing the error message into an errorfile
+* **| tee filename** storing the the output in a text file. **| tee -a filename** appends the old text file
+
+### Text processor commands 
+* **cut -c1,2,4 or -c1-4 or c1-2, 4-5 filename**  prints the characater file for given range
+* **cut -d: -f 6 /etc/passwd** shows the 6th field sepearated by limiter ":"
+* **cut -d, -f 2 test** shows the 6th field sepearated by limiter ","
+```
+-> cat test
+helo1,helo2
+-> cut -d, -f 2 test
+helo2
+```
+* **grep and egrep** 
+* **awk** 
+* **sort** 
+* **uniq** 
+* **wc**
+ 
 * **unset** remove the variable which is set <br />
 * **expr** computes the given expression and displays the output <br />
 * **vim, emacs, nano, vi** file editors in terminal
-* **cat, less, more, head, tail** diplays the content of file as output
+* **cat, less, more, head, tail** diplays the content of file as output. More and Less is paging through the file, one page at a time. j or k to go page through line by line. Spacebar to page via page by page
 * **Notation in linux**
 ```
 Anything that starts with a '-' is a file
@@ -290,6 +320,8 @@ abs path = /home/username/.../../document
 relative path = document/
 ```
 ### Shell scripting
+* **wc** counts the character (-m), number of lines (-l), bytes (-c), maximum line length (-L) in a text file
+* **|** is used for pipes in Linux. Command 1 | Command 2 | Command 3
 * **wildcard**
 ```
 * - zero or more characters Eg., ls na*n.py shows the naveen.py
@@ -451,8 +483,6 @@ ip name-server 8.8.8.8
 ip domain loopup
 ip domain name
 ````
-
-
 
 
 ### File systems in linux
