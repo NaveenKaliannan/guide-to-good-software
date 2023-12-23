@@ -190,12 +190,51 @@ helo1,helo2
 -> cut -d, -f 2 test
 helo2
 ```
-* **grep and egrep** 
-* **awk** 
-* **sort** 
-* **uniq** 
+* **awk '' ** used for data extraction from a file
+```
+-> cat test
+helo1,helo2
+awk '{print $1}' test - prints the firsl field of the text file
+awk '{print $1,$2}' test - prints the first and second field of the text file
+awk '{print $NF}' test - prints the last field of the text file
+awk '/helo2/ {print}' test searches for keywords
+awk -F: '{print $6}' /etc/passwd prints the fields sepearated by delimiter
+echo "heelo worl" | awk '{$2 = "world" ; print $0}' replace the words
+awk 'length($0) > 6' test prints the words greater than length 6
+awk '{if(length($0) > 5) print $0}' test
+awk '{print NF}' test - prints the number of field
+```
+* **grep and egrep**
+```
+grep "keyword" filename
+grep -c "keyword" filename
+grep -i "keyword" filename -> ignores the case sensitive
+grep -n "keyword" filename -> line number
+grep -v "keyword" filename -> exculded the keyword line
+egrep -i "keyword1|keyword2" -> searches for two keywords
+``` 
+* **sort**
+```
+sort filename
+sort -r filename -> reverse the sort
+sort -k2 filenae -> sort the file by second coloumn
+```
+* **uniq**
+```
+uniq filename
+uniq -c filename 
+uniq -d filename shows the repeated line
+```
 * **wc**
- 
+ ```
+wc filename
+wc -c filename
+wc -m filename 
+wc -l filename
+ls -l | grep "dr"  | wc -l
+```
+* **diff** shows the difference in line between  files
+* **cmp** shows the difference in byte between  files
 * **unset** remove the variable which is set <br />
 * **expr** computes the given expression and displays the output <br />
 * **vim, emacs, nano, vi** file editors in terminal
@@ -318,6 +357,22 @@ df -i
 ```
 abs path = /home/username/.../../document
 relative path = document/
+```
+### Compress and uncompress the files
+```
+tar cvf myfiles.tar folder-name -> compress
+tar xvf myfiles.tar -> extract
+gzip myfiles.tar -> reduce the size
+gzip -d or gunzip myfiles.tar -> enhance the size
+```
+### Truncate the files
+```
+truncate -s 10 filename -> only the 10 character exists
+```
+### Combine and split files
+```
+cat file1 file2 file 2 > file4
+split -l 300 file4 outputfile -> outputfileaa outputfileab
 ```
 ### Shell scripting
 * **wc** counts the character (-m), number of lines (-l), bytes (-c), maximum line length (-L) in a text file
