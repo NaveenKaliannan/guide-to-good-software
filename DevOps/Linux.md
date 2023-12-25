@@ -10,7 +10,7 @@ The internal core of the Linux architecture contains the hardware, the central c
 [Oracle Virtual BOX](https://www.virtualbox.org/wiki/Downloads) and [VMWare workstation player](https://www.vmware.com/de/products/workstation-pro/workstation-pro-evaluation.html) are free.
 Always take a snapshot.
 
-### VMWARE workstation set up
+## VMWARE workstation set up
 The Ubuntu image can be downloaded from [Ubuntu site](https://releases.ubuntu.com/)
 - Create a New VM
 - Typical
@@ -31,15 +31,7 @@ For accelerated graphics features, VMware recommends two virtual CPUs and 4 GB o
 - Remote via PUTTY, WISCP
 - Terminal
 
-### Root 
-User account that has access to all the commands, files, folders, and etc. 
-* **whoami** provide the user details
-* **hostname** provide the hostname
-/ - Root directory.
-/root - Root home directory
-* **passwd userid** change the password. It will ask you for the old and new password
-
-### Linux directory structure 
+## Linux directory structure 
 Filesystem is a system that manages the files in OS. OS stores files in organized way.
 Linux directory structure starts with /, the root directory. <br />
 * **/etc (root)** has the system configuration file  :exclamation:
@@ -58,7 +50,8 @@ Linux directory structure starts with /, the root directory. <br />
 ![alt tag](https://helpdeskgeek.com/wp-content/pictures/2020/02/file-directory.png)
 *The structure of typical Linux directory 
 . This image was taken from the helpdeskgeek.com site*
-### Important Linux Files You Should Know About
+
+## Important Linux Files You Should Know About
 * **/etc/passwd** file contains information such as UID (user ID), GID (group ID), home directory, shell interpreter, and etc.
 ```
 cat /etc/passwd |grep "username"
@@ -82,9 +75,9 @@ how to set SUID flag
 chmod u+s filename
 it will change -rwxrw-rw-  to -rwsrw-rw-
 ```
+* **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/etc/environment** file sets the variable permanently in the system. **~/.profile** is a similar file but belongs to each user. However, **/etc/profile** is a gloabl intialization file in the system. All are basically loading environmental variable. **bash_profile** file runs when login into the account. **bashrc** file runs when opening the terminal and set the variable.  
 * **/etc/systemd/system/docker.service.d/proxy.conf or http-proxy.conf** for setting proxy for  docker
-* **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
 * **/etc/inittab** configuration file which is to be used by initialization system. ```init``` create processes from this file.
 ```
@@ -125,20 +118,15 @@ index-url = artifactory website
 vim ~/.bashrc
 alias cddata='cd $HOME/tmp/data'
 ```
-### Shell commands
-Type the following command in the terminal to see all shell commands in linux. 
-```
-ls /bin/* 
-```
-### The most commonly used shell commands are explained here.
-* **#!** header file of shell script or shebang and it will tell which interpreter should be used. <br />
- ```
- #!/bin/bash
- ```
-* **man** display the user manual of any command <br />
-* **ls --version** display the version of the binary <br />
-* **whereis ls** finds the location of source/binary file of a command <br />
-* **which** locates the executable location
+
+## Root 
+
+User account that has access to all the commands, files, folders, and etc. 
+* **whoami** provide the user details
+* **hostname** provide the hostname
+/ - Root directory.
+/root - Root home directory
+* **passwd userid** change the password. It will ask you for the old and new password
 * **sudo su** used for root previliges <br />
 * **adduser** adding new user
 ```
@@ -152,25 +140,26 @@ group newuser
 su - newuser
 sudo ls /root
 ```
-* **finger** user info lookup command and provides details of all the users logged in. It is recommended to disable because remote login people might be able to look at all the user information.
-* **set** is used to define the value of system variables <br />
-* **export** is used the create environment variables <br />
- ```
- export PYTHONPATH=$(pwd):$(path2):$(path3)
- ```
-* **PATH** This variable specifies directories for executable.
-```
-export PATH=$PATH:/home/user/dipole/bin/
-```
-* **LD_LIBRARY_PATH** This variable specifies the search paths for shared libraries. By setting the path, we will be calling the corresponding header files.
-```
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64:
-```
-### Help commands
 
-* **man** 
-* **whatis** 
-* **--help**
+## Shell commands
+
+Type the following command in the terminal to see all shell commands in linux. 
+```
+ls /bin/* 
+```
+* **#!** header file of shell script or shebang and it will tell which interpreter should be used. <br />
+ ```
+ #!/bin/bash
+ ```
+
+### Help Commands
+
+* **man** display the user manual of any command <br />
+* **whatis** displays information on commands <br />
+* **--help** displays information on commands <br />
+* **ls --version** display the version of the binary <br />
+* **whereis ls** finds the location of source/binary file of a command <br />
+* **which** locates the executable location <br />
 
 ### Input and Output 
 
@@ -181,6 +170,15 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64:
 * **| tee filename** storing the the output in a text file. **| tee -a filename** appends the old text file
 
 ### Text processor commands 
+* **wildcard**
+```
+* - zero or more characters Eg., ls na*n.py shows the naveen.py
+? - single character Eg., ls na?een.py shows the naveen.py
+[] - range of character Eg., ls *[zy]* shows the file that has a name with word y or z
+\ - escape character
+^ - beginning of the line
+$ - dollar sign
+```
 * **cut -c1,2,4 or -c1-4 or c1-2, 4-5 filename**  prints the characater file for given range
 * **cut -d: -f 6 /etc/passwd** shows the 6th field sepearated by limiter ":"
 * **cut -d, -f 2 test** shows the 6th field sepearated by limiter ","
@@ -190,11 +188,11 @@ helo1,helo2
 -> cut -d, -f 2 test
 helo2
 ```
-* **awk '' ** used for data extraction from a file
+* **awk** used for data extraction from a file
 ```
 -> cat test
 helo1,helo2
-awk '{print $1}' test - prints the firsl field of the text file
+awk '{print $1}' test - prints the first field of the text file
 awk '{print $1,$2}' test - prints the first and second field of the text file
 awk '{print $NF}' test - prints the last field of the text file
 awk '/helo2/ {print}' test searches for keywords
@@ -233,12 +231,69 @@ wc -m filename
 wc -l filename
 ls -l | grep "dr"  | wc -l
 ```
-* **diff** shows the difference in line between  files
-* **cmp** shows the difference in byte between  files
-* **unset** remove the variable which is set <br />
-* **expr** computes the given expression and displays the output <br />
-* **vim, emacs, nano, vi** file editors in terminal
+* **diff** shows the difference in line between files
+* **cmp** shows the difference in byte between files
+
+### Access Control Linux
+It allows permission to any user or group to the disk or file or folders
+* **getfacl** displays the file read write information of users
+```
+$ getfacl z.py
+# file: z.py
+# owner: naveenk
+# group: naveenk
+user::rw-
+group::rw-
+other::r--
+```  
+* **setfacl** sets the write read permission of files for users or groups
+```
+setfacl -m u:username:rwx filename # adds the user to read write and execute the file
+setfacl -m g:groupname:rw filename # adds the group to read write and execute the file
+setfacl -dm "entry" filename 
+setfacl -x u:username filename # remove the user to process the file
+setfacl -b path-to-file # remove the user or group or everthing to process the file
+```
+
+### File or Folder commands
+* **mkdir** creates a directory or directories Example mkdir {1..3}{1..3} creates 9 directory with all the pairs of 1 to 3.
+* **cp** is used to copy the files or folder
+* **mv** moves the files or folder
+* **pwd** diplays the absolute path of your current directory. Print Working Directory
+* **wc** counts the character (-m), number of lines (-l), bytes (-c), maximum line length (-L) in a text file
 * **cat, less, more, head, tail** diplays the content of file as output. More and Less is paging through the file, one page at a time. j or k to go page through line by line. Spacebar to page via page by page
+* **find** searches for file and directory iteratively
+```
+find -name filename or folder name 
+find * -perm /4000
+```
+* **locate** locates the files. It uses pre built database to find it. It provide the false info if the database is not updated.
+* **updatedb** updates the databases
+* **ln -s and ln** create the soft (s) and hard symbolic links. 
+```
+ln -s filename softlink
+If the original file is removed. the softfile or link will removed. Both the files have different innode and file permission
+ln filename hardlink
+Both file `filename` and hardlink file will have same permission and same innode number. If the original file is removed. still the content in hardlink can be seen.
+If the original file is modified, it will also reflected in hard link. Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
+```
+* **innode number** is a uniquely existing number for all the files.  It basically gives the maximum number of files (2^32 or 4.3 billion files) can be stored in the computer. 
+```
+df -i
+```
+* **Compress and uncompress the files or folders**
+```
+tar cvf myfiles.tar folder-name -> compress
+tar xvf myfiles.tar -> extract
+gzip myfiles.tar -> reduce the size
+gzip -d or gunzip myfiles.tar -> enhance the size
+```
+* **Combine and split files**
+```
+cat file1 file2 file 2 > file4
+split -l 300 file4 outputfile -> outputfileaa outputfileab
+```
+
 * **Notation in linux**
 ```
 Anything that starts with a '-' is a file
@@ -297,6 +352,62 @@ chmod u-s test.txt or chmod 0766 test2.txt
 ```
 chown username:groupname file
 ```
+* **grep** searches for expressions in a file
+```
+cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
+history | grep "info"
+for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
+```
+* **Truncate the files**
+```
+truncate -s 10 filename -> only the 10 character exists
+```
+
+### Mathematical expression
+* **expr** computes the given expression and displays the output <br />
+
+### VIM editor
+* **vim filename**
+* Enter **i** or **a** to go into insert mode, **A** go to insert mode at the end of line and Hit **Esc** to escape the insert mode
+* **Shift->z->z** to save the file or **:wq** to save the file. Here wq means write quit
+* **Shift->z->z**  or **:q!** to unsave the file. Here q means quit
+*  **yy** to copy a line, **p** to paste the line, **dd** line to delte the line
+* **Esc->:/search-keywords** search the keyword
+* **Esc->:100** go to line 
+* **Comment the sourcecode**
+```
+Press Ctrl and v
+Select until the line of interest
+Press Shift and i
+Add  # 
+Click esc twice
+```
+* **Uncomment the sourcecode**
+```
+Press Ctrl and V
+Select until the line of interest
+Press x
+Click esc twice
+```
+
+### Important Commands woth knowing
+* **unset** remove the variable which is set <br />
+* **vim, emacs, nano, vi** file editors in terminal
+* **finger** user info lookup command and provides details of all the users logged in. It is recommended to disable because remote login people might be able to look at all the user information.
+* **set** is used to define the value of system variables <br />
+* **export** is used the create environment variables <br />
+ ```
+ export PYTHONPATH=$(pwd):$(path2):$(path3)
+ ```
+* **PATH** This variable specifies directories for executable.
+```
+export PATH=$PATH:/home/user/dipole/bin/
+```
+* **LD_LIBRARY_PATH** This variable specifies the search paths for shared libraries. By setting the path, we will be calling the corresponding header files.
+```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64:
+```
+
 * **PID** when a command issued in a linux starts a new process, which creates a 5 digit (PID) number and it can be tracked. 
 ```
 The process id of init process is 1
@@ -321,71 +432,15 @@ sed -i 's/old/new/g' file-name
 for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
 for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do  if [ *$(grep -nr "$i" | wc -l)* == *1* ] ; then echo $i ; fi   ; done
 ```
-* **grep** searches for expressions in a file
-```
-cat output | grep "info" | awk -F'[^0-9]*' '$0=$2'
-history | grep "info"
-for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do echo $i ; grep -nr "$i"   ; done
-```
-* **diff** shows the difference between two files
-* **find** searches for file and directory iteratively
-```
-find -name filename or folder name 
-find * -perm /4000
-```
-* **locate** locates the files. It uses pre built database to find it. It provide the false info if the database is not updated.
-* **updatedb** updates the databases
 * **env** prints the environment variables
-* **cp** is used to copy the files or folder
-* **mv** moves the files or folder
-* **mkdir** creates a directory or directories Example mkdir {1..3}{1..3} creates 9 directory with all the pairs of 1 to 3.
-* **ls** lists the files or folder in the current directory
-* **pwd** diplays the absolute path of your current directory. Print Working Directory
-* **ln -s and ln** create the soft (s) and hard symbolic links. 
-```
-ln -s filename softlink
-If the original file is removed. the softfile or link will removed. Both the files have different innode and file permission
-ln filename hardlink
-Both file `filename` and hardlink file will have same permission and same innode number. If the original file is removed. still the content in hardlink can be seen.
-If the original file is modified, it will also reflected in hard link. Hard link is like copying a data but when there is a change in original file, it will updated in hardlink.
-```
-* **innode number** is a uniquely existing number for all the files.  It basically gives the maximum number of files (2^32 or 4.3 billion files) can be stored in the computer. 
-```
-df -i
-```
 * **absolute and relative path**
 ```
 abs path = /home/username/.../../document
 relative path = document/
 ```
-### Compress and uncompress the files
-```
-tar cvf myfiles.tar folder-name -> compress
-tar xvf myfiles.tar -> extract
-gzip myfiles.tar -> reduce the size
-gzip -d or gunzip myfiles.tar -> enhance the size
-```
-### Truncate the files
-```
-truncate -s 10 filename -> only the 10 character exists
-```
-### Combine and split files
-```
-cat file1 file2 file 2 > file4
-split -l 300 file4 outputfile -> outputfileaa outputfileab
-```
+
 ### Shell scripting
-* **wc** counts the character (-m), number of lines (-l), bytes (-c), maximum line length (-L) in a text file
 * **|** is used for pipes in Linux. Command 1 | Command 2 | Command 3
-* **wildcard**
-```
-* - zero or more characters Eg., ls na*n.py shows the naveen.py
-? - single character Eg., ls na?een.py shows the naveen.py
-[] - range of character Eg., ls *[zy]* shows the file that has a name with word y or z
-\ - escape character
-^ - beginning of the line
-$ - dollar sign
-```
 * **Operator**
 ```
 **Arithmetic Operators**
@@ -458,7 +513,9 @@ for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\'
 ```
 * **until**
 * **select**
-### [Networking in linux](https://doc.lagout.org/operating%20system%20/linux/Linux%20Networking%20Cookbook.pdf)
+
+
+## [Networking in linux](https://doc.lagout.org/operating%20system%20/linux/Linux%20Networking%20Cookbook.pdf)
 To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers, DNS records, ports and IP address, what do they do?
 DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss.  PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. Names (google.com) are convenient for humans and Numbers are convenient for machines. <br />
 What is the differene between IPv4 and IPv6?. <br />
@@ -540,7 +597,7 @@ ip domain name
 ````
 
 
-### File systems in linux
+## File systems in linux
 
 Filesystem is a system that manages the files in OS. OS stores files in organized way.
 
@@ -583,23 +640,7 @@ copy (paste) to terminal
 ctrl-shift-c (v)
 ```
 
-# vim editor
-* **esc+:/search-keywors** search the keyword
-* **Comment the sourcecode**
-```
-Press Ctrl and V
-Select until the line of interest
-Press Shift and I
-Add  # or Delete #
-Click esc
-```
-* **Uncomment the sourcecode**
-```
-Press Ctrl and V
-Select until the line of interest
-Press x
-Click esc
-```
+
 
 
 # My Bashrc file 
