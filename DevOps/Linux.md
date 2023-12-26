@@ -75,6 +75,7 @@ how to set SUID flag
 chmod u+s filename
 it will change -rwxrw-rw-  to -rwsrw-rw-
 ```
+* **/etc/group** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/etc/environment** file sets the variable permanently in the system. **~/.profile** is a similar file but belongs to each user. However, **/etc/profile** is a gloabl intialization file in the system. All are basically loading environmental variable. **bash_profile** file runs when login into the account. **bashrc** file runs when opening the terminal and set the variable.  
 * **/etc/systemd/system/docker.service.d/proxy.conf or http-proxy.conf** for setting proxy for  docker
@@ -119,13 +120,42 @@ vim ~/.bashrc
 alias cddata='cd $HOME/tmp/data'
 ```
 
-## Root 
+## Root and User Account Managemet
 
-User account that has access to all the commands, files, folders, and etc. 
+Root user is the powerfull user that has access to all the commands, files, folders, and etc. 
+
 * **whoami** provide the user details
 * **hostname** provide the hostname
-/ - Root directory.
-/root - Root home directory
+* **/** - Root directory.
+* **/root** - Root home directory
+* **useradd**
+```
+useradd -m testuser # m creates the home directory
+id testuser # shows whether the user exists or not
+cat /etc/passwd  # shows whether the user exists or not
+cat /etc/group # shows whether the user exists or not
+passwd testuser #to set paasswd for the new test user
+``` 
+* **groupadd**
+```
+groupadd testgroup
+cat /etc/group # shows whether the user exists or not
+``` 
+* **userdel**
+```
+userdel -r testuser # delete the user and their home directory as well
+/etc/passwd  # shows whether the user exists or not
+``` 
+* **groupdel** 
+```
+groupdel testgroup
+cat /etc/group # shows whether the user exists or not
+``` 
+* **usermod** adds user to a certain group
+```
+usermode -G testgroup testuser # adds testuser to testgroup
+chgrp -R testgroup testuser # to make the home directory of testuser to group ownership from testuser
+```  
 * **passwd userid** change the password. It will ask you for the old and new password
 * **sudo su** used for root previliges <br />
 * **adduser** adding new user
@@ -362,11 +392,27 @@ for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\'
 ```
 truncate -s 10 filename -> only the 10 character exists
 ```
+* **sed** manipulate the files
+```
+sed 's/keyword/replaceword/g' filename
+sed -i 's/keyword/replaceword/g' filename # interactive mode
+sed -i 's/keyword//g' filename # removes the keyword
+sed -i '/keyword/d' filename # deletes the line with keyword
+sed -i '/^$/d' filename # deletes the line that is empty
+sed -i '1d' filename # deletes the first line
+sed -i '2d' filename # deletes the first two line
+sed -i '1d' filename # deletes the first line
+sed -i 's/\t/ /g' filename # replaces the tab with space
+sed -n 12,18p filename # prints the line between 12 and 18
+sed  12,18d filename # prints the line except between 12 and 18
+sed  G filename # Makes empty line between lines
+sed '8!s/keyword/replaceword/g' filename # replace the keyword except 8th line
+```
 
-### Mathematical expression
+## Mathematical expression
 * **expr** computes the given expression and displays the output <br />
 
-### VIM editor
+## VIM editor
 * **vim filename**
 * Enter **i** or **a** to go into insert mode, **A** go to insert mode at the end of line and Hit **Esc** to escape the insert mode
 * **Shift->z->z** to save the file or **:wq** to save the file. Here wq means write quit
@@ -382,6 +428,13 @@ Press Shift and i
 Add  # 
 Click esc twice
 ```
+* **Copy several line**
+```
+Press Ctrl and v
+Select until the line of interest
+Press y
+Press p at the line of interest
+```
 * **Uncomment the sourcecode**
 ```
 Press Ctrl and V
@@ -389,8 +442,14 @@ Select until the line of interest
 Press x
 Click esc twice
 ```
+* **Replace keywords with new keywords**
+```
+Esc
+%s/keyword/replacekeyword/g
+Enter
+```  
 
-### Important Commands woth knowing
+## Important Commands worth knowing
 * **unset** remove the variable which is set <br />
 * **vim, emacs, nano, vi** file editors in terminal
 * **finger** user info lookup command and provides details of all the users logged in. It is recommended to disable because remote login people might be able to look at all the user information.
