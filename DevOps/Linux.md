@@ -194,6 +194,9 @@ ls /bin/*
 ### Input and Output 
 
 * **echo** prints the given string
+```
+echo -e "8\n\n" | $gmxexe/gmx_d energy -f $ensemble.edr -o $ensemble.xvg  used to enter in the promt
+```  
 * **echo "Hello" >> or > Filename.txt** prints the given string in a txt file. > overwrites the files but >> appends into txt file
 * **<** is stdin for command
 * **2> errorfile** storing the error message into an errorfile
@@ -231,6 +234,9 @@ echo "heelo worl" | awk '{$2 = "world" ; print $0}' replace the words
 awk 'length($0) > 6' test prints the words greater than length 6
 awk '{if(length($0) > 5) print $0}' test
 awk '{print NF}' test - prints the number of field
+file=../simdata/0mol/f_5_1; head -1 $file | awk '{print NF}' ; prints the number of coloumns in a file
+file=../simdata/0mol/f_5_1; head -1 $file | awk '{print NF}' ; wc $file | awk '{print $1}' prints the number of coloumns and rows in a file
+sed 1,24d nve_pulse.xvg | awk 'NR % 80 == 0' prints every 80th line
 ```
 * **grep and egrep**
 ```
