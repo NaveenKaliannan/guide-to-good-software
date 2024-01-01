@@ -77,6 +77,8 @@ it will change -rwxrw-rw-  to -rwsrw-rw-
 ```
 * **/etc/group** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
 * **/etc/shadow** is a system file or a shadow password file in Linux that stores encrypted user passwords and is accessible only to the root user
+* **/etc/login.defs** The parameter in this defaults file controls behaviour of shadow file, passwd agin controls: passwd max, min days, pass min len, pass warn age, user permission, encryption type
+* **/etc/sudoers** sudo information folder. 
 * **/etc/environment** file sets the variable permanently in the system. **~/.profile** is a similar file but belongs to each user. However, **/etc/profile** is a gloabl intialization file in the system. All are basically loading environmental variable. **bash_profile** file runs when login into the account. **bashrc** file runs when opening the terminal and set the variable.  
 * **/etc/systemd/system/docker.service.d/proxy.conf or http-proxy.conf** for setting proxy for  docker
 * **/etc/ssh/ssh_config** allow us to connect to servers with pre-configured commands
@@ -170,6 +172,14 @@ group newuser
 su - newuser
 sudo ls /root
 ```
+* **change** per user can change the /etc/login.defs paramertes for a specific user. The change will be refected in **/etc/shadow** file
+* **su username** switch to username
+* **sudo su** to become a root
+* **visudo** can help to get permission to commands that only root has access.
+* **who** login information
+* **last** last login information
+* **finger** gives details of all the users who are logged in
+* **id** user ID
 
 ## Shell commands
 
