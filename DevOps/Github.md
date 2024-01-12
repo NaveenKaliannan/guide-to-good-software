@@ -160,6 +160,16 @@ temp/
 *.xyz
 !test.xyz
 ```
+How to add empty directories to a Git repository?
+```
+.gitkeep
+```
+**.gitattributes** -  Git saves the file or folder according to the attributes specified. 
+It has structure of pattern attr1 attr2 .. inside the file
+```
+*.json eol=lf # line endings can be configured
+*.txt filter=indent # filters the indent of the text file
+```
 To see the git root directory or branch hsa values 
 ```
 git rev-parse --show-toplevel
