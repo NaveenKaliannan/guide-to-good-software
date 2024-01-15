@@ -8,9 +8,12 @@ Run and compile programs professionally.
 ## Structure of Makefile
 Create a file with a name **Makefile** with the below struture:
 ```
+variable = 1
+
 target: prerequisites
 <TAB>command
 ```
+* **variable** is always string and defined at the start of the file. **make -p** gives the pre defined variable and it can be updated in our makefile as well.
 * **target** 
 * **prerequisites**
 * **command or operation that we want to perform**
@@ -45,3 +48,17 @@ clean:
 	rm -f main_exe *.o
 ```
 * **make** will run the **build** target. Since the build's prerequisites contains two object files, the target **main1.o** and **main1.o** will be running first. 
+### Example 3
+Make variables (make -p) can be used directly instead of explicity defining exisiting variables
+```
+build:
+	$(CXX) main.cc -o main_exe
+
+run:
+	./main_exe
+
+clean:
+	rm -f main_exe
+```
+We can overwrite the existing variable via the command line: **make CXX=g++ -std=c++11**
+
