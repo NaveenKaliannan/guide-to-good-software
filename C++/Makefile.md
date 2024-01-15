@@ -2,7 +2,10 @@
 
 Run and compile programs professionally.
 
-### Structure of Makefile
+## make
+**make** is a command that calls the **Makefile** file. 
+
+## Structure of Makefile
 Create a file with a name **Makefile** with the below struture:
 ```
 target: prerequisites
@@ -10,5 +13,23 @@ target: prerequisites
 ```
 * **target** 
 * **prerequisites**
-* **command**
+* **command or operation that we want to perform**
+
+## Examples
+### Example 1
+```
+build:
+	g++ main.cc -o main_exe
+
+run:
+	./main_exe
+
+clean:
+	rm -f main_exe
+```
+* **make** will run the **exe** target. **By default, the make will run the first target in the makefile**
+* **make exe** will run the **exe** target
+* **make build** will run the **build** target
+* **make clean** will run the **clean** target
+
 
