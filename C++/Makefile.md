@@ -27,9 +27,21 @@ run:
 clean:
 	rm -f main_exe
 ```
-* **make** will run the **exe** target. **By default, the make will run the first target in the makefile**
+* **make** will run the **build** target. **By default, the make will run the first target in the makefile**
 * **make exe** will run the **exe** target
 * **make build** will run the **build** target
 * **make clean** will run the **clean** target
-
-
+### Example 2
+```
+build: main1.o main2.o
+	g++ main1.o main2.o -o main_exe
+main1.o: 
+	g++ main1.cc -c main1.o
+main2.o: 
+	g++ main2.cc -c main2.o
+run:
+	./main_exe
+clean:
+	rm -f main_exe *.o
+```
+* **make** will run the **build** target. Since the build's prerequisites contains two object files, the target **main1.o** and **main1.o** will be running first. 
