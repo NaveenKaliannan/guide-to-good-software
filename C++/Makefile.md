@@ -12,12 +12,21 @@ variable = 1
 
 target: prerequisites
 <TAB>command
+
+.PHONY: target1 target2 ...
 ```
-* **variable** is always string and defined at the start of the file. **make -p** gives the pre defined variable and it can be updated in our makefile as well.
 * **target** 
 * **prerequisites**
 * **command or operation that we want to perform**
+* **variable** is always string and defined at the start of the file. **make -p** gives the pre defined variable and it can be updated in our makefile as well.
+```
+SOURCE_DIR=src
+INCLUDE_DIR=include
+CPPFLAGS= -I $(INCLUDE_DIR) #It tells the src files to where look for include header files
 
+variable ?= "mystring" # sets mystring only if the if it is not earlier somewhere. 
+```
+* **PHONY** contains all the target name that will be build or executed every time when make is run, even if the source files are not edited. Otherwise executable is upto-date will be displayed. 
 ## Examples
 ### Example 1
 ```
@@ -61,4 +70,38 @@ clean:
 	rm -f main_exe
 ```
 We can overwrite the existing variable via the command line: **make CXX=g++ -std=c++11**
+
+## Role of WildCards in Writing make files  
+
+Wildcards are special characters that represents other characters.
+
+Wild cards make life easier by stopping the repitation of command lines for each cc files.
+```
+$@: filename of the target
+$<: evaluates the first prerequisites 
+$^: evaluates all prerequisites
+$%:
+$?: 
+$+: 
+$*:
+SOURCE_FILES=$(wildcard *.cc) : gives the files with cc extension
+$(patsubst %.cc, %.o, $(SOURCE_FILES)) : gives the object files with names of all cc files
+
+%.o:%.c
+	g++ -c $^ -o $@
+
+create:
+	@mkdir -p build   #@ is added so the console output will be not visible
+```
+
+## loops
+
+# if conditions
+```
+ifeq($(variable),1)
+statement
+else
+statement
+endif
+```
 
