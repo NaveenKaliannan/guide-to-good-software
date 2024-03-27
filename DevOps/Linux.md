@@ -526,6 +526,7 @@ csh and tcsh
 ksh
 ```
 * **shellscript** is an executble file. The commands are executed one by one. First line should contain shell or shebang #!/bin/bash an interpreter used to execute the commands in shell script.
+* **read variable-name** reads the input and stores it in the variable
 * **|** is used for pipes in Linux. Command 1 | Command 2 | Command 3
 * **Operator**
 ```
@@ -597,9 +598,12 @@ file=/etc/passwd
 if  test -e $file ; then while IFS=: read -r user enpass uid gid desc home shell ; do [ $uid -ge 500 ] && echo "User $user ($uid) assigned \"$home\" home directory with $shell shell." ; done < "$file" ; fi
 for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\''//'  ); do  if [ *$(grep -nr "$i" | wc -l)* == *1* ] ; then echo $i ; fi   ; done
 ```
+* **case**
+```
+
+```  
 * **until**
 * **select**
-
 
 ## [Networking in linux](https://doc.lagout.org/operating%20system%20/linux/Linux%20Networking%20Cookbook.pdf)
 To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers, DNS records, ports and IP address, what do they do?
