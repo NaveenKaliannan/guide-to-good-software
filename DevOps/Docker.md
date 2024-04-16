@@ -54,6 +54,12 @@ https://docs.docker.com/engine/install/ubuntu/
 1. **docker** file handles single containers, while the **docker-compose** file handles multiple container applications
 2. **Dockerfile** is a text file that contains instruction to build the docker image.
 ```
+FROM python:3.6-slim
+COPY . /opt/
+WORKDIR /opt
+RUN pip install flask
+EXPOSE 8080
+ENTRYPOINT ["python", "pythonfile.py"]
 ``` 
 ******************************
 
@@ -63,11 +69,19 @@ with Docker, No need for any installation. Has its own operating layer. No envir
 Container is made up of images. The base is Linux Base image (Alpine or linux distributions). The top is application image.
 
 
-## How to build a Docker image (template) and run Docker containers (running instance)
+### How to build a Docker image (template) and run Docker containers (running instance)
 
-Create a docker file with name "Dockerfile"
+* Create a docker file with name "Dockerfile" and add all the necessary commands
 ```
 touch Dockerfile
 touch requirement.txt
 pip install -r requirements. txt
 ```
+* **docker build . -t dockerimagename** builds the image with given name. Note that the Dockerfile with commands should be available in the same folder where this commands get executed. 
+* **docker run imagename cat /etc/*release*** gives the base image.
+* **docker run -e ENVIRONMENTAL_VARIABLE=input imagename** passes the environmental variable. The variable name can be **docker inspect containerID | grep "environmental variable"**
+* **docker run --name containername -e enviornmentalvariable=value -p hostportnumber:containerportnumber  imagename**
+* **docker image history imagename** provides the information of image
+* Difference between **ENTRYPOINT** and **CMD** in a Dockerfile is how they interact with the Docker run command.
+* **ENTRYPOINT** Defines the executable that will be run when the container starts. The **ENTRYPOINT** command cannot be overridden by the Docker run command. Any arguments passed to the Docker run command will be appended to the **ENTRYPOINT** command. The **ENTRYPOINT** command is the primary entry point for executing the container.
+* **CMD** Defines the default command and/or parameters that will be used if no command is specified when starting the container. The **CMD** command can be completely overridden by providing arguments to the Docker run command. The **CMD** command is used as the default command when none is specified, but it can be overridden.
