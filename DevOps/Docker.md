@@ -54,14 +54,16 @@ https://docs.docker.com/engine/install/ubuntu/
 
 ### Working with private docker registry
 The structure of docker reposity is as follows: **dockerregistry/username/imagereposityname**. Dockerhub (docker.io) is the default registry and it public. google registry is gcr.io
+* **How to start a registry?** It can be achieved via the following command **docker run -d -p 5000:5000 --restart=always --name registry registry:2** Start a local Docker registry on port 5000
 ******************************
-* **docker login dockerregistryname.io** logs into the private docker registry
-* **docker run dockerregistry/username/imagereposityname** runs the private docker container
-* **docker run -d -p dockerhostportnumber:dockercontainerportnumber -name registry registry:2** 
-* **docker image tag imagename localhost:5000/myimagename**
-* **docker push localhost:5000/myimagename**
-* **docker pull localhost:5000/myimagename**
-* **docker pull dockeripaddress:5000/myimagename**
+* **docker run -d -p 5000:5000 --restart=always --name registry registry:2* Start a local Docker registry on port 5000. 
+* **docker pull ubuntu:latest* Pull the latest Ubuntu image from the default Docker Hub registry. 
+* **docker image tag ubuntu:latest localhost:5000/gfg-image* Tag the Ubuntu image for the local registry.
+* **docker image tag ubuntu:latest dockerregistry/username/imagereposityname* Tag the Ubuntu image for the cloud registry.  Example:  docker tag local-image gcr.io/my-project/my-image:v1
+* **docker push localhost:5000/gfg-image* Push the tagged image to the local registry.
+* **docker push dockerregistry/username/imagereposityname* Push the tagged image to the cloud registry. Example:  docker push gcr.io/my-project/my-image:v1
+* **docker pull localhost:5000/gfg-image* Pull the image from the local registry. 
+* **docker container stop registry* Stop the local Docker registry. 
 ******************************
 
 
