@@ -19,8 +19,12 @@ https://docs.docker.com/engine/install/ubuntu/
 4. **Docker compose**
 5. **Docker registry** is cloud where all the docker images are stored. The docker reistry is quite similar to the github where the website/useraccount/reposityname is used to pull repository. For private docker registry, **docker login registry.io** needs to be performed, and then run  **docker run registry.io/useraccount/dockercontainername** . Note that the docker registry is an another application and it is a docker image, exposes API on port 5000. docker access structure dockerregistry/username/imagereposityname. Dockerhub (docker.io) is default registry and it is public
 6. However, new **Docker image** can also be created from a running container. It can be created via **docker commit container-info**
-7. **Docker engine** is a software that creates and runs containers, as well as interact with the host OS. It consists of docker CLI (user interface),  API (for communication), Daemon (for processing the commands from docker client)
-8. **Docker host** is a server or machine in which docker runs.
+7. **Docker host** is a server or machine in which docker runs.
+8. **Docker Engine** is a software that creates and runs containers, as well as interacts with the host OS. When installing Docker on Linux, you are essentially installing:
+Docker CLI (command line interface, user interface)
+Docker API (for communication between the Docker client and the Docker daemon)
+Docker Daemon (a background process that processes commands from the Docker client, and manages images, containers, volumes, and networks)
+The Docker CLI can be installed on a different machine or host and can be connected to a remote Docker Engine using the -H or --host flag, like docker -H=remote-docker-engine:port command. This allows you to manage a remote Docker Engine from a different machine.
 9. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
 10. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address (192.186.1.5) and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
 11. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
