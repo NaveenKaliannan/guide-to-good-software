@@ -15,13 +15,15 @@ https://docs.docker.com/engine/install/ubuntu/
 ### Docker Terminology 
 ******************************
 1. **Docker image** is read only templates and contains all dependencies and information to build and run a docker container. In simpler words, it is just a package.
-3. **Docker container** is a runtime instance of a Docker image and an isolated environment, has own processes, interfaces, mounts. It can be realized via **docker run docker-image-name**. Docker container doesnt have the OS within it. It borrows the OS from the host machine and share the host kernel with other containers. In the case of VM, each VM has its own OS. Containers are portable. Docker uses Linux containers (LXC). Note that the windows based docker container cannot be run on linux OS. 
-4. However, new **Docker image** can also be created from a running container. It can be created via **docker commit container-info**
-5. **Docker engine** is a software that creates and runs containers, as well as interact with the host OS. It consists of docker CLI (user interface),  API (for communication), Daemon (for processing the commands from docker client)
-6. **Docker host** is a server or machine in which docker runs.
-7. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
-8. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address (192.186.1.5) and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
-9. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
+3. **Docker container** is a runtime instance of a Docker image and an isolated environment, has own processes, interfaces, mounts. It can be realized via **docker run docker-image-name**. Docker container doesnt have the OS within it. It borrows the OS from the host machine and share the host kernel with other containers. In the case of VM, each VM has its own OS. Containers are portable. Docker uses Linux containers (LXC). Note that the windows based docker container cannot be run on linux OS.
+4. **Docker compose**
+5. **Docker registry** is cloud where all the docker images are stored. The docker reistry is quite similar to the github where the website/useraccount/reposityname is used to pull repository. For private docker registry, **docker login registry.io** needs to be performed, and then run  **docker run registry.io/useraccount/dockercontainername** . Note that the docker registry is an another application and it is a docker image, exposes API on port 5000. docker access structure dockerregistry/username/imagereposityname. Dockerhub (docker.io) is default registry and it is public
+6. However, new **Docker image** can also be created from a running container. It can be created via **docker commit container-info**
+7. **Docker engine** is a software that creates and runs containers, as well as interact with the host OS. It consists of docker CLI (user interface),  API (for communication), Daemon (for processing the commands from docker client)
+8. **Docker host** is a server or machine in which docker runs.
+9. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
+10. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address (192.186.1.5) and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
+11. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
 ******************************
 
 ### Docker commands 
@@ -47,7 +49,21 @@ https://docs.docker.com/engine/install/ubuntu/
 * **docker logs container-ID**
 * **docker start container-ID**
 * **docker network ls**
+* **doceker push** to push the image to docker cloud.
 ******************************
+
+### Working with private docker registry
+The structure of docker reposity is as follows: **dockerregistry/username/imagereposityname**. Dockerhub (docker.io) is the default registry and it public. google registry is gcr.io
+******************************
+* **docker login dockerregistryname.io** logs into the private docker registry
+* **docker run dockerregistry/username/imagereposityname** runs the private docker container
+* **docker run -d -p dockerhostportnumber:dockercontainerportnumber -name registry registry:2** 
+* **docker image tag imagename localhost:5000/myimagename**
+* **docker push localhost:5000/myimagename**
+* **docker pull localhost:5000/myimagename**
+* **docker pull dockeripaddress:5000/myimagename**
+******************************
+
 
 ### Important Docker Files You Should Know About
 ******************************
@@ -85,3 +101,5 @@ pip install -r requirements. txt
 * Difference between **ENTRYPOINT** and **CMD** in a Dockerfile is how they interact with the Docker run command.
 * **ENTRYPOINT** Defines the executable that will be run when the container starts. The **ENTRYPOINT** command cannot be overridden by the Docker run command. Any arguments passed to the Docker run command will be appended to the **ENTRYPOINT** command. The **ENTRYPOINT** command is the primary entry point for executing the container.
 * **CMD** Defines the default command and/or parameters that will be used if no command is specified when starting the container. The **CMD** command can be completely overridden by providing arguments to the Docker run command. The **CMD** command is used as the default command when none is specified, but it can be overridden.
+* **docker run -d -p 5000:5000 -name my-registry --restart=always registry:2** Runs a registry server with name equals to my-registry using registry:2 image with host port set to 5000, and restart policy set to always.
+* **docker image tag nginx:latest localhost:5000/nginx:latest** tags the image with a target name. **docker push localhost:5000/nginx:latest** pushes the target image to registry.
