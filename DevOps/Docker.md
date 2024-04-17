@@ -24,6 +24,7 @@ https://docs.docker.com/engine/install/ubuntu/
 9. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
 10. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address (192.186.1.5) and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
 11. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
+12. **docker port mapping** Accessing Container Services: By mapping a host port to a container port, you can access services running inside the container from the host machine. For example, if you have a web server running on port 80 in the container, you can access it by connecting to localhost:80 on the host
 ******************************
 
 ### Docker commands 
@@ -50,6 +51,7 @@ https://docs.docker.com/engine/install/ubuntu/
 * **docker start container-ID**
 * **docker network ls**
 * **doceker push** to push the image to docker cloud.
+* **docker run --link source_container:alias runningcontainer** links the "example" container to the running container, and the running container would be able to access the "example" container using the alias "examplealias
 ******************************
 
 ### Working with private docker registry
@@ -69,7 +71,7 @@ The structure of docker reposity is as follows: **dockerregistry/username/imager
 
 ### Important Docker Files You Should Know About
 ******************************
-1. **docker** file handles single containers, while the **docker-compose** file handles multiple container applications
+1. **Dockerfile** file handles single containers, while the **docker-compose.yaml** file handles multiple container applications
 2. **Dockerfile** is a text file that contains instruction to build the docker image.
 ```
 FROM python:3.6-slim
@@ -78,13 +80,38 @@ WORKDIR /opt
 RUN pip install flask
 EXPOSE 8080
 ENTRYPOINT ["python", "pythonfile.py"]
-``` 
-******************************
+```
+3. **docker compose yaml file format**
+Docker Compose will first read the configuration file, then build the images (if necessary), and finally run the containers based on the specified configuration.
+In the Compose file, the key is the service name, and the value is the configuration for that service, which includes the image name, build instructions, ports, links, and other settings.
+The version field is a top-level element in the Compose file that specifies the version of the Compose file format being used.
+The services field defines the different services (containers) that make up the application.
+```
+version: '2'
+
+services:
+
+  containernameexample:
+    image: imagename
+
+  containername:
+    build: ./exe
+    image: imagename
+    environment:
+      USER:blau
+      PASSWORD:blau
+      VARIABLE:blau
+    ports:
+      - hostportnumber:containerportnumber
+    depends_on:
+      - containernameexample
+```
 
 without Docker- Every body has to install or compile all dependencies to run a source code in local environment. Artifacts with requirements.txt file
 with Docker, No need for any installation. Has its own operating layer. No environemnt configuraion
-
 Container is made up of images. The base is Linux Base image (Alpine or linux distributions). The top is application image.
+******************************
+* **docker-compose up** command runs the docker compose yaml file
 
 
 ### How to build a Docker image (template) and run Docker containers (running instance)
