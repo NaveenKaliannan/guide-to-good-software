@@ -7,9 +7,55 @@
 3. **Docker** virualizae application layer and borrows the OS kernel from host machine. Docker occupys less space compared to VM becuase it doesnt virtualize OS kernel. The other advantages are: Faster boot time, Easy to scale up, Reproduciability, compatability/dependenceies, no need to set up environment, Developer and tester can run the same code and get the same results even thought the machines are different. The application that we build we will always have same dependencies and easy to ship the application. With docker, each component or application can be run with specific dependecies/librarie with seperate container. The goal of the docker is to package an application, containerize the application and ship them  and run anytime/anywhere. Docker is to run a specific tasks, once the tasks is completed, the container exists but always lives until removed **docker rm container-id**. 
 ******************************
 
-### Docker Installation 
+## Docker Installation 
 ******************************
 https://docs.docker.com/engine/install/ubuntu/
+* **docker info** displays all the information about docker installation, configuration and networking.
+******************************
+
+## Docker commands 
+
+### Docker Image house keeping and running
+******************************
+* **docker image ls** lists all the docker images in local machine
+* **docker pull software-name:version** pulls the docker image of the software for the given version Example python:latest
+* **docker rmi -f hello-world** removes the docker images forcefully (**-f**). **docker images | sed '1d' | awk '{print $3}' | xargs docker rmi** deletes all the images. 
+* **docker image rm -f IMAGEID** remove the docker images forcefully (**-f**)
+* **docker images | sed '1d' | awk '{print {$1}} | xargs docker rmi -f'** removes all the images.
+* **docker build . -t dockerimagename**
+* **docker build -f dockerfile.prod**
+* **docker inspect imagename** returns all the information about docker runs including volume, state information, network information, metadata.
+* **doceker push** to push the image to docker cloud or local registry.
+* **docker run -d -p 5000:5000 -name my-registry --restart=always registry:2** Runs a registry server with name equals to my-registry using registry:2 image with host port set to 5000, and restart policy set to always.
+* **docker image tag nginx:latest localhost:5000/nginx:latest** tags the image with a target name. **docker push localhost:5000/nginx:latest** pushes the target image to registry.
+* **docker image history imagename** provides the information of image
+* **docker export imageid  > export.tar** exports the docker container. **cat export.tar | docker import - layer:1** imports the imageid.
+* **Reducing the image size** can be done by replacing the **apk install** with **apk add**. In addition, reducing instructions, optimized libraries, and etc.
+* **Multi stage image build** several images are build on single dockerfile. Each images depend on one another. 
+ ******************************
+
+### Container house keeping and running commands
+******************************
+* **docker ps** or **docker ps -a** lists the running containers or **-a** the records of running containers and previous runs. It displays container IDs, status, ports and etc.
+* **docker run software-name** takes a default (latest tag or version) docker image and creates a new container, run the container. 
+* **docker run software-name:version** takes a docker image and creates a new container, run the container. Version is also called as tag.
+* **docker run -it software-name:version** runs the container in both interactive and terminal modes. **-it** allows one to login to the container.
+* **docker run -p dockerhostportnumber:dockercotainerportnumber software-name:version** runs the container in specified ports.
+* **docker run -d software-name** runs the container in background. To bring it to the front end, **docker attach ContainerID**
+* **docker run -d -v hostvolume:dockervolume --name containername -e enviornmentalvariable=value -p hostportnumber:containerportnumber  imagename**
+* **docker run --link source_container:alias runningcontainer** links the "example" container to the running container, and the running container would be able to access the "example" container using the alias "examplealias
+* **docker run imagename cat /etc/*release*** gives the base image.
+* **docker run -e ENVIRONMENTAL_VARIABLE=input imagename** passes the environmental variable. The variable name can be **docker inspect containerID | grep "environmental variable"**
+* **docker run --name containername -e enviornmentalvariable=value -p hostportnumber:containerportnumber  imagename** 
+* **docker start container-ID** 
+* **docker stop containerName** stops the running containers
+* **docker rm containerID** removes the docker container.
+* **docker ps | sed '1d' | awk '{print {$1}}' | xargs docker rm** removes all the running containers. 
+* **docker logs container-ID**
+* **docker exec** executes a command on the running container, whereas **docker run** just creates a container, runs it and stop when done.
+* **docker exec container-ID cat /etc/hosts** shows the contents of /etc/hosts file.
+* **docker exec -it container-ID /bin/bash** shows the virutal file system inside a container
+* **docker exec containerID ps -eaf** to see the PIDs in container. **top** or **ps -eaf | grep "containername"** to see the PIDs in the linux. With namespace, multuple processes IDs are given to same process IDs.
 ******************************
 
 ### Docker Terminology 
@@ -64,34 +110,7 @@ when docker is installed, bridge, none and host networks are created.
 *  **docker network create --driver bridge --subnet 182.18.0.1/24 --gateway 182.18.0.1 wp-mysql-network** creates a new network named wp-mysql-network using the bridge driver, with a subnet of 182.18.0.1/24 and a gateway of 182.18.0.1.
 *  **docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=db_pass123 --network wp-mysql-network  mysql:5.6** creates a new container named mysql-db using the mysql:5.6 image, sets the MYSQL_ROOT_PASSWORD environment variable to db_pass123, and attaches the container to the wp-mysql-network network
 *  **docker run --network=wp-mysql-network -e DB_Host=mysql-db -e DB_Password=db_pass123 -p 38080:8080 --name webapp --link mysql-db:mysql-db -d kodekloud/simple-webapp-mysql** The docker run command creates a new container named webapp using the kodekloud/simple-webapp-mysql image, sets the DB_Host environment variable to mysql-db and the DB_Password environment variable to db_pass123, maps port 38080 on the host to port 8080 in the container, links the webapp container to the mysql-db container, and runs the container in detached mode (-d). The container is attached to the wp-mysql-network network, allowing it to communicate with the mysql-db container.
-******************************
-
-### Docker commands 
-******************************
-* **docker info** displays all the information about docker installation, configuration and networking.
-* **docker pull software-name:version** pulls the docker image of the software for the given version Example python:latest
-* **docker image ls** lists all the docker images in local machine
-* **docker rm containerID** removes the docker container.
-* **docker rmi -f hello-world** removes the docker images forcefully (**-f**). **docker images | sed '1d' | awk '{print $3}' | xargs docker rmi** deletes all the images. 
-* **docker image rm -f IMAGEID** remove the docker images forcefully (**-f**)
-* **docker ps** or **docker ps -a** lists the running containers or **-a** the records of running containers and previous runs. It displays container IDs, status, ports and etc.
-* **docker stop Name** stops the running containers
-* **docker run software-name** takes a default (latest tag or version) docker image and creates a new container, run the container. 
-* **docker run software-name:version** takes a docker image and creates a new container, run the container. Version is also called as tag.
-* **docker run -it software-name:version** runs the container in both interactive and terminal modes. **-it** allows one to login to the container.
-* **docker run -p dockerhostportnumber:dockercotainerportnumber software-name:version** runs the container in specified ports.
-* **docker run -d software-name** runs the container in background. To bring it to the front end, **docker attach ContainerID**
-* **docker exec** executes a command on the running container, whereas **docker run** just creates a container, runs it and stop when done.
-* **docker exec container-ID cat /etc/hosts** shows the contents of /etc/hosts file.
-* **docker exec -it container-ID /bin/bash** shows the virutal file system inside a container
-* **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
-* **docker inspect image-name** returns all the information about docker runs including volume, state information, network information, metadata.
-* **docker logs container-ID**
-* **docker start container-ID**
-* **docker network ls**
-* **doceker push** to push the image to docker cloud.
-* **docker run --link source_container:alias runningcontainer** links the "example" container to the running container, and the running container would be able to access the "example" container using the alias "examplealias
-* **docker exec containerID ps -eaf** to see the PIDs in container. **top** or **ps -eaf | grep "containername"** to see the PIDs in the linux. With namespace, multuple processes IDs are given to same process IDs.
+* **docker network ls**  
 ******************************
 
 ### Working with private docker registry
@@ -112,6 +131,20 @@ The structure of docker reposity is as follows: **dockerregistry/username/imager
 ### Important Docker Files You Should Know About
 ******************************
 1. **Dockerfile** file handles single containers, while the **docker-compose.yaml** file handles multiple container applications
+* Create a docker file with name **Dockerfile** and add all the necessary commands
+```
+touch Dockerfile
+touch requirement.txt
+pip install -r requirements. txt
+copy the source code
+```
+* **docker build . -t dockerimagename** builds the image with given name. Note that the Dockerfile with commands should be available in the same folder where this commands get executed. 
+* Difference between **ENTRYPOINT** and **CMD** in a Dockerfile is how they interact with the Docker run command.
+* **EXPOSE** expose the port.
+* **COPY** simply copies files or directories from the host machine to the Docker image. **ADD** has additional functionality beyond just copying - it can also download files from remote URLs and automatically extract compressed archives
+* **RUN** executes when building the image. ENTRYPOINT and CMD gets executed when the container runs. Each RUN instruction creates a new layer. Connect all the RUN instructions via &&.
+* **ENTRYPOINT** Defines the executable that will be run when the container starts. The **ENTRYPOINT** command cannot be overridden by the Docker run command. Any arguments passed to the Docker run command will be appended to the **ENTRYPOINT** command. The **ENTRYPOINT** command is the primary entry point for executing the container.
+* **CMD** Defines the default command and/or parameters that will be used if no command is specified when starting the container. The **CMD** command can be completely overridden by providing arguments to the Docker run command. The **CMD** command is used as the default command when none is specified, but it can be overridden.
 2. **Dockerfile** is a text file that contains instruction to build the docker image.
 ```
 FROM python:3.6-slim
@@ -146,44 +179,14 @@ services:
     depends_on:
       - containernameexample
 ```
-
 without Docker- Every body has to install or compile all dependencies to run a source code in local environment. Artifacts with requirements.txt file
 with Docker, No need for any installation. Has its own operating layer. No environemnt configuraion
 Container is made up of images. The base is Linux Base image (Alpine or linux distributions). The top is application image.
 ******************************
 * **docker-compose up** command runs the docker compose yaml file
+* **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
 
 
-### How to build a Docker image (template) and run Docker containers (running instance)
-******************************
-
-* Create a docker file with name "Dockerfile" and add all the necessary commands
-```
-touch Dockerfile
-touch requirement.txt
-pip install -r requirements. txt
-```
-* **docker build . -t dockerimagename** builds the image with given name. Note that the Dockerfile with commands should be available in the same folder where this commands get executed. 
-* **docker run imagename cat /etc/*release*** gives the base image.
-* **docker run -e ENVIRONMENTAL_VARIABLE=input imagename** passes the environmental variable. The variable name can be **docker inspect containerID | grep "environmental variable"**
-* **docker run --name containername -e enviornmentalvariable=value -p hostportnumber:containerportnumber  imagename**
-* **docker image history imagename** provides the information of image
-* Difference between **ENTRYPOINT** and **CMD** in a Dockerfile is how they interact with the Docker run command.
-* **ENTRYPOINT** Defines the executable that will be run when the container starts. The **ENTRYPOINT** command cannot be overridden by the Docker run command. Any arguments passed to the Docker run command will be appended to the **ENTRYPOINT** command. The **ENTRYPOINT** command is the primary entry point for executing the container.
-* **CMD** Defines the default command and/or parameters that will be used if no command is specified when starting the container. The **CMD** command can be completely overridden by providing arguments to the Docker run command. The **CMD** command is used as the default command when none is specified, but it can be overridden.
-* **docker run -d -p 5000:5000 -name my-registry --restart=always registry:2** Runs a registry server with name equals to my-registry using registry:2 image with host port set to 5000, and restart policy set to always.
-* **docker image tag nginx:latest localhost:5000/nginx:latest** tags the image with a target name. **docker push localhost:5000/nginx:latest** pushes the target image to registry.
-******************************
-
-### Build image with tag
-******************************
-* **docker build . -t dockerimagename**
-******************************
-
-### Run container with given name
-******************************
-* **docker run -d -v hostvolume:dockervolume --name containername -e enviornmentalvariable=value -p hostportnumber:containerportnumber  imagename**
-******************************
 
 ### orchestration
 * kubernetes, docker swarm, container orchestration for running multiple containers and monitoring them.
