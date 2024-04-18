@@ -25,10 +25,45 @@ Docker CLI (command line interface, user interface)
 Docker API (for communication between the Docker client and the Docker daemon)
 Docker Daemon (a background process that processes commands from the Docker client, and manages images, containers, volumes, and networks)
 The Docker CLI can be installed on a different machine or host and can be connected to a remote Docker Engine using the -H or --host flag, like docker -H=remote-docker-engine:port command. This allows you to manage a remote Docker Engine from a different machine.
-9. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
-10. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address (192.186.1.5) and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
-11. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
-12. **docker port mapping** Accessing Container Services: By mapping a host port to a container port, you can access services running inside the container from the host machine. For example, if you have a web server running on port 80 in the container, you can access it by connecting to localhost:80 on the host
+9. **namespace** the namespace PID of a process inside a Docker container can be determined by looking at the /proc/<pid>/status file on the host, where <pid> is the global PID of the container process. This mapping between namespace and global PIDs is an important concept for understanding how Docker containers isolate their processes. Processes running inside a Docker container have their PIDs isolated within the container's namespace. This means the PID of a process inside the container may be different from its PID on the host.
+To find the mapping between the namespace PID and the global PID on the host, you can look at the /proc/<pid>/status file on the host. The NSpid line will show the namespace PID. 
+For example, if you have a sleep 900 process running in a Docker container, you can find its namespace PID by looking at the NSpid line in the /proc/<pid>/status file on the host, where <pid> is the global PID of the Docker container process. 
+This allows you to debug processes inside the container using tools only available on the host, like strace, by mapping the namespace PID to the global PID. 
+The docker inspect --format '{{.State.Pid}}' container command can also be used to get the global PID of the container process on the host. 
+Linux namespaces, including the PID namespace, are a key feature that allows Docker containers to isolate their processes from the host and each other.
+10. How process ID is assigned. PID in linux and PID in containers are different and has own IDs.  
+11. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
+12. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address (192.186.1.5) and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
+13. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
+14. **docker port mapping** Accessing Container Services: By mapping a host port to a container port, you can access services running inside the container from the host machine. For example, if you have a web server running on port 80 in the container, you can access it by connecting to localhost:80 on the host
+15. Docker uses control group to manage the resources.
+******************************
+
+### Docker storage and File systems
+******************************
+when docker is installed the directory **/var/lib/docker** gets created. It contains **aufs, image, container, volumes, plugins and etc**. The cache data available in docker staorage is used to create all the layers in docker build. aufs folder stores the information about the docker image and container layers.
+
+Image layer is always read only. Contaienr only is read and write. 
+
+* **docker volume create mydata** creates a folder in data. mydata folder is inside  /var/lib/docker/volumes. all the data generated from docker run will stored in this folder rather than the default folder created by docker contaienr name. The data will be available even when the container is deleted. Docker volumes are the recommended option for persisting data in Docker containers, as they are managed by Docker and provide better performance.
+* Bind mounts  **docker run -v /home/naveenk/mydata:/var/lib/mysql mysql** or **docker run --mount type==bind,source=/home/naveenk/mydata,target=/var/lib/mysql mysql**  offer more flexibility by allowing you to directly access the host's filesystem 
+* **docker run -v mydata:/var/lib/mysql mysql** stores all the data in mydata folder.
+* **docker system df** or **docker system df -v** to see the memory used by images inside docker
+******************************
+
+### Docker networking
+******************************
+when docker is installed, bridge, none and host networks are created.
+* **bridge** network is achieved by default when **docker run containername** is executed. It is a private network, and series is around in the series 172.17..
+* **none** network is achieved when specifing **docker run containername --network==none** is executed. Not attached to any network and not accessible to outside world. 
+* **host** network is achieved when specifing **docker run containername --network==host** is executed
+* **docker network create --driver bridge --subnet ipaddress custom-isolated-network** creates own bridge network.
+*  **docker network ls** lists all the network
+*  **docker inspect containername or imagename**
+*  **docker network inspect bridge**
+*  **docker network create --driver bridge --subnet 182.18.0.1/24 --gateway 182.18.0.1 wp-mysql-network** creates a new network named wp-mysql-network using the bridge driver, with a subnet of 182.18.0.1/24 and a gateway of 182.18.0.1.
+*  **docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=db_pass123 --network wp-mysql-network  mysql:5.6** creates a new container named mysql-db using the mysql:5.6 image, sets the MYSQL_ROOT_PASSWORD environment variable to db_pass123, and attaches the container to the wp-mysql-network network
+*  **docker run --network=wp-mysql-network -e DB_Host=mysql-db -e DB_Password=db_pass123 -p 38080:8080 --name webapp --link mysql-db:mysql-db -d kodekloud/simple-webapp-mysql** The docker run command creates a new container named webapp using the kodekloud/simple-webapp-mysql image, sets the DB_Host environment variable to mysql-db and the DB_Password environment variable to db_pass123, maps port 38080 on the host to port 8080 in the container, links the webapp container to the mysql-db container, and runs the container in detached mode (-d). The container is attached to the wp-mysql-network network, allowing it to communicate with the mysql-db container.
 ******************************
 
 ### Docker commands 
@@ -56,6 +91,7 @@ The Docker CLI can be installed on a different machine or host and can be connec
 * **docker network ls**
 * **doceker push** to push the image to docker cloud.
 * **docker run --link source_container:alias runningcontainer** links the "example" container to the running container, and the running container would be able to access the "example" container using the alias "examplealias
+* **docker exec containerID ps -eaf** to see the PIDs in container. **top** or **ps -eaf | grep "containername"** to see the PIDs in the linux. With namespace, multuple processes IDs are given to same process IDs.
 ******************************
 
 ### Working with private docker registry
@@ -119,6 +155,7 @@ Container is made up of images. The base is Linux Base image (Alpine or linux di
 
 
 ### How to build a Docker image (template) and run Docker containers (running instance)
+******************************
 
 * Create a docker file with name "Dockerfile" and add all the necessary commands
 ```
@@ -136,3 +173,20 @@ pip install -r requirements. txt
 * **CMD** Defines the default command and/or parameters that will be used if no command is specified when starting the container. The **CMD** command can be completely overridden by providing arguments to the Docker run command. The **CMD** command is used as the default command when none is specified, but it can be overridden.
 * **docker run -d -p 5000:5000 -name my-registry --restart=always registry:2** Runs a registry server with name equals to my-registry using registry:2 image with host port set to 5000, and restart policy set to always.
 * **docker image tag nginx:latest localhost:5000/nginx:latest** tags the image with a target name. **docker push localhost:5000/nginx:latest** pushes the target image to registry.
+******************************
+
+### Build image with tag
+******************************
+* **docker build . -t dockerimagename**
+******************************
+
+### Run container with given name
+******************************
+* **docker run -d -v hostvolume:dockervolume --name containername -e enviornmentalvariable=value -p hostportnumber:containerportnumber  imagename**
+******************************
+
+### orchestration
+* kubernetes, docker swarm, container orchestration for running multiple containers and monitoring them.
+
+
+
