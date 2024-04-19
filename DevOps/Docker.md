@@ -99,34 +99,35 @@ Image layer is always read only. Contaienr only is read and write.
 
 ### Docker networking
 ******************************
-when docker is installed, bridge, none and host networks are created.
-* **bridge** network is achieved by default when **docker run containername** is executed. It is a private network, and series is around in the series 172.17..
+when docker is installed, bridge, none and host networks are created. Bridge is the default network a container attached.
+* **bridge** network is achieved by default when **docker run containername** is executed. It is a private network, and series is around in the series 172.17.. Containers can access all the ips of container inside the docker host.
 * **none** network is achieved when specifing **docker run containername --network==none** is executed. Not attached to any network and not accessible to outside world. 
-* **host** network is achieved when specifing **docker run containername --network==host** is executed
+* **host** network is achieved when specifing **docker run containername --network==host** is executed. The containers can accessed externally via host network, without port mapping. Hence, the ports are common to all the containers.
 * **docker network create --driver bridge --subnet ipaddress custom-isolated-network** creates own bridge network.
-*  **docker network ls** lists all the network
+*  **docker network ls** lists all the network 
 *  **docker inspect containername or imagename**
 *  **docker network inspect bridge**
-*  **docker network create --driver bridge --subnet 182.18.0.1/24 --gateway 182.18.0.1 wp-mysql-network** creates a new network named wp-mysql-network using the bridge driver, with a subnet of 182.18.0.1/24 and a gateway of 182.18.0.1.
+*  The Docker subnet and gateway are used for internal container networking within the Docker environment. When a Docker network is created, the Docker daemon automatically assigns an IP subnet and gateway for that network. The default subnet used by Docker is typically 172.17.0.0/16, which provides 65,534 usable IP addresses for containers. The gateway IP address is also automatically assigned by Docker, usually 172.17.0.1, and serves as the default gateway for containers on that network. This subnet and gateway are used for communication between containers on the same Docker network. Containers can communicate with each other using their assigned IP addresses or container names. The subnet and gateway are part of the internal Docker networking setup and are not directly accessible from the host machine or external networks. They are used solely for container-to-container communication within the Docker environment. The subnet is a range of IP addresses that Docker assigns to the containers on a network, while the gateway is the IP address of the virtual router that provides connectivity between the containers and the external network. The subnet is specified using CIDR notation, such as 172.28.0.0/16, which represents the range of IP addresses from 172.28.0.0 to 172.28.255.255. The gateway is a single IP address within that subnet, typically the first address (e.g., 172.28.0.1).
+*  **docker network create --driver bridge --subnet 182.18.0.1/24 --gateway 182.18.0.1 wp-mysql-network** creates a new isolated network named wp-mysql-network using the bridge driver, with a subnet of 182.18.0.1/24 and a gateway of 182.18.0.1.
+*  **docker inspect containerid | grep "NetworkMode"** displays the type of network used in the container.
+*  **docker inspect networkid | grep "Subnet"** displays the subnet info. networkid can be obtained from **docker network ls**.
 *  **docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=db_pass123 --network wp-mysql-network  mysql:5.6** creates a new container named mysql-db using the mysql:5.6 image, sets the MYSQL_ROOT_PASSWORD environment variable to db_pass123, and attaches the container to the wp-mysql-network network
 *  **docker run --network=wp-mysql-network -e DB_Host=mysql-db -e DB_Password=db_pass123 -p 38080:8080 --name webapp --link mysql-db:mysql-db -d kodekloud/simple-webapp-mysql** The docker run command creates a new container named webapp using the kodekloud/simple-webapp-mysql image, sets the DB_Host environment variable to mysql-db and the DB_Password environment variable to db_pass123, maps port 38080 on the host to port 8080 in the container, links the webapp container to the mysql-db container, and runs the container in detached mode (-d). The container is attached to the wp-mysql-network network, allowing it to communicate with the mysql-db container.
-* **docker network ls**  
 ******************************
 
 ### Working with private docker registry
 The structure of docker reposity is as follows: **dockerregistry/username/imagereposityname**. Dockerhub (docker.io) is the default registry and it public. google registry is gcr.io
 * **How to start a registry?** It can be achieved via the following command **docker run -d -p 5000:5000 --restart=always --name registry registry:2** Start a local Docker registry on port 5000
 ******************************
-* **docker run -d -p 5000:5000 --restart=always --name registry registry:2* Start a local Docker registry on port 5000. 
-* **docker pull ubuntu:latest* Pull the latest Ubuntu image from the default Docker Hub registry. 
-* **docker image tag ubuntu:latest localhost:5000/gfg-image* Tag the Ubuntu image for the local registry.
-* **docker image tag ubuntu:latest dockerregistry/username/imagereposityname* Tag the Ubuntu image for the cloud registry.  Example:  docker tag local-image gcr.io/my-project/my-image:v1
-* **docker push localhost:5000/gfg-image* Push the tagged image to the local registry.
-* **docker push dockerregistry/username/imagereposityname* Push the tagged image to the cloud registry. Example:  docker push gcr.io/my-project/my-image:v1
-* **docker pull localhost:5000/gfg-image* Pull the image from the local registry. 
-* **docker container stop registry* Stop the local Docker registry. 
+* **docker run -d -p 5000:5000 --restart=always --name registry registry:2** Start a local Docker registry on port 5000. 
+* **docker pull ubuntu:latest** Pull the latest Ubuntu image from the default Docker Hub registry. 
+* **docker image tag ubuntu:latest localhost:5000/gfg-image** Tag the Ubuntu image for the local registry.
+* **docker image tag ubuntu:latest dockerregistry/username/imagereposityname** Tag the Ubuntu image for the cloud registry.  Example:  docker tag local-image gcr.io/my-project/my-image:v1
+* **docker push localhost:5000/gfg-image** Push the tagged image to the local registry.
+* **docker push dockerregistry/username/imagereposityname** Push the tagged image to the cloud registry. Example:  docker push gcr.io/my-project/my-image:v1
+* **docker pull localhost:5000/gfg-image** Pull the image from the local registry. 
+* **docker container stop registry** Stop the local Docker registry. 
 ******************************
-
 
 ### Important Docker Files You Should Know About
 ******************************
@@ -187,9 +188,5 @@ Container is made up of images. The base is Linux Base image (Alpine or linux di
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
 
 
-
 ### orchestration
 * kubernetes, docker swarm, container orchestration for running multiple containers and monitoring them.
-
-
-
