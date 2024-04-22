@@ -1,8 +1,9 @@
 # Kubernetes or K8s
 ******************************
-It manages containerized applications in different enviroenment. 
+It manages containerized applications. 
 * **Containers** packages applications or virtualize application layers. They are an isolated environements, own process, own network, own volume and etc.
-* **Container Orchestration** Process of deploying and managing lot of containers in clusteres environment. 
+* **Container Orchestration** Process of deploying and managing lot of containers in clusteres environment.
+* **kubernetes** encapsulates the containered applications such as docker containers and then runs it on worker nodes. 
 ******************************
 
 # Terminology in K8s
@@ -35,5 +36,12 @@ Key characteristics of a Kubernetes pod:
 * **kubectl cluster-info** command does provide information about the status of the Kubernetes cluster, including the URLs of the API server, the Kubernetes dashboard (if enabled), and any additional services running in the cluster.
 * **kubectl get nodes** This command will list all the nodes in the cluster and their current status (e.g., Ready, NotReady, etc.).
 * **kubectl describe node <node-name>** get more detailed information about a specific node.
+******************************
+
+
+# Command
+******************************
+* **kubectl run namedockerimage --image specifieddockerimage** Kubernetes will create a new pod using the specified Docker image, and the pod will be named namedockerimage.
+* **kubectl get pods**  Kubernetes will display a list of all the pods currently running in the cluster, including the one you created with the previous command.  
 ******************************
 
