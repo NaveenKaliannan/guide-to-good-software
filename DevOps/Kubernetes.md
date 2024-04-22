@@ -49,6 +49,29 @@ Key characteristics of a Kubernetes pod:
 * **kubectl run namedockerimage --image specifieddockerimage** Kubernetes will create a new pod using the specified Docker image, and the pod will be named namedockerimage.
 * **kubectl get pods**  Kubernetes will display a list of all the pods currently running in the cluster, including the one you created with the previous command.  
 ******************************
+
+# YAML files for POD
+* Exmample YAML file. Note that container is a list since many containers can be run on single pod. 
+******************************
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: example
+  template:
+    metadata:
+      labels:
+        app: example
+    spec:
+      containers:
+      - name: example-container
+        image: example-image
+        ports:
+        - containerPort: 8080
 ******************************
 
 
