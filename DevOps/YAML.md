@@ -42,7 +42,7 @@ Dictionaries within lists are represented by indenting the key-value pairs under
 These examples demonstrate the flexibility of YAML in representing structured data, from simple key-value pairs to more complex nested data structures. The consistent use of indentation and special characters like - makes YAML files easy for both humans and machines to read and write.
 
 * **when to use them**
-Use **key-value** pairs for simple scalar values
-Use **lists** for ordered collections of values
-Use **lists of dictionaries** for collections of structured data
+Use **key-value** pairs for simple scalar values Example: telephone directory. \
+Use **lists** for ordered collections of values, Example, alpbhabetical order, series and etc. \
+Use **lists of dictionaries** for collections of structured data, Example: databases 
 ******************************
