@@ -6,6 +6,11 @@ It manages containerized applications.
 * **kubernetes** encapsulates the containered applications such as docker containers and then runs it on worker nodes. 
 ******************************
 
+# Installation of K8s
+******************************
+* https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+******************************
+
 # Terminology in K8s
 ******************************
 * **pod** is the basic unit that encapsulates and manages one or more tightly coupled containers for deployment in a Kubernetes cluster. A Kubernetes pod is the fundamental unit that encapsulates and manages one or more tightly coupled containers as a single deployable entity within a Kubernetes cluster
@@ -44,4 +49,6 @@ Key characteristics of a Kubernetes pod:
 * **kubectl run namedockerimage --image specifieddockerimage** Kubernetes will create a new pod using the specified Docker image, and the pod will be named namedockerimage.
 * **kubectl get pods**  Kubernetes will display a list of all the pods currently running in the cluster, including the one you created with the previous command.  
 ******************************
+******************************
+
 
