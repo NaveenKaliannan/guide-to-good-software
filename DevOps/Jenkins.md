@@ -21,10 +21,12 @@ This allows for a fully automated deployment process, where new features and bug
 Jenkins integrates with a wide range of tools and technologies to enable this end-to-end CI/CD pipeline, such as version control systems, build tools, container registries, and Kubernetes clusters
 ****************************************
 
-### Installation of Jenkins via Docker
+### Installation of Jenkins via Docker and important links
 ****************************************
 * **https://www.jenkins.io/doc/book/installing/docker/**
 * **docker run -p 8080:8080 -p 50000:50000 -v jenkins_home:jenkins-data:/var/jenkins_home  jenkins/jenkins:latest**
+* https://www.jenkins.io/doc/pipeline/steps/workflow-cps/
+* https://www.groovy-lang.org/syntax.html
 ****************************************
 
 ### Jenkins Job
@@ -118,6 +120,8 @@ The **stages** block contains one or more stage blocks, each representing a stag
 Inside each **stage** block, the **steps** block contains the actual commands/instructions to be executed in that stage.
 The **deleteDir** step deletes the specified directory.
 The **dir** step is used to change the current working directory, similar to the cd command in bash/shell scripts
+* **Jenkinsfile** from github (source code management) can be used in the pipeline via SCM option. Note that the file should ends with Jenkinsfile, prod.Jenkinsfile, test.Jenkinsfile, Multiple Jenkins can also be included.
+* **Poll SCM** whenever the code is merged, the jenkins triggers the pipeline.
 ```
 pipeline {
   agent any
@@ -164,3 +168,100 @@ pipeline {
 ```
 ****************************************
 
+### MultiBranch Pipeline
+It is quite similar to the above github pipeline but for all the branches. The pipeline is created for each branches. Whenever new commit is merged, then the scan referesh the pipeline.
+
+### Parameters in Jenkins
+By using parameters in your Jenkins pipelines, you can make your builds more flexible and adaptable to different scenarios and environments
+This block defines a parameter named myBoolean of type booleanParam. It is a boolean parameter that allows the user to choose between true or false when running the pipeline. The defaultvalue is set to false, which means that if the user doesn't provide a value, it will default to false. The description is a human-readable string that explains the purpose of the parameter.
+we can build with parameters set to prod, stage, test and etc.
+****************************************
+```
+parameters {
+   booleanParam(defaultvalue: false, description "Enable service?", name: "myBoolean")
+}
+
+parameters {
+   String(defaultvalue: "Test", description "which environment?", name: "mystring")
+}
+
+parameters {
+   choice(defaultvalue: ["Test","Stage","Prod"], description "which environment?", name: "mychoice")
+}
+
+echo ${params.myBoolean}
+
+echo ${params.mystring}
+
+echo ${params.mychoice}
+```
+****************************************
+
+### Variables in Jenkins
+****************************************
+```
+environment {
+def mystring = "Hello! World"
+def mynumber = 10
+def myboolean = true
+USER_ID = credentials()
+PASSWD = credentials()
+}
+
+env {
+def mynumnber = 2
+}
+
+echo "${mystring}"
+echo "${mynumber}"
+echo "${myboolean}"
+```
+****************************************
+
+### Statements
+Variable scoping in Jenkins Groovy refers to the accessibility and lifetime of variables within different parts of the pipeline script
+****************************************
+echo "${env.BUILD_NUMBER}"
+
+script{
+if(params.myboolean == false){
+currentBuild.result="SUCESS"
+return 
+}
+else{
+echo "${params.myboolean}"
+}
+}
+
+steps{
+  myfunc("fdfd",2)
+}
+
+def myfunc(string text, int num){
+
+echo "${text} ${num}"
+}
+
+
+steps {
+    build job: 'pipelinename', parameters: [
+        [$class: 'BooleanParameterValue', name: 'myvariable', value: true]
+    ]
+}
+steps {
+    build job: 'pipelinename', parameters: [
+        [$class: 'BooleanParameterValue', name: 'myvariable', value: true],
+        [$class: 'StringParameterValue', name: 'mystring', value: 'hello']
+    ]
+}
+****************************************
+
+The Jenkins Build Health Weather Plugin offers a visual representation of the health of recent builds within your pipeline or branch. The plugin assigns weather icons based on the success rate of the last few builds, allowing for quick identification of potentially unstable pipelines or branches.
+
+## Weather Icons
+
+- 🌤 **Sunny (Health over 80%)**: Indicates that over 80% of recent builds have passed successfully, representing very stable builds.
+- ⛅ **Partially Sunny (Health 61-80%)**: Shows that between 61-80% of recent builds have passed.
+- ⛅ **Partially Cloudy (Health 41-60%)**: Indicates that 41-60% of recent builds have been successful.
+- ☁️ **Cloudy (Health 21-40%)**: Suggests that only 21-40% of recent builds have passed, indicating some instability.
+- 🌧 **Rainy (Health 0-20%)**: Represents poor health, with less than 20% of recent builds succeeding, indicating frequent failures that require investigation and fixing.
