@@ -38,7 +38,8 @@ Jenkins integrates with a wide range of tools and technologies to enable this en
 3. Run the Python script
    python main.py
 ```
-* **Pipeline** is a more modern way of defining build processes in Jenkins using a domain-specific language (DSL) based on Groovy
+* **Pipeline** is a more modern way of defining build processes in Jenkins using a domain-specific language (DSL) based on Groovy. Build trigger is used to run when the pipeline jobs is triggered. \
+when Poll SCM is ticker, it triggers the job when new changes are merged into the github code. 
 ```
 groovy
 // Declarative Pipeline for a simple Node.js application
@@ -108,3 +109,58 @@ multibranchPipelineJob('my-repo') {
     - Project 4
 ```
 ****************************************
+
+### Pipeline instructions from jenkins.io
+****************************************
+The **Pipeline** script always starts with the pipeline block.
+The **agent** block specifies which Jenkins node/agent the Pipeline will run on.
+The **stages** block contains one or more stage blocks, each representing a stage in the Pipeline like building, testing, etc.
+Inside each **stage** block, the **steps** block contains the actual commands/instructions to be executed in that stage.
+The **deleteDir** step deletes the specified directory.
+The **dir** step is used to change the current working directory, similar to the cd command in bash/shell scripts
+```
+pipeline {
+  agent any
+  stages {
+    stage("Clean old git repos") {
+      steps {
+        script {
+          dir('StructureFactor') {
+            deleteDir()
+          }          
+        }
+      }
+    }      
+    stage("clone") {
+      steps {
+        sh "git clone https://github.com/NaveenKaliannan/StructureFactor.git"
+      }
+    }
+    stage("build") {
+      steps {
+        dir("StructureFactor") {
+          sh "ls -ltr ; echo 'Building'"
+        }
+      }
+    }
+    stage("clean") {
+      steps {
+        script {
+          dir('SimulationData') {
+            deleteDir()
+          }          
+        }
+      }
+    }    
+    stage("test") {
+      steps {
+        dir("rdf-sourcecode") {
+          sh "ls -ltr ../ ; ls -ltr ; echo 'Testing'"
+        }
+      }
+    }
+  }
+}
+```
+****************************************
+
