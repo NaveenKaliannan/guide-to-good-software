@@ -164,11 +164,41 @@ How to add empty directories to a Git repository?
 ```
 .gitkeep
 ```
-**.gitattributes** -  Git saves the file or folder according to the attributes specified. 
+**.gitattributes** - gitattributes file provides a powerful way to customize Git's behavior for different file types and workflows across your repository.  Git saves the file or folder according to the attributes specified. 
 It has structure of pattern attr1 attr2 .. inside the file
 ```
-*.json eol=lf # line endings can be configured
-*.txt filter=indent # filters the indent of the text file
+# Set default behaviour to automatically normalize line endings
+* text=auto
+
+# Force Unix-style line endings for these file types
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+
+# Force Windows-style line endings for batch scripts
+*.bat text eol=crlf
+
+# Treat these files as binary and don't generate diffs
+*.png binary
+*.jpg binary
+
+# Diff these files with external tools
+*.doc diff=word
+*.pdf diff=pdf
+
+# Use the union merge driver for these files
+*.unity3d merge=unityyamlmerge
+*.prefab merge=unityyamlmerge
+
+# Ensure Unix line endings in exported archives
+* text=auto eol=lf export-ignore
+
+# Track Unity3D asset files in LFS
+*.unity3d filter=lfs diff=lfs merge=lfs -text
+*.prefab filter=lfs diff=lfs merge=lfs -text
+
+# Treat these as Python source files
+*.py diff=python
 ```
 To see the git root directory or branch hsa values 
 ```
