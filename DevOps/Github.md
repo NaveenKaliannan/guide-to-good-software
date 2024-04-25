@@ -1,6 +1,115 @@
-# Github and Git
-GitHub is a cloud-based hosting service that helps to manage git repositories. Git is a version control system. 
+# Git and Github
+******************************************
+ Git is a popular version control system that runs on local machine.  GitHub is a cloud-based hosting service that helps to manage git repositories.
 
+## Git installation
+******************************************
+* **command line** `sudo apt-get update`  and `sudo apt-get install git`. CLI provides the most control and power
+* **GUI installations** `sudo apt-get install git-gui`, `git gui` and `gitk` or `sudo apt-get install git-all`
+* **gitk**  This is a repository browser tool for visualizing the commit history.
+* **git-gui** This provides a GUI for performing Git commands like commit, push, pull etc.
+* **git --version** shows the version of git
+* **git-scm.com** for git documentation. 
+
+## Terminology
+******************************************
+* **repository** is the complete project and metadata stored by Git, including all commits, branches, and file versions.
+* **HEAD->master** means the pointer refer to the current location in master. **git switch branch-name** switches to give branch. Then the pointer refer to the given branch **HEAD->branch-name**.
+
+## Linux directory structure 
+******************************************
+
+## Important file you should know about in git
+******************************************
+* `.git` directory
+1. **description:** This is a text file that contains a description of the repository. It's typically used for informational purposes.
+2.  **refs:** This directory contains references to commits, branches, and tags in the repository. It's used to keep track of the current state of the repository.
+3.  **hooks:** This directory contains custom scripts that can be executed at different stages of the Git workflow, such as before a commit, after a push, etc.
+4.  **HEAD:** This is a symbolic reference that points to the current branch or commit in the repository. **cat .git/HEAD** reference particular commit **ref: ref/head/branch-name**.
+5. **branches:** This directory contains files that represent the local branches in the repository.
+6. **objects:** This directory stores all the objects (commits, trees, blobs) that make up the repository's history.
+7.  **config:** This is the main configuration file for the Git repository. It contains settings like the repository's remote URL, user information, and other customizations. 
+* `.gitignore` file ignore the files and directories that should not be part of commit.
+```gitignore
+# 1. Ignore a specific file
+example.txt
+
+# 2. Ignore all files with .log extension
+*.log
+
+# 3. Ignore all files in the "temp" directory
+temp/
+
+# 4. Ignore all files starting with "test"
+test*
+
+# 5. Ignore all files named "debug.log" in any directory
+**/debug.log
+
+# 6. Ignore all .txt files except example.txt
+*.txt
+!example.txt
+
+# 7. Ignore all files except README.md
+*
+!README.md
+
+# 8. Ignore files in the "build" directory but not its subdirectories
+/build/
+
+# 9. Ignore all files named "config.json" in any directory
+**/config.json
+
+# 10. Ignore files in the root directory only
+/*
+``` 
+
+## Git configuration
+******************************************
+* To configure your Git user settings, you can use the **git config** command.
+Here's how you can set your user name and email for all Git repositories on your system (global configuration) or for a specific repository:
+```bash
+git config --global user.name  "NaveenKaliannan"
+git config user.name
+git config --global user.email "myemailaddress"
+git config --global user.email
+git config --global core.editor "vim"
+git config --global core.editor
+```
+The configuration can be seen in /home/naveenk/.gitconfig. 
+
+## Git commands
+******************************************
+* **git init** creates a hidden .git subdirectory in the current working directory. This directory contains all the necessary files and directories for a Git repository. git init for already exisining repo will not create new repo
+* **git add file1 file2** selects the interested changes to the staging area for commit. Untracked files in red will be left out for commit. **git commit -m (--message) "commit message"** creates a checkpoint or snapshot with commit message. Note that **git add .** adds all untracked files. The commit should focus on single topics such single bug fix. The commit message should be in *past tense* and meaningful. When commit is made, hash unique long/letter number (SHA1 alogirthm) is created with other commit information. The inital commit will not have a parent commit. 
+* **git log** shows the commit information such usernmae, Hash values, date commit message and etc.
+* **git log --pretty=oneline --abbrev-commit** shows the commit in prettier way.
+* **git commit --amend** amending the previous commit.
+* **git status** shows which branch, commit status, untracked file, staged files and etc.
+* **git branch branch-name** HEAD will refer to master, branch-name both.\
+      1. **master** is the default branch. It is an **official branch**. Recently the **master** is named to **main** in github not in git.\
+      2. **git branch -v** shows all the branches and tippest commit name.\
+      3. **git switch branch-name** switches to given branch. Then the HEAD pointer refers to the branch-name. **git switch -c branch-name** creates a new branch and switches to it.\
+      4. **git checkout branch-name** switches to given branch.\
+      5. **git branch -d unwanted-branch-name** -d option will delete the branch locally and -D will force the branch to delete locally. **git push** push the change.\
+      6. **git push origin --delete unwanted-branch-name** Deleting a branch remotely. Note that one cannot delete the branch by checking out.\
+      7. **git branch -m new-branch-name** renames the branch to new name.\
+      8. For **Merging** the changes from a side branch to master or branch of interest, we need to switch to master or branch of interest. **git swtich master or branch-of-interest**, i.e., HEAD->master or branch-of-interest. Then **git merge side-branch**, i.e., HEAD->master or branch-of-interest. Commits from side-branch will appended into master. \
+      9. **Fast Forward Merging** happens only when the side branch is ahead of master and there is no commit on master after side branch is created and commited.  \
+      10. when the **master is ahead of the side-branch**, **git switch master** and **git merge side-branch** will merge but the git will make additional commit with commit message 'merge brach side-branch'. \  
+      11. **Conflict markers** Resolve the conflict by choosing which changes to keep.       Get rid of those markers and unwanted changes. Then **git add changes** and **git commit -m "resolve conflicts"** fix the issue.
+  
+      <<<<<<< HEAD
+      This is the content on the main branch. Updated by you.
+      =======
+      This is the content on the feature branch.
+      >>>>>>> side-branch
+  
+  12. **git diff** shows the difference between commits, branches, files,  specific files and etc. **git diff commit1..commit2 textfile.txt** shows the difference between textfile in commit1 and textfile in commit2. **git diff --staged** compares the staging area with the last commit. **git diff** shows the unstaged changes. **git diff HEAD** compares the staged and unstaged changes with last commit. **git diff branch1..branch2** compares 2 branches. **git diff --stat** shows the stats. `@@ -<old_line>,<old_lines_count> +<new_line>,<new_lines_count> @@` The starting line number in the "old" (original) version of the file, and the number of lines of context.  The starting line number in the "new" (modified) version of the file, and the number of lines of context. `@@` means hunk header which tells about location and context of the changes.
+  13.  **git stash** saves the uncommited work and brings back. **git stash pop** brings the stashed work to working directory again. This allows to switch branches without making commits to changes. **git stash apply** will keep the stashes in stash and can be applied multiple time. \
+  14. **Multiple stash** **git stash list** and **git stash apply stash@{1}** reference particular stash inside the curly braces. **git stash drop stash@{1}** drops the particular stash inside the curly braces. **git stash pop** always consides the last stash.\
+  15.          
+    
 Configuring the SSH keys, which are important the access credential for the SSH network protocol. 
 This allows to you connect to remote repository. No need to type password
 ```
@@ -14,21 +123,8 @@ How to generate a new key
 ```
 ssh-keygen -t rsa -b 4096 will generate ssh key for 4096 bit
 ```
-Configuring your /home/naveen/.gitconfig and /my-repository/.git. For example, user id, password
-```
-git config
-git config --global user.email navee...@gmail.com
-git config --global user.name  Naveen.....
-```
-Setting up a new branch
-```
-git branch new-branch-name
-```
-Status checks
-```
-git branch -v
-git status
-```
+
+
 restore the files
 ```
 git checkout filename
@@ -98,14 +194,7 @@ git rebase -i master
 do : delete the specific commit instead of squash or pick or other keywords. This means delete the entire line
 git push --force-with-lease
 ```
-Delete a branch 
-```
-git branch -d unwanted-branch-name
--d option will delete the branch locally and -D will force the branch to delete locally
-git push
-Deleting a branch remotely. Use the following command
-git push origin --delete unwanted-branch-name
-```
+
 
 To avoid from the following errors: "smudge filter lfs failed" or "external filter 'git-lfs filter-process' failed"
 ```
@@ -152,14 +241,7 @@ How to igonre or exclude files For example, binaries, inputs of large size, exte
 go to root of your local git (repository-name/.gitigonre) and create gitignore file
 touch .gitignore
 inside the file
-# ignore ALL .log .xyz, .o files
-*.log, .xyz, .o
-# ignore ALL files in ANY directory named temp
-temp/
-# igonore all files except test.xyz
-*.xyz
-!test.xyz
-```
+
 How to add empty directories to a Git repository?
 ```
 .gitkeep
