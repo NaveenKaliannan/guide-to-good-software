@@ -14,10 +14,8 @@
 ## Terminology
 ******************************************
 * **repository** is the complete project and metadata stored by Git, including all commits, branches, and file versions.
-* **HEAD->master** means the pointer refer to the current location in master. **git switch branch-name** switches to give branch. Then the pointer refer to the given branch **HEAD->branch-name**.
-
-## Linux directory structure 
-******************************************
+* **HEAD->master** means the pointer refer to the current location in master. **git switch branch-name** switches to give branch. Then the pointer refer to the given branch **HEAD->branch-name**. **git checkout commitID** switches to an commit. Now the pointer refer to the commit. **cat .git/HEAD** reference particular commit **Commit hash value**. 
+* **origin** means cloud. **origin/branch-name** means branch in cloud. **branch-name** means branch in local machine.
 
 ## Important file you should know about in git
 ******************************************
@@ -25,7 +23,7 @@
 1. **description:** This is a text file that contains a description of the repository. It's typically used for informational purposes.
 2.  **refs:** This directory contains references to commits, branches, and tags in the repository. It's used to keep track of the current state of the repository.
 3.  **hooks:** This directory contains custom scripts that can be executed at different stages of the Git workflow, such as before a commit, after a push, etc.
-4.  **HEAD:** This is a symbolic reference that points to the current branch or commit in the repository. **cat .git/HEAD** reference particular commit **ref: ref/head/branch-name**.
+4.  **HEAD:** This is a symbolic reference that points to the current branch or commit in the repository. **cat .git/HEAD** reference particular commit **ref: ref/head/branch-name**. 
 5. **branches:** This directory contains files that represent the local branches in the repository.
 6. **objects:** This directory stores all the objects (commits, trees, blobs) that make up the repository's history.
 7.  **config:** This is the main configuration file for the Git repository. It contains settings like the repository's remote URL, user information, and other customizations. 
@@ -77,6 +75,30 @@ git config --global core.editor "vim"
 git config --global core.editor
 ```
 The configuration can be seen in /home/naveenk/.gitconfig. 
+* Set up SSH authentication by generating an SSH key pair and adding the public key to your GitHub account. Configuring SSH keys is important for accessing credentials for the SSH network protocol. This allows you to connect to a remote repository without needing to type a password.
+To create a new key on your local machine: Navigate to the .ssh/ directory: 
+```bash
+cd ~/.ssh/
+```
+List the contents of the directory to check for existing keys:
+```bash
+ls -ltr
+```
+Copy the content of the public key id_rsa.pub:
+```bash
+cat id_rsa.pub
+```
+Paste the copied content into the SSH keys section of your GitHub account settings: Go to Settings -> SSH and GPG keys  Click on "New SSH key" and paste the copied key
+* To generate a new SSH key: Run the following command to generate an RSA key with a bit length of 4096:
+```bash
+ssh-keygen -t rsa -b 4096
+```
+* Verify SSH Connection: You can verify that your SSH connection is working by running:
+```bash
+ssh -T git@github.com
+```
+use the SSH URL for your Git remote instead of the HTTPS URL.
+
 
 ## Git commands
 ******************************************
@@ -88,7 +110,7 @@ The configuration can be seen in /home/naveenk/.gitconfig.
 * **git status** shows which branch, commit status, untracked file, staged files and etc.
 * **git branch branch-name** HEAD will refer to master, branch-name both.\
       1. **master** is the default branch. It is an **official branch**. Recently the **master** is named to **main** in github not in git.\
-      2. **git branch -v** shows all the branches and tippest commit name.\
+      2. **git branch -v** shows all the branches and tippest commit name. **git branch -r** shows all the remote branch.\
       3. **git switch branch-name** switches to given branch. Then the HEAD pointer refers to the branch-name. **git switch -c branch-name** creates a new branch and switches to it.\
       4. **git checkout branch-name** switches to given branch.\
       5. **git branch -d unwanted-branch-name** -d option will delete the branch locally and -D will force the branch to delete locally. **git push** push the change.\
@@ -96,58 +118,45 @@ The configuration can be seen in /home/naveenk/.gitconfig.
       7. **git branch -m new-branch-name** renames the branch to new name.\
       8. For **Merging** the changes from a side branch to master or branch of interest, we need to switch to master or branch of interest. **git swtich master or branch-of-interest**, i.e., HEAD->master or branch-of-interest. Then **git merge side-branch**, i.e., HEAD->master or branch-of-interest. Commits from side-branch will appended into master. \
       9. **Fast Forward Merging** happens only when the side branch is ahead of master and there is no commit on master after side branch is created and commited.  \
-      10. when the **master is ahead of the side-branch**, **git switch master** and **git merge side-branch** will merge but the git will make additional commit with commit message 'merge brach side-branch'. \  
-      11. **Conflict markers** Resolve the conflict by choosing which changes to keep.       Get rid of those markers and unwanted changes. Then **git add changes** and **git commit -m "resolve conflicts"** fix the issue.
+      10. when the **master is ahead of the side-branch**, **git switch master** and **git merge side-branch** will merge but the git will make additional commit with commit message 'merge brach side-branch'. \
+      11. **git diff** shows the difference between commits, branches, files,  specific files and etc. **git diff commit1..commit2 textfile.txt** shows the difference between textfile in commit1 and textfile in commit2. **git diff --staged** compares the staging area with the last commit. **git diff** shows the unstaged changes. **git diff HEAD** compares the staged and unstaged changes with last commit. **git diff branch1..branch2** compares 2 branches. **git diff --stat** shows the stats. `@@ -<old_line>,<old_lines_count> +<new_line>,<new_lines_count> @@` The starting line number in the "old" (original) version of the file, and the number of lines of context.  The starting line number in the "new" (modified) version of the file, and the number of lines of context. `@@` means hunk header which tells about location and context of the changes.\
+      12.  **git stash** saves the uncommited work and brings back. **git stash pop** brings the stashed work to working directory again. This allows to switch branches without making commits to changes. **git stash apply** will keep the stashes in stash and can be applied multiple time. \
+      13. **Multiple stash** **git stash list** and **git stash apply stash@{1}** reference particular stash inside the curly braces. **git stash drop stash@{1}** drops the particular stash inside the curly braces. **git stash pop** always consides the last stash.\  
+      14. **Conflict markers** Resolve the conflict by choosing which changes to keep.       Get rid of those markers and unwanted changes. Then **git add changes** and **git commit -m "resolve conflicts"** fix the issue.
   
       <<<<<<< HEAD
       This is the content on the main branch. Updated by you.
       =======
       This is the content on the feature branch.
       >>>>>>> side-branch
-  
-  12. **git diff** shows the difference between commits, branches, files,  specific files and etc. **git diff commit1..commit2 textfile.txt** shows the difference between textfile in commit1 and textfile in commit2. **git diff --staged** compares the staging area with the last commit. **git diff** shows the unstaged changes. **git diff HEAD** compares the staged and unstaged changes with last commit. **git diff branch1..branch2** compares 2 branches. **git diff --stat** shows the stats. `@@ -<old_line>,<old_lines_count> +<new_line>,<new_lines_count> @@` The starting line number in the "old" (original) version of the file, and the number of lines of context.  The starting line number in the "new" (modified) version of the file, and the number of lines of context. `@@` means hunk header which tells about location and context of the changes.
-  13.  **git stash** saves the uncommited work and brings back. **git stash pop** brings the stashed work to working directory again. This allows to switch branches without making commits to changes. **git stash apply** will keep the stashes in stash and can be applied multiple time. \
-  14. **Multiple stash** **git stash list** and **git stash apply stash@{1}** reference particular stash inside the curly braces. **git stash drop stash@{1}** drops the particular stash inside the curly braces. **git stash pop** always consides the last stash.\
-  15.          
-    
-Configuring the SSH keys, which are important the access credential for the SSH network protocol. 
-This allows to you connect to remote repository. No need to type password
-```
-Create a new key in your local machine
-cd .ssh/
-ls -ltr
-copy the content in public key id_rsa.pub and paste in github add key section
-go to settings -> ssh and GPG keys (you can add keys by clicking the new keys)
-```
-How to generate a new key
-```
-ssh-keygen -t rsa -b 4096 will generate ssh key for 4096 bit
-```
+
+* **git log --pretty=oneline --abbrev-commit** and **git checkout commit-hash-value** checkouts the old commit.\
+* **git checkout origin/branch-name** checkouts the origin branch in local machine.
+* **git checkout HEAD~1** checkouts one commit before. **git checkout HEAD~2** checkouts two commit before. **git checkout HEAD~5** checkouts five commit before. **git switch -** brings back to tip.
+* **git checkout HEAD filename** checkouts the file from last commit. \
+* **git restore filename** restores the file from HEAD with committed change. It is an alternative for **git checkout HEAD filename**.  **git restore --source HEAD~2 filename** restore the file from 2 commits ago.
+* **git restore --staged filename** to unstage the files.
+* **git reset commit-hash** get rid of the commit, there wont be any commit after that. But the changes will still be present. This can be used later or commited. 
+* **git reset --hard commit-hash** removes the commit and the latest changes will also be removed.
+* **git revert commit-hash** it will undo the commit by making a new commit. The commit that we want to remove will still exist. 
+
+## Github commands
+******************************************
+* **git clone URL** copies the latest git reposity from cloud.\
+* **git push origin branch-name** pushes master or given branch to cloud or origin  \
+* **git push origin sidebranch:masterbranch** push the latest changes from side-branch to origin master\
+* **git push -u or --set-upstream origin branch-name** command is used to set the upstream branch for the current local branch. This means that it establishes a relationship between your local branch and a branch on a remote repository. The upstream means that you can use commands like git push and git pull without specifying the remote and branch names explicitly \
+* **git fetch origin branch-name** brings the origin/branch-name and will update the origin/branch-name but branch-name will be unaffected. git status on branch-name will say my branch is behind certain commits.
+* **git pull origin branch-name** is sum of **git fetch** and **git merge**. If conflicts, then **git add changes** and **git commit -m "resolve conflicts"** fix the issue.
 
 
-restore the files
-```
-git checkout filename
-git restore filename
-```
-Update the current code
-```
-git pull
-```
-Checking out the created branch or master
-```
-git checkout new-branch-name
-git checkout master
-```
+
 coping a specific commit from one branch to the interested branch
 ```
 git checkout interested-branch
 git cherrypick SHA-values-of-commit
 ```
-Git commit history
-```
-git log
-```
+
 Squash and rebase
 ## first way (A)
 ```
