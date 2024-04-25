@@ -15,15 +15,31 @@ address:
   city: Anytown
   state: CA
 ```
+```
+json
+{
+  "name": "John Doe",
+  "age": 30,
+  "address": {
+    "street": "123 Main St",
+    "city": "Anytown",
+    "state": "CA"
+  }
+}
+```
 * **Key-List**
 ```
 yaml
+yaml
 fruits:
-- apple
-- banana 
-- orange
-- mango
-``` 
+  - apple
+  - banana
+  - orange
+```
+```
+json
+"fruits": ["apple", "banana", "orange"]
+```
 * **Key-List of Dictionaries**
 ```
 yaml
@@ -34,6 +50,23 @@ employees:
 - name: John D'vloper
   job: PM
   skill: Elite
+```
+```
+json
+{
+  "employees": [
+    {
+      "name": "Martin D'vloper",
+      "job": "Developer",
+      "skill": "Elite"
+    },
+    {
+      "name": "John D'vloper",
+      "job": "PM",
+      "skill": "Elite"
+    }
+  ]
+}
 ```
 * **The key points are**:
 Key-value pairs are represented with a colon : separating the key and value, with the value indented on the next line.
