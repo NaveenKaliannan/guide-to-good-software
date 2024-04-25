@@ -27,6 +27,7 @@
 5. **branches:** This directory contains files that represent the local branches in the repository.
 6. **objects:** This directory stores all the objects (commits, trees, blobs) that make up the repository's history.
 7.  **config:** This is the main configuration file for the Git repository. It contains settings like the repository's remote URL, user information, and other customizations. 
+* The primary purpose of `.gitkeep` is to force Git to include an otherwise empty directory in the repository. Without a file inside, Git would ignore the directory entirely
 * `.gitignore` file ignore the files and directories that should not be part of commit.
 ```gitignore
 # 1. Ignore a specific file
@@ -60,7 +61,45 @@ test*
 
 # 10. Ignore files in the root directory only
 /*
-``` 
+```
+* **.gitattributes** - Git's control to suit various file types and workflow requirements within your repository. By specifying attributes in this file, Git stores files and folders based on the defined rules and configurations.
+```gitignore
+It has structure of pattern attr1 attr2 .. inside the file
+
+```text
+# Set default behaviour to automatically normalize line endings
+* text=auto
+
+# Force Unix-style line endings for these file types
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+
+# Force Windows-style line endings for batch scripts
+*.bat text eol=crlf
+
+# Treat these files as binary and don't generate diffs
+*.png binary
+*.jpg binary
+
+# Diff these files with external tools
+*.doc diff=word
+*.pdf diff=pdf
+
+# Use the union merge driver for these files
+*.unity3d merge=unityyamlmerge
+*.prefab merge=unityyamlmerge
+
+# Ensure Unix line endings in exported archives
+* text=auto eol=lf export-ignore
+
+# Track Unity3D asset files in LFS
+*.unity3d filter=lfs diff=lfs merge=lfs -text
+*.prefab filter=lfs diff=lfs merge=lfs -text
+
+# Treat these as Python source files
+*.py diff=python
+```
 
 ## Git configuration
 ******************************************
@@ -73,8 +112,19 @@ git config --global user.email "myemailaddress"
 git config --global user.email
 git config --global core.editor "vim"
 git config --global core.editor
+git config --global alias.s  status
+git s
 ```
-The configuration can be seen in /home/naveenk/.gitconfig. 
+The configuration can be seen in /home/naveenk/.gitconfig.  git alias are helpful to reduce the commands [alias] s=status, l=log
+```bash
+git config --local user.name  "NaveenKaliannan"
+git config user.name
+git config --local user.email "myemailaddress"
+git config --local user.email
+git config --local core.editor "vim"
+git config --local core.editor
+```
+The configuration can be seen .git/config.
 * Set up SSH authentication by generating an SSH key pair and adding the public key to your GitHub account. Configuring SSH keys is important for accessing credentials for the SSH network protocol. This allows you to connect to a remote repository without needing to type a password.
 To create a new key on your local machine: Navigate to the .ssh/ directory: 
 ```bash
@@ -140,12 +190,14 @@ use the SSH URL for your Git remote instead of the HTTPS URL.
 * **git reset --hard commit-hash** removes the commit and the latest changes will also be removed.
 * **git revert commit-hash** it will undo the commit by making a new commit. The commit that we want to remove will still exist. 
 * Pick commit and copy to another branch: Checkout the branch you want to apply the commit to : **git checkout interested-branch** and Use the git cherry-pick command, providing the commit SHA (hash value) of the commit you want to copy: **git cherry-pick SHA-of-commit**
-
+* **Resolving conflicts during rebase** :exclamation: If there are any conflicts, you'll need to resolve them manually. Once the conflicts are resolved, add the files and continue the rebase: **git add .**,  **git rebase --continue**, and **git log**
+* **git clean -d -f** is used to remove untracked files from the working directory of a Git repository, including directories (-d) and force-deleting (-f) them.
 
 
 ## Github commands
 ******************************************
 * **git clone URL** copies the latest git reposity from cloud.\
+* **shallow clone**The error message "RPC error: TLS connection" typically indicates an issue with the SSL/TLS connection during a Git operation. To address this error and complete the repository cloning process, you can follow these steps : Clone the repository with the --depth 1 option to limit the history depth (called shalled clone): **git clone --depth 1 git-link**, **cd git-name**, Fetch the complete history of the repository to resolve the shallow clone **git fetch --unshallow**. Here the `--depth 1` This option specifies that only the most recent commit and its associated data will be cloned.  
 * **git push origin branch-name** pushes master or given branch to cloud or origin  \
 * **git push origin sidebranch:masterbranch** push the latest changes from side-branch to origin master\
 * **git push -u or --set-upstream origin branch-name** command is used to set the upstream branch for the current local branch. This means that it establishes a relationship between your local branch and a branch on a remote repository. The upstream means that you can use commands like git push and git pull without specifying the remote and branch names explicitly \
@@ -153,176 +205,43 @@ use the SSH URL for your Git remote instead of the HTTPS URL.
 * **git pull origin branch-name** is sum of **git fetch** and **git merge**. If conflicts, then **git add changes** and **git commit -m "resolve conflicts"** fix the issue.
 * **pull request** in GitHub is a core feature that enables developers to propose and discuss changes to a codebase before merging them into the main project
 
-* **Squash and Rebase** to maintain workflows. Squashing commits is a way to combine multiple commits into a single commit: **git checkout your-branch**, then **git rebase -i master**, In the text editor, you'll see the word "pick" next to each commit. Change the word "pick" to "squash" (or "s" for short) for all the commits you want to squash, except for the first one. For the first commit, you can leave it as "pick" or change it to "reword" if you want to modify the commit message. If there are any conflicts, you'll need to resolve them manually. Once the conflicts are resolved, add the files and continue the rebase: **git add .**,  **git rebase --continue**, and **git log**
+* **Squash and Rebase** :exclamation: to maintain workflows. Squashing commits is a way to combine multiple commits into a single commit: **git checkout your-branch**, then **git rebase -i master**, In the text editor, you'll see the word "pick" next to each commit. Change the word "pick" to "squash" (or "s" for short) for all the commits you want to squash, except for the first one. For the first commit, you can leave it as "pick" or change it to "reword" if you want to modify the commit message. If there are any conflicts, you'll need to resolve them manually. Once the conflicts are resolved, add the files and continue the rebase: **git add .**,  **git rebase --continue**, and **git log**
 * **Delete a specific commit**  can delete a specific commit **git checkout your-branch**, then **git rebase -i master** In the text editor, locate the commit you want to delete. Instead of using "pick" or "squash", simply delete the entire line for the commit you want to remove or add `drop`. Then **git push --force-with-lease**
 * **Delete a specific commit in main branch** Identify the commit you want to delete **git log** Take note of the commit's SHA (the unique identifier for the commit). **git rebase -i <commit-sha>~1** Replace <commit-sha> with the SHA of the commit you want to delete. The **~1** means you want to rebase the last commit before the one you specified. Then **git push --force-with-lease**
 * **interactive rebase** opens an interactive rebase editor **git rebase -i HEAD~3** specifies that you want to rebase the last 3 commits, i.e., the commits that are 3 steps back from the current HEAD commit.
+* **git reset --soft HEAD~3 && git commit** reset the HEAD to 3rd commit, but keep the changes since it is soft reset. Then changes are commited in single commit. 
 
+* **git reflog** shows a log that records when the tips of branches and other references were updated in the local repository. Reflogs expire 90 days.\
+* **git reflog show HEAD** shows HEAD reference
+* **git reset HEAD** is for undoing uncommitted changes. **git reflog** is rescue to **git reset**
+* To prevent encountering errors such as "smudge filter lfs failed" or "external filter 'git-lfs filter-process' failed," follow these steps: **git lfs install --skip-smudge**, **git clone repository-name**, **git lfs pull**, **git lfs install --force**
+* To see the git root directory or branch hsa values : **git rev-parse --show-toplevel**, **git rev-parse --git-dir**, **git rev-parse --branches**
+* To update your local branch with the latest changes from the remote repository and reset the head pointer to the latest commit, you can follow these steps: **git checkout master**, **git pull**, **git reset --hard origin/branch-name**, and **git pull**
+* To resolve the error indicating an incomplete merge (MERGE_HEAD exists), follow these steps: **git merge --abort**, **git fetch --all**, **git branch -v**, **git reset --hard origin/branch-name**, and **git pull**.
 
-### Git Tags
+## Git Tags
+**********************************
+* Version the code at important points with three digits **3.8.1**, i.e., **major releases.minor releases.patch releases**.
+* **git tag** shows all tags.
+* **git tag tagname**
+* **git tag -a tagname** annotated tag
+* **git tag tagname previous-commit** tag the previous commit
+* **git tag -f tagname commit** move tag to another commit id from one commit
+* **git tag -d tagname** deletes the tag
+* **git push --tags** pushes the tag to cloud or origin
 **********************************
 
-**********************************
-
-## first way (A)
-```
-git rebase master
-git rebase --continue
-git log --oneline -10
-git reset --soft HEAD~3 && git commit
-git push --force
-```
-## second way (J)
-```
-git branch backup/current-branch-name
-git checkout master or interested-branch-name
-git pull
-git status
-in case if there is an Unmerged paths: git reset --hard origin/interested-branch-name or origin/master
-git status
-git checkout my-branch-name
-git rebase master or interested-branch-name (not origin)
-git abort
-git checkout master or interested-branch-name (not origin)
-git cherry-pick
-git cherry-pick SHA-values-of-commit
-git log
-git checkout my-branch-name
-git reset --hard master or interested-branch-name (not origin)
-git log
-git checkout master or interested-branch-name (not origin)
-git reset --hard origin/master or interested-branch-name
-git log
-git checkout my-branch-name
-git push --force-with-lease
-```
-
-
-
-To avoid from the following errors: "smudge filter lfs failed" or "external filter 'git-lfs filter-process' failed"
-```
-git lfs install --skip-smudge
-git clone repository-name
-git lfs pull
-git lfs install --force
-```
-Bookmark commits. Release different versions
-```
-git tag
-```
-How to clean the untracked files
-```
-git clean
-```
-git reset is used to updating the HEAD inorder to add or remove commits from the branch
-```
-git reset HEAD is for undoing uncommitted changes
-git reflog is rescue to git reset
-```
-reverse the changes made in commits
-git revert will make a new commit that reverts the changes made by other commits.
-```
-git revert commit id
-git revert HEAD
-```
-HEAD is a pointer
-```
-cat .git/HEAD
-HEAD in git is used to keep track tip of the branch. When new commits are made, the pointer  point to the new commit.
-git checkout specific commit will make the head points to specific commit. not the new commit anymore. 
-```
-
-How to fix git conflict
-```
-git rebase -i master
-if there is an conflict, then make changes and git add the files
-git add files
-git rebse --continue
-```
-How to igonre or exclude files For example, binaries, inputs of large size, external libraries 
-```
-go to root of your local git (repository-name/.gitigonre) and create gitignore file
-touch .gitignore
-inside the file
-
-How to add empty directories to a Git repository?
-```
-.gitkeep
-```
-**.gitattributes** - gitattributes file provides a powerful way to customize Git's behavior for different file types and workflows across your repository.  Git saves the file or folder according to the attributes specified. 
-It has structure of pattern attr1 attr2 .. inside the file
-```
-# Set default behaviour to automatically normalize line endings
-* text=auto
-
-# Force Unix-style line endings for these file types
-*.js text eol=lf
-*.css text eol=lf
-*.html text eol=lf
-
-# Force Windows-style line endings for batch scripts
-*.bat text eol=crlf
-
-# Treat these files as binary and don't generate diffs
-*.png binary
-*.jpg binary
-
-# Diff these files with external tools
-*.doc diff=word
-*.pdf diff=pdf
-
-# Use the union merge driver for these files
-*.unity3d merge=unityyamlmerge
-*.prefab merge=unityyamlmerge
-
-# Ensure Unix line endings in exported archives
-* text=auto eol=lf export-ignore
-
-# Track Unity3D asset files in LFS
-*.unity3d filter=lfs diff=lfs merge=lfs -text
-*.prefab filter=lfs diff=lfs merge=lfs -text
-
-# Treat these as Python source files
-*.py diff=python
-```
-To see the git root directory or branch hsa values 
-```
-git rev-parse --show-toplevel
-git rev-parse --git-dir
-git rev-parse --branches
-```
-When someone updated your branch and it is available in cloud, Wanna update the head pointer to latest one and pull the updates
-```
-git checkout master
-git pull -> will update the master from origin
-git reset --hard origin/branch-name -> No need to update the code. Just update the head where it points to.
-git pull  
-```
-error: You have not concluded your merge (MERGE_HEAD exists)
-```
-git merge --abort
-git fetch --all
-git branch -v
-git reset --hard origin/branch-name
-git pull
-```
-RPC error: TLS connection
-```
-git clone --depth 1 git-link
-cd git-name
-git fetch --unshallow
-```
-The following untracked working tree files would be overwritten by checkout
-```
-git clean  -d  -f .
-```
-How to add note and warning in Github Readme.md file 
+## How to add note, warning, various symbols in Github Readme.md file 
 
 > __Note__  
 
 > __Warning__
- 
-:exclamation:  :warning:  :boom: :memo: :point_up: :zap: 
+:exclamation: for exclamation \
+:warning: for warning \
+:boom: for danger\
+:memo: for general notes\
+:point_up: for important points\
+:zap: for special attention\
 
 | :warning: WARNING          |
 |:---------------------------|
@@ -344,5 +263,5 @@ How to add note and warning in Github Readme.md file
 | :zap:        content   |
 |-----------------------------------------|
 
- ##### Note that the &check; ( means Passed), &cross; (means not checked yet) and &cross; ( means Failed)
+Note that the &check; ( means Passed), &cross; (means not checked yet) and &cross; ( means Failed)
 
