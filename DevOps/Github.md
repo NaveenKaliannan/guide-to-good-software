@@ -16,6 +16,70 @@
 * **repository** is the complete project and metadata stored by Git, including all commits, branches, and file versions.
 * **HEAD->master** means the pointer refer to the current location in master. **git switch branch-name** switches to give branch. Then the pointer refer to the given branch **HEAD->branch-name**. **git checkout commitID** switches to an commit. Now the pointer refer to the commit. **cat .git/HEAD** reference particular commit **Commit hash value**. 
 * **origin** means cloud. **origin/branch-name** means branch in cloud. **branch-name** means branch in local machine.
+* **detached HEAD** not in the tip of the branch but in a specific commit.
+
+## Important difference in commands
+******************************************
+* **Git Merge** : When you merge one branch into another, Git creates a new commit that combines the changes from both branches. This new commit has two parent commits, one from each of the merged branches.
+```bash
+# Start on the main branch
+git checkout main
+
+# Merge the feature branch into main
+git merge feature
+
+# The commit history now looks like:
+#   C4 (HEAD -> main) Merge branch 'feature'
+#  /\
+# C2 C3 (feature) Feature commits
+# |/
+# C1 Initial commit
+```
+**Git Rebase** : Rebase rewrites the commit history of one branch onto another. It moves the entire branch to begin on the tip of the target branch, replaying each commit from the source branch onto the target one. Unlike merge, rebasing doesn't create new merge commits. Instead, it linearizes the history, making it appear as if the work on the rebased branch occurred directly after the work on the branch it's rebased onto.
+```bash
+# Start on the feature branch
+git checkout feature
+
+# Rebase the feature branch onto main
+git rebase main
+
+# The commit history now looks like:
+#   C3' (HEAD -> feature) Feature commit
+#   C2' Feature commit
+#  /
+# C1 (main) Initial commit
+```
+* **git fetch**  only downloads new data from the remote repository (such as new branches or updated commits) to your local repository. It doesn't integrate these changes into your working branches or modify your working directory. After fetching, you can inspect the changes and decide how to integrate them into your local branches, such as by merging or rebasing. 
+```bash
+# Check the current state of your local repository
+cat example.txt  # Output: Hello, World!
+
+# Fetch the changes from the remote repository
+git fetch
+
+# The changes are now in your local repository, but not merged
+git log --oneline origin/main  # Shows the new commit from the remote
+
+# Your local working directory is still unchanged
+cat example.txt  # Output: Hello, World!
+
+# To merge the changes, you need to explicitly run `git merge`
+git merge origin/main
+
+# Now the changes are merged into your local working directory
+cat example.txt  # Output: Hello, Universe!
+```
+**git pull** is a combination of two actions: git fetch followed by git merge or git rebase.
+```bash
+# Check the current state of your local repository
+cat example.txt  # Output: Hello, World!
+
+# Pull the changes from the remote repository
+git pull
+
+# The changes are automatically fetched and merged
+cat example.txt  # Output: Hello, Universe!
+```
 
 ## Important file you should know about in git
 ******************************************
