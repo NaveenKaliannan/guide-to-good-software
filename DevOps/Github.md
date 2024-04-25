@@ -139,6 +139,9 @@ use the SSH URL for your Git remote instead of the HTTPS URL.
 * **git reset commit-hash** get rid of the commit, there wont be any commit after that. But the changes will still be present. This can be used later or commited. 
 * **git reset --hard commit-hash** removes the commit and the latest changes will also be removed.
 * **git revert commit-hash** it will undo the commit by making a new commit. The commit that we want to remove will still exist. 
+* Pick commit and copy to another branch: Checkout the branch you want to apply the commit to : **git checkout interested-branch** and Use the git cherry-pick command, providing the commit SHA (hash value) of the commit you want to copy: **git cherry-pick SHA-of-commit**
+
+
 
 ## Github commands
 ******************************************
@@ -148,16 +151,19 @@ use the SSH URL for your Git remote instead of the HTTPS URL.
 * **git push -u or --set-upstream origin branch-name** command is used to set the upstream branch for the current local branch. This means that it establishes a relationship between your local branch and a branch on a remote repository. The upstream means that you can use commands like git push and git pull without specifying the remote and branch names explicitly \
 * **git fetch origin branch-name** brings the origin/branch-name and will update the origin/branch-name but branch-name will be unaffected. git status on branch-name will say my branch is behind certain commits.
 * **git pull origin branch-name** is sum of **git fetch** and **git merge**. If conflicts, then **git add changes** and **git commit -m "resolve conflicts"** fix the issue.
+* **pull request** in GitHub is a core feature that enables developers to propose and discuss changes to a codebase before merging them into the main project
+
+* **Squash and Rebase** to maintain workflows. Squashing commits is a way to combine multiple commits into a single commit: **git checkout your-branch**, then **git rebase -i master**, In the text editor, you'll see the word "pick" next to each commit. Change the word "pick" to "squash" (or "s" for short) for all the commits you want to squash, except for the first one. For the first commit, you can leave it as "pick" or change it to "reword" if you want to modify the commit message. If there are any conflicts, you'll need to resolve them manually. Once the conflicts are resolved, add the files and continue the rebase: **git add .**,  **git rebase --continue**, and **git log**
+* **Delete a specific commit**  can delete a specific commit **git checkout your-branch**, then **git rebase -i master** In the text editor, locate the commit you want to delete. Instead of using "pick" or "squash", simply delete the entire line for the commit you want to remove or add `drop`. Then **git push --force-with-lease**
+* **Delete a specific commit in main branch** Identify the commit you want to delete **git log** Take note of the commit's SHA (the unique identifier for the commit). **git rebase -i <commit-sha>~1** Replace <commit-sha> with the SHA of the commit you want to delete. The **~1** means you want to rebase the last commit before the one you specified. Then **git push --force-with-lease**
+* **interactive rebase** opens an interactive rebase editor **git rebase -i HEAD~3** specifies that you want to rebase the last 3 commits, i.e., the commits that are 3 steps back from the current HEAD commit.
 
 
+### Git Tags
+**********************************
 
-coping a specific commit from one branch to the interested branch
-```
-git checkout interested-branch
-git cherrypick SHA-values-of-commit
-```
+**********************************
 
-Squash and rebase
 ## first way (A)
 ```
 git rebase master
@@ -190,19 +196,7 @@ git log
 git checkout my-branch-name
 git push --force-with-lease
 ```
-squash commits
-```
-git rebase -i master
-do : first commit to reword (top) and other all to squash (below)
-git rebase --continue
-git log
-```
-Delete a specific commit 
-```
-git rebase -i master
-do : delete the specific commit instead of squash or pick or other keywords. This means delete the entire line
-git push --force-with-lease
-```
+
 
 
 To avoid from the following errors: "smudge filter lfs failed" or "external filter 'git-lfs filter-process' failed"
