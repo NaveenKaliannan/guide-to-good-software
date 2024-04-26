@@ -25,6 +25,20 @@ Jenkins integrates with a wide range of tools and technologies to enable this en
 ****************************************
 * **https://www.jenkins.io/doc/book/installing/docker/**
 * **docker run -p 8080:8080 -p 50000:50000 -v /home/naveenk/learning/devops/jenkins/:/var/jenkins_home  jenkins/jenkins:latest**
+*  **docker-compose.yml** for Jenkins installation
+```yaml
+version: '3'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - "/home/naveenk/learning/devops/jenkins/:/var/jenkins_home"
+```
 * https://www.jenkins.io/doc/pipeline/steps/workflow-cps/
 * https://www.groovy-lang.org/syntax.html
 ****************************************
