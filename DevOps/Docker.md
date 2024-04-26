@@ -174,7 +174,7 @@ Docker Compose will first read the configuration file, then build the images (if
 In the Compose file, the key is the service name, and the value is the configuration for that service, which includes the image name, build instructions, ports, links, and other settings.
 The version field is a top-level element in the Compose file that specifies the version of the Compose file format being used.
 The services field defines the different services (containers) that make up the application.
-```
+```yaml
 version: '2'
 
 services:
@@ -197,6 +197,20 @@ services:
 without Docker- Every body has to install or compile all dependencies to run a source code in local environment. Artifacts with requirements.txt file
 with Docker, No need for any installation. Has its own operating layer. No environemnt configuraion
 Container is made up of images. The base is Linux Base image (Alpine or linux distributions). The top is application image.
+4. **docker-compose.yml** for Jenkins installation
+```yaml
+version: '3'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - "/home/naveenk/learning/devops/jenkins/:/var/jenkins_home"
+```
 ******************************
 * **docker-compose up** command runs the docker compose yaml file
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
