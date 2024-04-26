@@ -11,12 +11,19 @@
 ******************************
 * **Linux installation** : https://docs.docker.com/engine/install/ubuntu/
 * **Debian installation** : https://docs.docker.com/engine/install/debian/
+* The command **sudo systemctl enable docker** enables the Docker service to start automatically when the system boots up
 * **Necessary permissions to access the Docker daemon socket file (/var/run/docker.sock). By default, the Docker socket file is owned by the "root" user and the "docker" group. when Docker is installed, it typically creates a group called "docker" if it doesn't already exist. This group is used to manage access control to the Docker daemon and related resources, such as the Docker socket file (/var/run/docker.sock).**
   1. **sudo groupadd docker** Create the "docker" group if it doesn't exist
   2. **sudo usermod -aG docker $USER** Add your user account to the "docker" group. Log out and log back in for the group changes to take effect.
   3. **sudo systemctl restart docker**
   4. Check the ownership and permissions of the Docker socket file **sudo ls -l /var/run/docker.sock**. The socket file should be owned by the "root" user and the "docker" group. If not, you can change the ownership: **sudo chown root:docker /var/run/docker.sock**
 - Verify that the Docker daemon is running: **sudo systemctl status docker**
+
+* **docker-compose installation**
+   1. sudo curl -L "https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+   2. sudo chmod +x /usr/local/bin/docker-compose
+   3. docker-compose --version
+
 * **docker info** displays all the information about docker installation, configuration and networking.
 ******************************
 
