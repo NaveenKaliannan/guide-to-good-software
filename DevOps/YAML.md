@@ -6,8 +6,7 @@ YAML (Yet Another Markup Language) is a human-readable text-based format used ex
 * Common Kubernetes YAML file components include apiVersion, kind, metadata, spec, and status. The spec section defines the desired state of the resource
 * YAML files allow you to define complex Kubernetes objects, such as Deployments, which include settings like the number of replicas, container images, and labels
 * **Key Value**
-```
-yaml
+```yaml
 name: John Doe
 age: 30
 address:
@@ -15,8 +14,7 @@ address:
   city: Anytown
   state: CA
 ```
-```
-json
+```json
 {
   "name": "John Doe",
   "age": 30,
@@ -28,21 +26,17 @@ json
 }
 ```
 * **Key-List**
-```
-yaml
-yaml
+```yaml
 fruits:
   - apple
   - banana
   - orange
 ```
-```
-json
+```json
 "fruits": ["apple", "banana", "orange"]
 ```
 * **Key-List of Dictionaries**
-```
-yaml
+```yaml
 employees:
 - name: Martin D'vloper
   job: Developer
@@ -51,8 +45,7 @@ employees:
   job: PM
   skill: Elite
 ```
-```
-json
+```json
 {
   "employees": [
     {
