@@ -212,8 +212,9 @@ services:
       - "/home/naveenk/learning/devops/jenkins/:/var/jenkins_home"
 ```
 ******************************
-* **docker-compose up** command runs the docker compose yaml file
+* **docker-compose up** command runs the docker compose yaml file. **-d** option to run it in brackground.
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
+* **docker-compose start, restart stop, down containerid** to stop and start, delete services.
 
 
 ### orchestration
