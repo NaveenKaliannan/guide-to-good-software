@@ -9,6 +9,7 @@
 
 ## Docker Installation 
 ******************************
+* Docker Community Edition (public) and Enterprise Edition (industries and images are verfified).
 * **Linux installation** : https://docs.docker.com/engine/install/ubuntu/
 * **Debian installation** : https://docs.docker.com/engine/install/debian/
 * The command **sudo systemctl enable docker** enables the Docker service to start automatically when the system boots up
@@ -37,7 +38,7 @@ The main factors that determine the maximum number of containers on a host are: 
 ```
 The ipv6 option enables IPv6 support, and fixed-cidr-v6 specifies the IPv6 subnet to be used for the default bridge network. Replace 2001:db8:1::/64 with your desired IPv6 subnet.\
 Save the file and restart the Docker daemon for the changes to take effect. Create an IPv6 Network. After enabling IPv6 support, you can create an IPv6 network using the docker network create command with the --ipv6 flag: **docker network create --ipv6 --subnet=<ipv6-subnet> <network-name>**  Replace <ipv6-subnet> with your desired IPv6 subnet (e.g., 2001:db8:2::/64) and <network-name> with the name of your new network. Run Containers with IPv6 Addressing When running containers, you can specify the --ip6 flag to assign an IPv6 address from the configured subnet, or use the --network flag to attach the container to the IPv6-enabled network you created: **docker run --ip6=2001:db8:2::10 --name my-ipv6-container my-image** or **docker run --network=my-ipv6-network --name my-ipv6-container my-image**. This will allow the container to communicate using IPv6 addresses. Enable IPv6 Forwarding (Optional) If you want containers to communicate with the outside world using IPv6, you need to enable IPv6 forwarding on the Docker host: **sysctl net.ipv6.conf.all.forwarding=1**. You may also need to configure iptables rules to allow forwarding.  By following these steps, you can enable IPv6 support in Docker and create IPv6-enabled networks for your containers to use IPv6 addressing and communication
-* Docker daemon logs using the following command: **sudo journalctl -u docker** offers the issue in daemon's operation, whereas logs for a specific Docker container **docker logs <container_name_or_id>** for contaiener level logs
+* Docker daemon logs using the following command: **sudo journalctl -u docker** or **grep -i docker /var/syslog** offers the issue in daemon's operation, whereas logs for a specific Docker container **docker logs <container_name_or_id>** for contaiener level logs
 
 
 ******************************
@@ -66,7 +67,7 @@ So, while the Docker client and Docker daemon are separate components, they are 
 4. **Docker image** is read only templates and contains all dependencies and information to build and run a docker container. In simpler words, it is just a package and is made up of different layers (a parent layer and many chid derived layers).
 5. **Docker container** is a runtime instance of a Docker image and an isolated environment, has own processes, interfaces, mounts. It can be realized via **docker run docker-image-name**. Docker container doesnt have the OS within it. It borrows the OS from the host machine and share the host kernel with other containers. In the case of VM, each VM has its own OS. Containers are portable. Docker uses Linux containers (LXC). Note that the windows based docker container cannot be run on linux OS.
 6. **Docker registry** is cloud where all the docker images are stored. The docker reistry is quite similar to the github where the website/useraccount/reposityname is used to pull repository. For private docker registry, **docker login registry.io** needs to be performed, and then run  **docker run registry.io/useraccount/dockercontainername** . Note that the docker registry is an another application and it is a docker image, exposes API on port 5000. docker access structure dockerregistry/username/imagereposityname. Dockerhub (docker.io) is default registry and it is public
-7. However, new **Docker image** can also be created from a running container. It can be created via **docker commit container-info**
+7. However, new **Docker image** can also be created from a running container. It can be created via **docker run -it <image_name> /bin/bash**, **docker commit <container_id> <new_image_name>**
 8. **Docker host** is a server or machine in which docker runs.
 9. **namespace** the namespace PID of a process inside a Docker container can be determined by looking at the /proc/<pid>/status file on the host, where <pid> is the global PID of the container process. This mapping between namespace and global PIDs is an important concept for understanding how Docker containers isolate their processes. Processes running inside a Docker container have their PIDs isolated within the container's namespace. This means the PID of a process inside the container may be different from its PID on the host.
 To find the mapping between the namespace PID and the global PID on the host, you can look at the /proc/<pid>/status file on the host. The NSpid line will show the namespace PID. 
@@ -97,7 +98,7 @@ Linux namespaces, including the PID namespace, are a key feature that allows Doc
 * **docker build -f dockerfile.prod**
 * **docker inspect imagename** returns all the information about docker runs including volume, state information, network information, metadata.
 * **doceker push** to push the image to docker cloud or local registry.
-* **docker run -d -p 5000:5000 -name my-registry --restart=always registry:2** Runs a registry server with name equals to my-registry using registry:2 image with host port set to 5000, and restart policy set to always.
+* **docker run -d -p 5000:5000 -name my-registry --restart=always registry:2** Runs a registry server with name equals to my-registry using registry:2 image with host port set to 5000, and restart policy set to always. The --restart=always option in Docker instructs the container to automatically restart whenever it stops, including when the host system is rebooted or restarted. **no (default)**: Do not automatically restart the container. **on-failure**: Restart the container if it exits due to an error. **unless-stopped**: Restart the container unless it was explicitly stopped. **always**: Always restart the container regardless of the exit status.
 * **docker image tag nginx:latest localhost:5000/nginx:latest** tags the image with a target name. **docker push localhost:5000/nginx:latest** pushes the target image to registry.
 * **docker image history imagename** provides the information of image
 * **docker export imageid  > export.tar** exports the docker container. **cat export.tar | docker import - layer:1** imports the imageid.
@@ -140,7 +141,11 @@ Overall, multi-stage builds in Docker provide a way to optimize the build proces
 * **docker kill** command sends the SIGKILL signal to a running container, forcibly terminating it without any chance for cleanup.
 * **docker run** creates a new container, starts it, and attaches the console to the container's main process. **docker create** creates a new container but does not start it. The container remains in a "created" state until you start it manually using **docker start**.
 * The best way to find a Docker container with the exact name "containername" is to use the **docker ps --filter "name=containername**
-* Debugging a container to use **docker exec** command
+* Debugging a container to use **docker exec** command.
+* Enter and conencting to containers
+  1. **docker run -it --name containername imagename /bin/bash** bash shell prompt of container
+  2. **docker run -it containerid /bin/bash** shell prompt of container for already pulled image and created container. 
+  3. **docker exec -it containerid /bin/bash** inside the container
 ******************************
 
 ### Docker storage and File systems
@@ -149,10 +154,51 @@ when docker is installed the directory **/var/lib/docker** gets created. It cont
 
 Image layer is always read only. Contaienr only is read and write. 
 
-* **docker volume create mydata** creates a folder in data. mydata folder is inside  /var/lib/docker/volumes. all the data generated from docker run will stored in this folder rather than the default folder created by docker contaienr name. The data will be available even when the container is deleted. Docker volumes are the recommended option for persisting data in Docker containers, as they are managed by Docker and provide better performance.
-* Bind mounts  **docker run -v /home/naveenk/mydata:/var/lib/mysql mysql** or **docker run --mount type==bind,source=/home/naveenk/mydata,target=/var/lib/mysql mysql**  offer more flexibility by allowing you to directly access the host's filesystem 
+* **docker volume create mydata** creates a folder in data. mydata folder is inside  /var/lib/docker/volumes. all the data generated from docker run will stored in this folder rather than the default folder created by docker contaienr name. The data will be available even when the container is deleted. Docker volumes are the recommended option for persisting data in Docker containers, as they are managed by Docker and provide better performance. **docker volume create testvolume** **docker volume ls**, **docker volume inspect** shows the mountpoint, **docker volume rm testvolume**
+* Bind mounts  **docker run -v /home/naveenk/mydata:/var/lib/mysql mysql** or **docker run --mount type==bind,source=/home/naveenk/mydata,target=/var/lib/mysql mysql**  offer more flexibility by allowing you to directly access the host's filesystem. Mount option by creating **docker volume create testvolume**,  **docker run --mount type==bind,source=testvolume,target=/var/lib/mysql mysql**
 * **docker run -v mydata:/var/lib/mysql mysql** stores all the data in mydata folder.
 * **docker system df** or **docker system df -v** to see the memory used by images inside docker
+* Docker provides three main types of mounts for managing data in containers: volumes, bind mounts, and tmpfs mounts
+  1. Volumes are the recommended way to persist data in Docker. They are managed by Docker and are stored in a part of the host filesystem (/var/lib/docker/volumes/ on Linux) that is designed to be managed by Docker.
+```bash
+# Create a volume
+docker volume create my-vol
+
+# Start a container with a volume mounted
+docker run -d --name devtest -v my-vol:/app nginx:latest
+```
+ 2. Bind Mounts  allow you to mount a directory or file from the host machine into the container's filesystem. They rely on the host machine's filesystem structure.
+```bash 
+# Start a container with a bind mount
+docker run -d --name devtest -v /path/on/host:/app nginx:latest
+```
+  3. tmpfs Mounts are stored in the host system's memory only and are never written to the host system's filesystem. They are used for storing non-persistent, temporary data or sensitive information.
+```bash 
+# Start a container with a tmpfs mount
+docker run -d --name devtest --tmpfs /app nginx:latest
+```
+* Docker container can be connected to multiple volumes at the same time. Here are a few examples
+```bash
+bash
+docker run -d --name mycontainer \
+  -v volume1:/path/in/container \
+  -v volume2:/another/path \
+  -v /host/path:/third/path \
+  nginx
+```
+```yaml
+version: '3'
+services:
+  myservice:
+    image: nginx
+    volumes:
+      - volume1:/path/in/container
+      - volume2:/another/path
+      - /host/path:/third/path
+volumes:
+  volume1:
+  volume2:
+```
 ******************************
 
 ### Docker networking
@@ -171,6 +217,41 @@ when docker is installed, bridge, none and host networks are created. Bridge is 
 *  **docker inspect networkid | grep "Subnet"** displays the subnet info. networkid can be obtained from **docker network ls**.
 *  **docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=db_pass123 --network wp-mysql-network  mysql:5.6** creates a new container named mysql-db using the mysql:5.6 image, sets the MYSQL_ROOT_PASSWORD environment variable to db_pass123, and attaches the container to the wp-mysql-network network
 *  **docker run --network=wp-mysql-network -e DB_Host=mysql-db -e DB_Password=db_pass123 -p 38080:8080 --name webapp --link mysql-db:mysql-db -d kodekloud/simple-webapp-mysql** The docker run command creates a new container named webapp using the kodekloud/simple-webapp-mysql image, sets the DB_Host environment variable to mysql-db and the DB_Password environment variable to db_pass123, maps port 38080 on the host to port 8080 in the container, links the webapp container to the mysql-db container, and runs the container in detached mode (-d). The container is attached to the wp-mysql-network network, allowing it to communicate with the mysql-db container.
+* Connecting to multiple user-defined networks
+```bash
+# Create two user-defined networks
+docker network create frontend
+docker network create backend
+
+# Run a container and connect it to both networks
+docker run -d --name app --network frontend --network backend nginx
+```
+```yaml
+version: '3'
+services:
+  web:
+    networks:
+      - frontend
+      - backend
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+```
+```yaml
+yaml
+version: '3'
+services:
+  web:
+    networks:
+      - frontend
+      - bridge
+networks:
+  frontend:
+    driver: bridge
+```
+
 ******************************
 
 ### Working with private docker registry
