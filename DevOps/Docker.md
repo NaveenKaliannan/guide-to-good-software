@@ -167,12 +167,12 @@ docker volume create my-vol
 # Start a container with a volume mounted
 docker run -d --name devtest -v my-vol:/app nginx:latest
 ```
- 2. Bind Mounts  allow you to mount a directory or file from the host machine into the container's filesystem. They rely on the host machine's filesystem structure.
+ 2. Bind Mounts allow you to mount a directory or file from the host machine into the container's filesystem. They rely on the host machine's filesystem structure.
 ```bash 
-# Start a container with a bind mount
+# Start a container with a bind mount or "$(pwd)"/data
 docker run -d --name devtest -v /path/on/host:/app nginx:latest
 ```
-  3. tmpfs Mounts are stored in the host system's memory only and are never written to the host system's filesystem. They are used for storing non-persistent, temporary data or sensitive information.
+  3. tmpfs Mounts are stored in the host system's memory only, inside the container and are never written to the host system's filesystem. They are used for storing non-persistent, temporary data or sensitive information.
 ```bash 
 # Start a container with a tmpfs mount
 docker run -d --name devtest --tmpfs /app nginx:latest
