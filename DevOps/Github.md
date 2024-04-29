@@ -80,7 +80,9 @@ git pull
 # The changes are automatically fetched and merged
 cat example.txt  # Output: Hello, Universe!
 ```
-
+* The **git reset --hard** command is a destructive operation that moves the branch pointer to a specified commit, discarding all changes made after that commit.
+* The **git revert** command is a safer way to undo changes. It creates a new commit that undoes the changes made by a specified commit, leaving the commit history intact
+  
 ## Important file you should know about in git
 ******************************************
 * `.git` directory
