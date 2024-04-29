@@ -25,6 +25,63 @@
    3. docker-compose --version
 
 * **docker info** displays all the information about docker installation, configuration and networking.
+* **docker system prune** prune the entire Docker system and remove all unused containers, images, networks, and volumes.  **-fa** are force and all flag.
+* The number of containers that can be run depends on the available resources (CPU, memory, etc.) on the host machine.
+The main factors that determine the maximum number of containers on a host are: Available memory on the host, CPU resources of the host, Kernel resources like cgroups, namespaces, etc. As you run more containers, they consume more of the host's memory, CPU cycles, and kernel resources. Once these resources are exhausted, you won't be able to run additional containers.
+* **To configure Docker to use IPv6 networking**, you need to follow these steps:Enable IPv6 Support in Docker, Create or edit the Docker daemon configuration file **/etc/docker/daemon.json**. Add the following configuration options:
+```json
+{
+  "ipv6": true,
+  "fixed-cidr-v6": "2001:db8:1::/64"
+}
+```
+The ipv6 option enables IPv6 support, and fixed-cidr-v6 specifies the IPv6 subnet to be used for the default bridge network. Replace 2001:db8:1::/64 with your desired IPv6 subnet.\
+Save the file and restart the Docker daemon for the changes to take effect. Create an IPv6 Network. After enabling IPv6 support, you can create an IPv6 network using the docker network create command with the --ipv6 flag: **docker network create --ipv6 --subnet=<ipv6-subnet> <network-name>**  Replace <ipv6-subnet> with your desired IPv6 subnet (e.g., 2001:db8:2::/64) and <network-name> with the name of your new network. Run Containers with IPv6 Addressing When running containers, you can specify the --ip6 flag to assign an IPv6 address from the configured subnet, or use the --network flag to attach the container to the IPv6-enabled network you created: **docker run --ip6=2001:db8:2::10 --name my-ipv6-container my-image** or **docker run --network=my-ipv6-network --name my-ipv6-container my-image**. This will allow the container to communicate using IPv6 addresses. Enable IPv6 Forwarding (Optional) If you want containers to communicate with the outside world using IPv6, you need to enable IPv6 forwarding on the Docker host: **sysctl net.ipv6.conf.all.forwarding=1**. You may also need to configure iptables rules to allow forwarding.  By following these steps, you can enable IPv6 support in Docker and create IPv6-enabled networks for your containers to use IPv6 addressing and communication
+* Docker daemon logs using the following command: **sudo journalctl -u docker** offers the issue in daemon's operation, whereas logs for a specific Docker container **docker logs <container_name_or_id>** for contaiener level logs
+
+
+******************************
+
+### Docker Terminology 
+******************************
+1. **Docker Client** is the primary way users interact with Docker. It accepts commands and configuration data from the user and communicates with the Docker daemon to execute those commands.
+2. **Docker Daemon** (dockerd) is a long-running program that manages Docker objects like images, containers, networks, and storage volumes. It listens for Docker API requests and processes them accordingly.
+3. **Docker Engine** is a software that creates and runs containers, as well as interacts with the host OS. When installing Docker on Linux, you are essentially installing:
+Docker CLI (command line interface, user interface)
+Docker API (for communication between the Docker client and the Docker daemon)
+Docker Daemon (a background process that processes commands from the Docker client, and manages images, containers, volumes, and networks)
+The Docker CLI can be installed on a different machine or host and can be connected to a remote Docker Engine using the -H or --host flag, like docker -H=remote-docker-engine:port command. This allows you to manage a remote Docker Engine from a different machine.\
+* The differece among them:\
+  **Docker Client**
+The Docker client is the primary way users interact with Docker. It is a command-line interface (CLI) tool that sends commands and configuration data to the Docker daemon. The Docker client communicates with the Docker daemon through a REST API, either over a UNIX socket or a network interface.\
+  **Docker Daemon**
+The Docker daemon (dockerd) is a long-running process that manages Docker objects such as images, containers, networks, and volumes. It listens for Docker API requests from the Docker client and processes them accordingly. The Docker daemon is responsible for the heavy lifting of building, running, and distributing Docker containers.\
+  **Docker Engine**
+Docker Engine is the core technology that enables containerization. It consists of both the Docker daemon and the Docker client, along with other components like the Docker API, Docker Compose, and Docker Hub.\
+  **In summary**\
+The Docker client is the CLI tool that users interact with to issue commands to Docker.\
+The Docker daemon is the server-side process that manages and executes Docker operations.\
+The Docker Engine is the overall containerization technology that includes the Docker daemon, Docker client, and other components.\
+So, while the Docker client and Docker daemon are separate components, they are both part of the broader Docker Engine platform. The Docker client communicates with the Docker daemon, which in turn manages and orchestrates the Docker containers and other resources
+4. **Docker image** is read only templates and contains all dependencies and information to build and run a docker container. In simpler words, it is just a package and is made up of different layers (a parent layer and many chid derived layers).
+5. **Docker container** is a runtime instance of a Docker image and an isolated environment, has own processes, interfaces, mounts. It can be realized via **docker run docker-image-name**. Docker container doesnt have the OS within it. It borrows the OS from the host machine and share the host kernel with other containers. In the case of VM, each VM has its own OS. Containers are portable. Docker uses Linux containers (LXC). Note that the windows based docker container cannot be run on linux OS.
+6. **Docker registry** is cloud where all the docker images are stored. The docker reistry is quite similar to the github where the website/useraccount/reposityname is used to pull repository. For private docker registry, **docker login registry.io** needs to be performed, and then run  **docker run registry.io/useraccount/dockercontainername** . Note that the docker registry is an another application and it is a docker image, exposes API on port 5000. docker access structure dockerregistry/username/imagereposityname. Dockerhub (docker.io) is default registry and it is public
+7. However, new **Docker image** can also be created from a running container. It can be created via **docker commit container-info**
+8. **Docker host** is a server or machine in which docker runs.
+9. **namespace** the namespace PID of a process inside a Docker container can be determined by looking at the /proc/<pid>/status file on the host, where <pid> is the global PID of the container process. This mapping between namespace and global PIDs is an important concept for understanding how Docker containers isolate their processes. Processes running inside a Docker container have their PIDs isolated within the container's namespace. This means the PID of a process inside the container may be different from its PID on the host.
+To find the mapping between the namespace PID and the global PID on the host, you can look at the /proc/<pid>/status file on the host. The NSpid line will show the namespace PID. 
+For example, if you have a sleep 900 process running in a Docker container, you can find its namespace PID by looking at the NSpid line in the /proc/<pid>/status file on the host, where <pid> is the global PID of the Docker container process. 
+This allows you to debug processes inside the container using tools only available on the host, like strace, by mapping the namespace PID to the global PID. 
+The docker inspect --format '{{.State.Pid}}' container command can also be used to get the global PID of the container process on the host. 
+Linux namespaces, including the PID namespace, are a key feature that allows Docker containers to isolate their processes from the host and each other.
+**Mount (mnt) namespace: Provides the container with an isolated view of the filesystem, ensuring processes don't interfere with files belonging to other processes on the host. The container's root filesystem is typically mounted from the /var/lib/docker/ directory on the host. Network (net) namespace: Provides the container with an isolated view of the network stack, including network interfaces, routing tables, and iptables rules. Containers can share the network namespace of other containers, allowing them to communicate with each other.  Process ID (pid) namespace: How process ID is assigned. PID in linux and PID in containers are different and has own IDs.** 
+11. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
+12. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address (192.186.1.5) and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
+13. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
+14. **docker port mapping** Accessing Container Services: By mapping a host port to a container port, you can access services running inside the container from the host machine. For example, if you have a web server running on port 80 in the container, you can access it by connecting to localhost:80 on the host
+15. Docker uses control group to manage the resources.
+16. **detached container** in Docker refers to a container that is running in the background, without being attached to the terminal or console from which it was started.
+17. **.dockerignore**  file that excludes the files and folder. 
 ******************************
 
 ## Docker commands 
@@ -45,7 +102,16 @@
 * **docker image history imagename** provides the information of image
 * **docker export imageid  > export.tar** exports the docker container. **cat export.tar | docker import - layer:1** imports the imageid.
 * **Reducing the image size** can be done by replacing the **apk install** with **apk add**. In addition, reducing instructions, optimized libraries, and etc.
-* **Multi stage image build** several images are build on single dockerfile. Each images depend on one another. 
+* **Multi stage image build** several images are build on single dockerfile. Each images depend on one another. To create a multi-stage build in Docker, you need to follow these steps:
+1. Define multiple FROM statements in your Dockerfile, each representing a different stage of the build process.\
+2. Give each stage a name using the AS <stage-name> syntax after the FROM statement.\
+3. Use the COPY --from=<stage-name> instruction to copy files or artifacts from one stage to another.\
+4. In the final stage, copy only the necessary files or binaries needed to run the application, leaving behind the build dependencies.\
+The key benefit of using multi-stage builds is that it helps reduce the final Docker image size. By copying only the necessary artifacts to the final stage, you can significantly reduce the size of the image, making it more efficient to distribute and deploy.
+This technique also improves the security of the final image, as it contains only the required dependencies, reducing the attack surface and potential vulnerabilities.
+Overall, multi-stage builds in Docker provide a way to optimize the build process and create smaller, more secure Docker images.
+* **tags** are used for versioning, testing purposes
+* There are a few ways to force a rebuild of a Docker image when the Dockerfile has been updated: Use the docker build command with the --no-cache option: **docker build --no-cache -t my-image .**, **docker-compose build --no-cache my-service**, 
  ******************************
 
 ### Container house keeping and running commands
@@ -70,33 +136,11 @@
 * **docker exec container-ID cat /etc/hosts** shows the contents of /etc/hosts file.
 * **docker exec -it container-ID /bin/bash** shows the virutal file system inside a container
 * **docker exec containerID ps -eaf** to see the PIDs in container. **top** or **ps -eaf | grep "containername"** to see the PIDs in the linux. With namespace, multuple processes IDs are given to same process IDs.
-******************************
-
-### Docker Terminology 
-******************************
-1. **Docker image** is read only templates and contains all dependencies and information to build and run a docker container. In simpler words, it is just a package.
-3. **Docker container** is a runtime instance of a Docker image and an isolated environment, has own processes, interfaces, mounts. It can be realized via **docker run docker-image-name**. Docker container doesnt have the OS within it. It borrows the OS from the host machine and share the host kernel with other containers. In the case of VM, each VM has its own OS. Containers are portable. Docker uses Linux containers (LXC). Note that the windows based docker container cannot be run on linux OS.
-4. **Docker compose**
-5. **Docker registry** is cloud where all the docker images are stored. The docker reistry is quite similar to the github where the website/useraccount/reposityname is used to pull repository. For private docker registry, **docker login registry.io** needs to be performed, and then run  **docker run registry.io/useraccount/dockercontainername** . Note that the docker registry is an another application and it is a docker image, exposes API on port 5000. docker access structure dockerregistry/username/imagereposityname. Dockerhub (docker.io) is default registry and it is public
-6. However, new **Docker image** can also be created from a running container. It can be created via **docker commit container-info**
-7. **Docker host** is a server or machine in which docker runs.
-8. **Docker Engine** is a software that creates and runs containers, as well as interacts with the host OS. When installing Docker on Linux, you are essentially installing:
-Docker CLI (command line interface, user interface)
-Docker API (for communication between the Docker client and the Docker daemon)
-Docker Daemon (a background process that processes commands from the Docker client, and manages images, containers, volumes, and networks)
-The Docker CLI can be installed on a different machine or host and can be connected to a remote Docker Engine using the -H or --host flag, like docker -H=remote-docker-engine:port command. This allows you to manage a remote Docker Engine from a different machine.
-9. **namespace** the namespace PID of a process inside a Docker container can be determined by looking at the /proc/<pid>/status file on the host, where <pid> is the global PID of the container process. This mapping between namespace and global PIDs is an important concept for understanding how Docker containers isolate their processes. Processes running inside a Docker container have their PIDs isolated within the container's namespace. This means the PID of a process inside the container may be different from its PID on the host.
-To find the mapping between the namespace PID and the global PID on the host, you can look at the /proc/<pid>/status file on the host. The NSpid line will show the namespace PID. 
-For example, if you have a sleep 900 process running in a Docker container, you can find its namespace PID by looking at the NSpid line in the /proc/<pid>/status file on the host, where <pid> is the global PID of the Docker container process. 
-This allows you to debug processes inside the container using tools only available on the host, like strace, by mapping the namespace PID to the global PID. 
-The docker inspect --format '{{.State.Pid}}' container command can also be used to get the global PID of the container process on the host. 
-Linux namespaces, including the PID namespace, are a key feature that allows Docker containers to isolate their processes from the host and each other.
-10. How process ID is assigned. PID in linux and PID in containers are different and has own IDs.  
-11. **Docker client** mainly allows user to interact with Docker. Any Docker command that is run on the terminal, is sent to the Docker daemon via Docker API.
-12. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address (192.186.1.5) and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
-13. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
-14. **docker port mapping** Accessing Container Services: By mapping a host port to a container port, you can access services running inside the container from the host machine. For example, if you have a web server running on port 80 in the container, you can access it by connecting to localhost:80 on the host
-15. Docker uses control group to manage the resources.
+* **docker run -d --name mycontainer --memory="512m" --cpus=1 myimage** limits both memory and CPU usage
+* **docker kill** command sends the SIGKILL signal to a running container, forcibly terminating it without any chance for cleanup.
+* **docker run** creates a new container, starts it, and attaches the console to the container's main process. **docker create** creates a new container but does not start it. The container remains in a "created" state until you start it manually using **docker start**.
+* The best way to find a Docker container with the exact name "containername" is to use the **docker ps --filter "name=containername**
+* Debugging a container to use **docker exec** command
 ******************************
 
 ### Docker storage and File systems
@@ -159,7 +203,7 @@ copy the source code
 * **COPY** simply copies files or directories from the host machine to the Docker image. **ADD** has additional functionality beyond just copying - it can also download files from remote URLs and automatically extract compressed archives
 * **RUN** executes when building the image. ENTRYPOINT and CMD gets executed when the container runs. Each RUN instruction creates a new layer. Connect all the RUN instructions via &&.
 * **ENTRYPOINT** Defines the executable that will be run when the container starts. The **ENTRYPOINT** command cannot be overridden by the Docker run command. Any arguments passed to the Docker run command will be appended to the **ENTRYPOINT** command. The **ENTRYPOINT** command is the primary entry point for executing the container.
-* **CMD** Defines the default command and/or parameters that will be used if no command is specified when starting the container. The **CMD** command can be completely overridden by providing arguments to the Docker run command. The **CMD** command is used as the default command when none is specified, but it can be overridden.
+* **CMD** Defines the default command and/or parameters that will be used if no command is specified when starting the container. The **CMD** command can be completely overridden by providing arguments to the Docker run command. The **CMD** command is used as the default command when none is specified, but it can be overridden. If the Dockerfile contains multiple CMD instructions, **only the last one is used**. The CMD instruction can be overridden by providing a command and arguments when running the container.
 2. **Dockerfile** is a text file that contains instruction to build the docker image.
 ```
 FROM python:3.6-slim
@@ -169,6 +213,69 @@ RUN pip install flask
 EXPOSE 8080
 ENTRYPOINT ["python", "pythonfile.py"]
 ```
+* **Differences between CMD and ENTRYPOINT in Docker**
+Example 1: Simple CMD
+```Dockerfile
+FROM ubuntu
+CMD ["echo", "Hello, World!"]
+```
+Running the container:
+```bash
+docker run ubuntu-with-cmd
+# Output: Hello, World!
+```
+* In this example, the CMD instruction sets the default command to be executed when the container runs. The docker run command doesn't need to specify any additional arguments.
+```Dockerfile
+FROM ubuntu
+CMD ["echo", "Hello, World!"]
+```
+Running the container with a custom command:
+```bash
+docker run ubuntu-with-cmd /bin/bash
+# Output: /bin/bash
+```
+In this case, the CMD instruction is overridden by the command provided in the docker run command.
+```Dockerfile
+FROM ubuntu
+ENTRYPOINT ["echo"]
+CMD ["Hello, World!"]
+```
+Running the container
+```bash
+docker run ubuntu-with-entrypoint
+# Output: Hello, World!
+```
+* In this example, the ENTRYPOINT sets the default executable to be "echo", and the CMD provides the default arguments passed to the ENTRYPOINT.
+```Dockerfile
+FROM ubuntu
+ENTRYPOINT ["echo"]
+CMD ["Hello, World!"]
+```
+Running the container with a custom ENTRYPOINT:
+```bash
+docker run --entrypoint /bin/bash ubuntu-with-entrypoint
+# Output: /bin/bash
+```
+In this case, the ENTRYPOINT is overridden by the --entrypoint flag in the docker run command.
+* ENTRYPOINT and multiple CMD instructions
+```Dockerfile
+Dockerfile:
+FROM ubuntu
+
+ENTRYPOINT ["echo", "Hello"]
+CMD ["World"]
+CMD ["Abhinav"]
+```
+The ENTRYPOINT instruction sets the default executable command to be echo "Hello".\
+The first CMD instruction sets the default argument to be "World".\
+The second CMD instruction sets another default argument to be "Abhinav".\
+When you build an image from this Dockerfile and run a container, the behavior will be as follows:\
+```bash
+ docker build -t entrypoint-cmd .
+ docker run entrypoint-cmd
+```
+The second CMD instruction ["Abhinav"] is not executed because the CMD instructions are used to provide default arguments, and the first CMD argument was already used.
+
 3. **docker compose yaml file format**
 Docker Compose will first read the configuration file, then build the images (if necessary), and finally run the containers based on the specified configuration.
 In the Compose file, the key is the service name, and the value is the configuration for that service, which includes the image name, build instructions, ports, links, and other settings.
@@ -211,6 +318,27 @@ services:
     volumes:
       - "/home/naveenk/learning/devops/jenkins/:/var/jenkins_home"
 ```
+5. Limit cpu and memory
+```yaml
+version: '3'
+services:
+  myservice:
+    image: myimage
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+```
+6. Docker labels are key-value pairs that allow you to add metadata to Docker objects like images, containers, volumes, and networks. Labels are useful for organizing, identifying, and providing additional information about these objects. Here's how you can use Docker labels: Adding Labels to Docker Images You can add labels to your Docker images by using the LABEL instruction in your Dockerfile. For example:
+```dockerfile
+LABEL maintainer="john@example.com"
+LABEL version="1.0"
+LABEL description="This is my custom app"
+```   
+Viewing Labels
+To view the labels of a Docker image, you can use the docker inspect command: **docker inspect <image_id> --format='{{json .ContainerConfig.Labels}}'**
+Using Labels for Filtering : Labels can be used to filter Docker objects. For example, to list all containers with a specific label: **docker ps --filter="label=mylabel=myvalue"** and You can also filter based on the existence of a label key, regardless of its value: **docker ps --filter="label=mylabel"**
 ******************************
 * **docker-compose up** command runs the docker compose yaml file. **-d** option to run it in brackground.
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
