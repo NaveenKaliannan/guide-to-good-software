@@ -88,7 +88,7 @@ cat example.txt  # Output: Hello, Universe!
 * `.git` directory
 1. **description:** This is a text file that contains a description of the repository. It's typically used for informational purposes.
 2.  **refs:** This directory contains references to commits, branches, and tags in the repository. It's used to keep track of the current state of the repository.
-3.  **hooks:** This directory contains custom scripts that can be executed at different stages of the Git workflow, such as before a commit, after a push, etc.
+3.  **hooks:** This directory contains custom scripts that can be executed at different stages of the Git workflow, such as before a commit, after a push, etc. The **pre-commit hook** script runs before the commit is created, allowing you to prevent the commit if certain conditions such unit test cases are not sucess. The post-commit hook runs after the commit is created, allowing you to perform actions that should happen after the commit, such as notifications or deployments.
 4.  **HEAD:** This is a symbolic reference that points to the current branch or commit in the repository. **cat .git/HEAD** reference particular commit **ref: ref/head/branch-name**. 
 5. **branches:** This directory contains files that represent the local branches in the repository.
 6. **objects:** This directory stores all the objects (commits, trees, blobs) that make up the repository's history.
