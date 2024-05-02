@@ -55,5 +55,37 @@
 6. Firewalls use port numbers to control network access and security by allowing or blocking traffic on specific ports.
 7. In summary, ports are an essential component of network communication, allowing multiple applications and services to utilize the same network address by uniquely identifying each connection.
 * **IP packet** consists of a header and a payload. The header contains important information required for routing and delivering the packet, including the sender's IP address, the recipient's IP address, and other control information. The payload carries the actual data or content being transmitted, such as a web page, email message, or file. IP packets are the fundamental building blocks of communication over the internet and other IP-based networks. IP packets enable features like file transfer, voice/video communication, streaming, VPNs, and IoT by breaking down data into smaller units that can be efficiently transmitted and routed across networks. Routers use the source and destination IP addresses in the packet header to determine the best path to forward the packet to its final destination
+
+The main components of an IP packet are:
+**IP Header**:
+Version (4 bits for IPv4, 6 bits for IPv6)
+Header Length (4 bits)
+Type of Service (8 bits)
+Total Length (16 bits)
+Identification (16 bits)
+Flags (3 bits)
+Fragment Offset (13 bits)
+Time to Live (8 bits)
+Protocol (8 bits)
+Header Checksum (16 bits)
+Source IP Address (32 bits for IPv4, 128 bits for IPv6)
+Destination IP Address (32 bits for IPv4, 128 bits for IPv6)
+Options (variable length)
+
+**Data Payload**:
+The actual data being transmitted, such as a web page, email, or file. 
 * **subnetting*** is a fundamental networking concept that allows larger networks to be divided into smaller, more manageable and efficient subnetworks through the use of subnet masks.The subnet mask separates the IP address into the network ID and host ID by setting the network bits to 1 and the host bits to 0. For example, the subnet mask 255.255.255.0 has the first three octets (24 bits) set to 1, indicating the network portion, and the last octet (8 bits) set to 0, indicating the host portion.
 * **default gateway** is a router or network node that serves as an access point to another network, typically the internet.  It is the node that a device uses to forward network packets when the destination is not on the same local network.
+* **ICMP Internet Control Message Protocol** is a supporting protocol in the Internet protocol suite that is used by network devices, including routers, to send error messages and operational information indicating success or failure when communicating with another IP address.
+
+The ICMP header comes after the IP header and contains the following main fields:
+Type (8 bits): Specifies the type of ICMP message, such as Echo Request (type 8), Echo Reply (type 0), Destination Unreachable (type 3), etc. \
+Code (8 bits): Provides more detail on the specific type of ICMP message. For example, the Destination Unreachable message has different codes like "Network Unreachable" (code 0), "Host Unreachable" (code 1), etc. \
+Checksum ( 16 bits): A checksum calculated over the ICMP header and data to detect errors. The ICMP header is then followed by additional fields that depend on the specific ICMP message type. \
+For example: For Echo Request/Reply, there are Identifier and Sequence Number fields. For Destination Unreachable, there is an unused field followed by the original IP header and first 64 bits of the original datagram. ICMP provides feedback and control messages to help IP deal with errors and problems in data transmission. ICMP is used to send and receive messages that report errors, test connectivity, or provide information about the network.  ICMP is a connectionless but reliable protocol, ensuring that control messages are delivered correctly. ICMP supplements IP by providing additional features like error reporting, network diagnostics, and troubleshooting. ICMP is a supporting protocol that works together with IP to enable communication between devices.
+
+
+
+
+
+
