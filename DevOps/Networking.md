@@ -203,7 +203,7 @@ def getIP():
 hostname = socket.gethostname()
 ip_address = socket.gethostbyname(hostname)
 
-CHAT2_IP_ADDRESS = str(ip_address) # string(get(IP))
+CHAT2_IP_ADDRESS = '127.0.0.1' # string(get(IP))
 CHAT2_PORT = 6401
 MAX_BYTES=1024
 
