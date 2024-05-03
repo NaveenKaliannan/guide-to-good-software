@@ -74,7 +74,23 @@ Options (variable length)
 
 **Data Payload**:
 The actual data being transmitted, such as a web page, email, or file. 
-* **subnetting*** is a fundamental networking concept that allows larger networks to be divided into smaller, more manageable and efficient subnetworks through the use of subnet masks.The subnet mask separates the IP address into the network ID and host ID by setting the network bits to 1 and the host bits to 0. For example, the subnet mask 255.255.255.0 has the first three octets (24 bits) set to 1, indicating the network portion, and the last octet (8 bits) set to 0, indicating the host portion.
+* **subnetting*** is a fundamental networking concept that allows larger networks to be divided into smaller, more manageable and efficient subnetworks through the use of subnet masks.The subnet mask separates the IP address into the network ID and host ID by setting the network bits to 1 and the host bits to 0. For example, the subnet mask 255.255.255.0 has the first three octets (24 bits) set to 1, indicating the network portion, and the last octet (8 bits) set to 0, indicating the host portion. **All the bits set to 1 in the subnet mask belong to the network portion, while all the bits set to 0 belong to the host portion. Subtracting 2 from the total number of addresses in a subnet accounts for the reserved network address and broadcast address. This ensures that these addresses are not assigned to individual hosts within the subnet, as doing so could lead to routing and communication issues.**
+1.   Subnet Mask: 255.255.255.0 -> 11111111.11111111.11111111.00000000 -> 24 1s and 8 0s
+This subnet mask allocates 24 bits for the network portion and 8 bits for the host portion.
+With 8 bits for the host portion, the maximum number of host addresses is 2^8 - 2 = 254 (the -2 is to account for the network and broadcast addresses).
+Therefore, the maximum number of devices that can be connected with this subnet mask is 254.
+2. Subnet Mask: 255.255.254.0 -> 11111111.11111111.11111110.00000000 -> 23 1s and 9 0s
+This subnet mask allocates 23 bits for the network portion and 9 bits for the host portion.
+With 9 bits for the host portion, the maximum number of host addresses is 2^9 - 2 = 510 (the -2 is to account for the network and broadcast addresses).
+Therefore, the maximum number of devices that can be connected with this subnet mask is 510.
+3. Subnet Mask: 255.255.0.0 -> 11111111.11111111.00000000.00000000 -> 16 1s and 16 0s
+This subnet mask allocates 16 bits for the network portion and 16 bits for the host portion.
+With 16 bits for the host portion, the maximum number of host addresses is 2^16 - 2 = 65,534 (the -2 is to account for the network and broadcast addresses).
+Therefore, the maximum number of devices that can be connected with this subnet mask is 65,534.
+4. Subnet Mask: 255.0.0.0 -> 11111111.00000000.00000000.00000000 -> -> 8 1s and 24 0s
+This subnet mask allocates 8 bits for the network portion and 24 bits for the host portion.
+With 24 bits for the host portion, the maximum number of host addresses is 2^24 - 2 = 16,777,214 (the -2 is to account for the network and broadcast addresses).
+Therefore, the maximum number of devices that can be connected with this subnet mask is 16,777,214.
 * **default gateway** is a router or network node that serves as an access point to another network, typically the internet.  It is the node that a device uses to forward network packets when the destination is not on the same local network.
 * **ICMP Internet Control Message Protocol** is a supporting protocol in the Internet protocol suite that is used by network devices, including routers, to send error messages and operational information indicating success or failure when communicating with another IP address.
 
@@ -84,8 +100,47 @@ Code (8 bits): Provides more detail on the specific type of ICMP message. For ex
 Checksum ( 16 bits): A checksum calculated over the ICMP header and data to detect errors. The ICMP header is then followed by additional fields that depend on the specific ICMP message type. \
 For example: For Echo Request/Reply, there are Identifier and Sequence Number fields. For Destination Unreachable, there is an unused field followed by the original IP header and first 64 bits of the original datagram. ICMP provides feedback and control messages to help IP deal with errors and problems in data transmission. ICMP is used to send and receive messages that report errors, test connectivity, or provide information about the network.  ICMP is a connectionless but reliable protocol, ensuring that control messages are delivered correctly. ICMP supplements IP by providing additional features like error reporting, network diagnostics, and troubleshooting. ICMP is a supporting protocol that works together with IP to enable communication between devices.
 
+* **TTL (Time to Live)** in networking refers to the mechanism used to prevent data packets from circulating indefinitely in a network. Here's an explanation with an example:
+TTL is an 8-bit field in the IP packet header that specifies the maximum number of hops a packet can traverse before being discarded. When a packet is sent, the source device sets an initial TTL value, typically 64 for Linux/Unix or 128 for Windows.
 
+Here's an example of how TTL works:
+1. Host A wants to send a packet to Host B. Host A sets the initial TTL value to 64.
+2. The packet is sent to Router A, which is the gateway for Host A's network. Router A receives the packet and decrements the TTL value by 1, so the TTL is now 63.
+3. Router A then forwards the packet to Router B, which is on the path to Host B. Router B decrements the TTL by 1 again, so the TTL is now 62.
+4. This process continues as the packet hops from one router to the next, with each router decrementing the TTL value by 1.
+5. If the packet reaches a router where the TTL value has been decremented to 0, that router will discard the packet and send an ICMP "Time Exceeded" message back to the source (Host A).
+This TTL mechanism prevents packets from looping indefinitely in the network, which could lead to network congestion and other issues. The TTL value is used by network utilities like ping and traceroute to determine the number of hops a packet takes to reach a destination. In addition to IP packets, TTL is also used in other networking contexts, such as:
+1. DNS caching: DNS records have a TTL value that determines how long a DNS resolver can cache the record before needing to refresh it.
+2. CDN caching: Content Delivery Networks (CDNs) use TTL to control how long cached content is served from their edge servers before fetching a new copy from the origin server.
+By properly configuring TTL values, network administrators can optimize network performance, security, and reliability.
 
+* **Traceroute** is a network diagnostic tool used to determine the path that IP packets take from one host to another over an IP network. It works by sending a series of UDP packets to the destination host, with each packet having a Time to Live (TTL) value set to a specific number. Here's how it works:
+1. The first packet has a TTL of 1, which causes the first router to send back an ICMP "Time Exceeded" message when it receives the packet
+2. Traceroute records the IP address of this first router and the round-trip time for the packet
+3. Each subsequent packet has its TTL incremented by 1, causing it to be dropped by the next router in the path
+4. This process continues until the packet reaches the destination host, which responds with an ICMP "Port Unreachable" message, indicating that the destination has been reached
+5. Traceroute displays the IP addresses of the routers along the path and the round-trip times for each hop \
+`traceroute javatpoint.com` will give you \
+```text
+traceroute to javatpoint.com (13.232.200.100), 64 hops max, 52 byte packets
+ 1  10.0.0.1 (10.0.0.1)  0.321 ms  0.288 ms  0.271 ms
+ 2  192.168.1.1 (192.168.1.1)  1.005 ms  0.921 ms  0.899 ms
+ 3  100.64.0.1 (100.64.0.1)  5.321 ms  5.288 ms  5.271 ms
+ 4  209.85.252.165 (209.85.252.165)  10.005 ms  9.921 ms  9.899 ms
+ 5  72.14.232.84 (72.14.232.84)  15.321 ms  15.288 ms  15.271 ms
+ 6  142.251.49.206 (142.251.49.206)  20.005 ms  19.921 ms  19.899 ms
+ 7  13.232.200.100 (13.232.200.100)  25.321 ms  25.288 ms  25.271 ms
+```
+* **ARP (Address Resolution Protocol)** is a communication protocol used for discovering the link layer address, such as a MAC address, associated with a given internet layer address, typically an IPv4 address. Key points about ARP:
+1. ARP is used to map an IP address to its corresponding MAC address
+2. It operates at the data link layer (Layer 2) of the OSI model
+3. ARP uses a request-response mechanism to discover the MAC address associated with an IP address
+4. ARP requests are broadcast to all devices on the local network, while responses are unicast directly to the requesting device
+5. The ARP protocol is defined in RFC 826 and is an Internet Standard (STD 37)
+6. In IPv6 networks, ARP is replaced by the Neighbor Discovery Protocol (NDP) \
+ARP is necessary because IP addresses are logical addresses used for routing, while MAC addresses are physical addresses used for local delivery of frames . Devices need to know the MAC address of the destination in order to send frames on the local network. ARP can be vulnerable to spoofing attacks, where a malicious user replies to an ARP request with a false MAC address in order to intercept traffic. Proxy ARP is a legitimate use of ARP where a router answers ARP requests on behalf of other devices
 
+### UDP User Datagram Protocol
+*********************************
 
 
