@@ -142,5 +142,83 @@ ARP is necessary because IP addresses are logical addresses used for routing, wh
 
 ### UDP User Datagram Protocol
 *********************************
+UDP is a simple, connectionless transport layer protocol that is part of the Internet Protocol suite. Unlike the connection-oriented Transmission Control Protocol (TCP), UDP does not require prior communication to set up special transmission channels or data paths. The UDP header is 8 bytes and contains source and destination ports, length, and checksum fields. Some key characteristics of UDP:
+1. It provides checksums for data integrity and port numbers for addressing different functions at the source and destination.
+2. It has no handshaking dialogues, no guaranteed delivery, ordering, or duplicate protection.
+3. It is suitable for time-sensitive applications that prefer dropped packets to delayed packets, such as video streaming, online games, and VOIP
+4. It is transaction-oriented, suitable for simple query-response protocols like DNS and NTP.
+5. It is stateless, suitable for very large numbers of clients, such as in streaming media applications.
+6. It supports multicast, suitable for broadcast information like service discovery and shared information. \
+Examples of applications that commonly use UDP include:
+1. Video streaming and online gaming - UDP's low latency and lack of retransmission delays make it well-suited for real-time applications that can tolerate some packet loss.
+2. Voice over IP (VoIP) - VoIP uses UDP to transmit voice data, as a static-y conversation is preferable to one with heavy delays.
+3. Domain Name System (DNS) lookups - DNS servers use UDP for fast, efficient responses.
+4. Network Time Protocol (NTP) - NTP uses UDP for simple query-response time synchronization.
+5. Trivial File Transfer Protocol (TFTP) - TFTP uses UDP for lightweight file transfers. \
+In summary, UDP is a lightweight, fast, connectionless protocol suitable for real-time, loss-tolerant applications, while TCP provides reliability and ordering at the cost of higher overhead and latency.
+
+* Multiplexing and demultiplexing are key functions performed by the transport layer protocols TCP and UDP to enable communication between multiple applications on a host.
+1. Multiplexing is the process of combining multiple data streams from different application processes on the sender side into a single stream for transmission over the network. It involves adding a header to each data unit that includes source and destination port numbers to identify the sending and receiving applications.
+2. Demultiplexing is the reverse process on the receiving side. The transport layer uses the destination port number in the header to deliver the incoming data to the correct application process. This allows multiple applications on a host to utilize the network simultaneously.
+3. The main differences between TCP and UDP multiplexing/demultiplexing: TCP uses the 4-tuple of source IP, source port, destination IP, destination port for connection identification. UDP only uses the destination IP and port. TCP maintains connection state, so the 4-tuple is needed to track the connection. UDP is connectionless. TCP demultiplexing is more complex, as incoming segments must be matched to the correct connection . UDP just delivers to the port. In summary, multiplexing combines data from multiple applications for transmission, while demultiplexing separates it back out on the receiving end using port numbers . The specific mechanisms differ between TCP and UDP based on their connection-oriented vs connectionless nature.
+```python
+# CHAT 1
+import socket
+from urllib.request import urlopen
+import re
+
+def getIP():
+    url = urlopen('http://checkip.dyndns.com/')
+    return re.compile(r'Address: (\d+\.\d+\.\d+\.\d+)').search(str(url.read())).group(1)
 
 
+hostname = socket.gethostname()
+ip_address = socket.gethostbyname(hostname)
+
+CHAT1_IP_ADDRESS = str(ip_address) # string(get(IP))
+CHAT1_PORT = 6400
+MAX_BYTES=1024
+print(CHAT1_IP_ADDRESS, CHAT1_PORT)
+CHAT2_IP_ADDRESS = '127.0.0.1'
+CHAT2_PORT = 6401
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+    s.bind((CHAT1_IP_ADDRESS, CHAT1_PORT))
+    print(f'Chatter 1 Listening on {CHAT1_IP_ADDRESS}:{CHAT1_PORT}')
+    while True:
+        data, addr = s.recvfrom(MAX_BYTES)
+        print(f'Received from {addr}: {data.decode()}')
+        message = input('Enter your message: ')
+        s.sendto(message.encode(), (CHAT2_IP_ADDRESS, CHAT2_PORT))
+``` 
+```python
+# CHAT 2
+import socket
+from urllib.request import urlopen
+import re
+
+def getIP():
+    url = urlopen('http://checkip.dyndns.com/')
+    return re.compile(r'Address: (\d+\.\d+\.\d+\.\d+)').search(str(url.read())).group(1)
+
+hostname = socket.gethostname()
+ip_address = socket.gethostbyname(hostname)
+
+CHAT2_IP_ADDRESS = str(ip_address) # string(get(IP))
+CHAT2_PORT = 6401
+MAX_BYTES=1024
+
+CHAT1_IP_ADDRESS = '127.0.0.1'
+CHAT1_PORT = 6400
+
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+
+    s.bind((CHAT2_IP_ADDRESS, CHAT2_PORT))
+    print(f'Chatter 2 Listening on {CHAT2_IP_ADDRESS}:{CHAT2_PORT}')
+
+    while True:
+        message = input('Enter your message: ')
+        s.sendto(message.encode(), (CHAT1_IP_ADDRESS, CHAT1_PORT))
+
+        data, addr = s.recvfrom(MAX_BYTES)
+        print(f'Received from {addr}: {data.decode()}')
+```
