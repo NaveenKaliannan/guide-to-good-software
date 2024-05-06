@@ -225,3 +225,26 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         data, addr = s.recvfrom(MAX_BYTES)
         print(f'Received from {addr}: {data.decode()}')
 ```
+
+### Commands
+***********************
+* **tcpdump** us a analyzer tool that can be used to capture and inspect network traffic on a Linux/Unix system by capturing IP, arp, icmp packets on the network interface.
+1. **sudo tcpdump -D** To display all available interfaces
+2. **sudo tcpdump -i <interfacename> arp** This will capture all ARP packets on the specified interface, and you can then analyze the output to extract the relevant MAC address information. However, the command itself does not directly provide the MAC number - you would need to parse the output to find the MAC addresses. **sudo tcpdump -n -i wlp1s0 arp** will display only the mac number and ip address.
+3. **sudo tcpdump -n -i <interfacename> icmp** This command will capture and display all ICMP packets that are going through the "wlp1s0" interface on your system. The filter `icmp` that tells tcpdump to only capture ICMP packets.
+4. **sudo tcpdump -c 4 -i wlo1** To capture a specific number of packets
+5. **sudo tcpdump -n -i <interface> src <ip address>** and **sudo tcpdump -n -i <interface> src <ip address> dest <address>**  This command will capture and display all packets where the source IP address matches the specified <ip address>, the destination IP address matches the specified <address>, and the traffic is going through the specified
+6. **sudo tcpdump -A** To print captured packets in ASCII format
+7. **sudo tcpdump -i eth0 'tcp port 80 and (tcp[tcpflags] & (tcp-syn|tcp-fin) != 0)'** To capture only HTTP GET and POST packets
+8. **sudo tcpdump -i eth0 -n -s 0 -l | egrep -o 'http://[^ ]*'** To extract HTTP request URLs
+9. **sudo tcpdump -i eth0 icmp** To capture ICMP packets
+10. **sudo tcpdump -nn -l port 25 grep -i 'MAIL FROM\RCPT TO'** To capture SMTP/POP3 email traffic
+11. **sudo tcpdump -i eth0 -s0 -w capture.pcap** To write captured packets to a file
+12. **sudo tcpdump -i eth0 -s0 -w - | wireshark -k -i -** To view captured packets in Wireshark
+13. **sudo tcpdump -i eth0 -A** To capture and display only the ASCII text
+14. **sudo tcpdump -i eth0 -X** To capture and display both hex and ASCII
+* **nslookup**
+1. **nslookup <domain name>** looks the ip address
+2. **nslookup -type=mx <domain name>** This will look up the MX (Mail Exchange) record for the domain "example.com".
+3. **nslookup <domain name> 8.8.8.8** This will use the DNS server at IP address "8.8.8.8" (Google's public DNS) to look up the domain name. Note that the DNS servers are responsible for the domain name to IP address mapping.
+4. **nslookup -** This will put you into the interactive nslookup mode, where you can enter multiple queries.
