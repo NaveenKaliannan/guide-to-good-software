@@ -24,16 +24,6 @@
 3. Switches forward data in the form of frames, while routers forward data in the form of packets.
 4. Switches have less collision and less routing complexity compared to routers.
 5. Routers are generally more expensive than switches. 
-* **TCP/IP (Transmission Control Protocol/Internet Protocol)** model is a conceptual framework used to describe the functions of network communication. It is a simpler, four-layer model compared to the more detailed seven-layer OSI (Open Systems Interconnection) model
-1. Application Layer: This is the top layer that interacts directly with applications and protocols like HTTP, FTP, SMTP, etc. It provides network services to applications.
-2. Transport Layer: Responsible for end-to-end communication and data transfer, providing features like error correction and flow control. The main protocols at this layer are TCP and UDP.
-3. Internet Layer: Also known as the Network layer, this layer handles logical addressing and routing of data between networks. The primary protocol is IP (Internet Protocol).
-4. Network Access Layer: This bottom layer deals with the physical network hardware and data link protocols for node-to-node data transfer. It corresponds to the Physical and Data Link layers of the OSI model.
-5. The key differences between the TCP/IP and OSI models are:
-- TCP/IP has a more simplified, four-layer structure compared to OSI's seven layers.
-- TCP/IP combines the Presentation and Session layers of OSI into its Application layer.
-- TCP/IP follows a more horizontal, connectionless approach, while OSI uses a vertical, connection-oriented model.
-- Overall, the TCP/IP model provides a practical, widely-adopted framework for network communication that has been fundamental to the development and growth of the internet.
 * **Host-to-host communication** refers to the ability for computers (hosts) to directly communicate with each other over a network, rather than requiring all traffic to pass through a central system.
 1. ARPANET was the first network to enable direct communication between computers, rather than requiring all traffic to pass through a central system.
 2. This was achieved through the use of a distributed routing algorithm, where each node (computer) on the network was equipped with a special-purpose computer called an Interface Message Processor (IMP) responsible for routing data packets.
@@ -142,6 +132,7 @@ traceroute to javatpoint.com (13.232.200.100), 64 hops max, 52 byte packets
 5. The ARP protocol is defined in RFC 826 and is an Internet Standard (STD 37)
 6. In IPv6 networks, ARP is replaced by the Neighbor Discovery Protocol (NDP) \
 ARP is necessary because IP addresses are logical addresses used for routing, while MAC addresses are physical addresses used for local delivery of frames . Devices need to know the MAC address of the destination in order to send frames on the local network. ARP can be vulnerable to spoofing attacks, where a malicious user replies to an ARP request with a false MAC address in order to intercept traffic. Proxy ARP is a legitimate use of ARP where a router answers ARP requests on behalf of other devices
+* **network interface** is the point of interconnection between a computer and a network, either a private or public network. It is the hardware component, typically a network interface card (NIC), that allows the computer to access and communicate over the network. Each network interface is assigned a unique address, as network interfaces are the endpoints of the network. The main function of a network interface is to inject packets into the network and retrieve packets from the network.
 
 ### UDP User Datagram Protocol
 *********************************
@@ -248,3 +239,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
 2. **nslookup -type=mx <domain name>** This will look up the MX (Mail Exchange) record for the domain "example.com".
 3. **nslookup <domain name> 8.8.8.8** This will use the DNS server at IP address "8.8.8.8" (Google's public DNS) to look up the domain name. Note that the DNS servers are responsible for the domain name to IP address mapping.
 4. **nslookup -** This will put you into the interactive nslookup mode, where you can enter multiple queries.
+
+
+### TCP 
+****************************
+* **TCP/IP (Transmission Control Protocol/Internet Protocol)** model is a conceptual framework used to describe the functions of network communication. It is a simpler, four-layer model compared to the more detailed seven-layer OSI (Open Systems Interconnection) model
+1. Application Layer: This is the top layer that interacts directly with applications and protocols like HTTP, FTP, SMTP, etc. It provides network services to applications.
+2. Transport Layer: Responsible for end-to-end communication and data transfer, providing features like error correction and flow control. The main protocols at this layer are TCP and UDP.
+3. Internet Layer: Also known as the Network layer, this layer handles logical addressing and routing of data between networks. The primary protocol is IP (Internet Protocol).
+4. Network Access Layer: This bottom layer deals with the physical network hardware and data link protocols for node-to-node data transfer. It corresponds to the Physical and Data Link layers of the OSI model.
+5. The key differences between the TCP/IP and OSI models are:
+- TCP/IP has a more simplified, four-layer structure compared to OSI's seven layers.
+- TCP/IP combines the Presentation and Session layers of OSI into its Application layer.
+- TCP/IP follows a more horizontal, connectionless approach, while OSI uses a vertical, connection-oriented model.
+- Overall, the TCP/IP model provides a practical, widely-adopted framework for network communication that has been fundamental to the development and growth of the internet.
+* TCP is one of the main protocols of the Internet protocol suite, providing reliable, ordered, and error-checked delivery of data between applications running on hosts communicating over an IP network. TCP header, which is typically 20 bytes long. Some key aspects of TCP include:Connection-oriented: TCP establishes a connection between the client and server before data can be exchanged, using a three-way handshake. This ensures reliable data transfer. Ordered data transfer: TCP rearranges out-of-order segments according to sequence numbers to present a reliable byte stream to the application. Retransmission of lost packets: TCP detects lost or corrupted packets and retransmits them to guarantee delivery. Flow control: TCP limits the rate at which the sender transfers data to match the receiver's processing capacity, using a sliding window mechanism. Congestion control: TCP adjusts the sending rate based on network congestion to prevent overloading the network. Abstraction from lower-level networking details: TCP presents a simple, reliable byte stream interface to the application, handling all the underlying networking complexities. TCP is widely used by major internet applications like the web, email, file transfer, and more. It is optimized for reliable, in-order delivery rather than low latency, making it less suitable for real-time applications like VoIP which prefer the connectionless UDP protocol
+* TCP connection establishment is a crucial process that enables reliable and synchronized communication between a client and a server. It is achieved through a three-way handshake: **Initiation (SYN)**: The client initiates the connection by sending a TCP packet with the SYN (synchronize) flag set. This packet includes the client's initial sequence number. **Acknowledgment (SYN-ACK)**: The server responds with a TCP packet that has both the SYN and ACK (acknowledge) flags set. This packet acknowledges the client's request and includes the server's own initial sequence number. **Confirmation (ACK)**: Finally, the client sends an ACK packet to the server, acknowledging the server's readiness. The connection is now established, and both the client and server have agreed upon initial sequence numbers and other parameters for secure data exchange. The three-way handshake ensures that both parties are synchronized and ready for reliable communication. It helps prevent data loss, ensures data integrity, and sets the foundation for a secure and orderly data transfer.
