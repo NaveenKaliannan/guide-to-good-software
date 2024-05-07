@@ -26,6 +26,7 @@ The Ubuntu image can be downloaded from [Ubuntu site](https://releases.ubuntu.co
 The RAM depends on the applications that we gonna work on.
 For accelerated graphics features, VMware recommends two virtual CPUs and 4 GB of RAM. 
 - Under Customize Hardware : Memory= 4-8GB, Processors = 4-8, Virtualization engine = activate "VT-x" and "IOMMU", Number of monitors= 2-4
+- To get internet connection, go to **Network** and Switched to **Bridged Adaptor in the attached to** drop down menu. 
 
 ## How to connect to Linux Machine
 - Remote via PUTTY, WISCP
@@ -102,6 +103,11 @@ FTP (file transfer protocol) - hands file transfer between two machines
 SFTP (ssh file transfer protocol or secure FTP)
 ssh - secure shell to access a machine
 ```
+* **/etc/nsswitch.conf** a critical system configuration file that controls how the Linux system looks up various types of information, and should be modified with caution
+* **/etc/hostname** simple way for local applications to identify the hostname of the Linux machine, without needing to resolve a full domain name. It is a local configuration file, separate from the /etc/hosts file which maps hostnames to IP addresses
+* **/etc/sysconfig/network** is used to specify information about the desired network configuration on the Linux server. It contains settings such as: NETWORKING=yes/no - whether to configure networking or not. FORWARD_IPV4=yes/no - whether to perform IP forwarding or not. HOSTNAME=hostname - the hostname of the server. GATEWAY=gwip - the IP address of the remote network gateway. GATEWAYDEV=gwdev - the device name (e.g. eth0) used to access the remote gateway
+* **/etc/sysconfig/network-scripts/ifcfg-nic** is used to configure the network interface settings for a specific network interface (NIC) on a Linux system. The file contains various parameters that define the configuration of the network interface, such as: DEVICE=nic - the name of the network interface device (e.g. eth0, enp1s0). BOOTPROTO=none/dhcp - the boot protocol to use, either static IP or DHCP. 
+ONBOOT=yes/no - whether to bring up the interface at system boot. IPADDR=ipaddr - the static IP address if using a fixed IP configuration. NETMASK=netmask - the subnet mask if using a fixed IP configuration. GATEWAY=gwip - the default gateway IP address if using a fixed IP configuration.
 * **/etc/hosts** is used for name resolution and contains ip address and its corresponding domain name.
 ```
 ip address host-name or user-defined-alias-name (alias name for the amazon.com is ama.com)
@@ -606,6 +612,12 @@ for i in $(vulture filename.py| awk '{print $4}' | sed  's/'\''//' | sed  's/'\'
 * **select**
 
 ## [Networking in linux](https://doc.lagout.org/operating%20system%20/linux/Linux%20Networking%20Cookbook.pdf)
+### Network Components
+1. IP
+2. subnet mask
+3. Gateway
+4. Static and DHCP (dynamic)
+5. Network Interface Example NIC card. 
 To understand networking in Linux, it is important to understand what are DNS resolvers, DNS nameservers, DNS records, ports and IP address, what do they do?
 DNS resolver in local machine sents our DNS querries to DNS nameserver, which covert the human readbale names (google.com) to IP addresss.  PC and our notebooks use IPv4/IPv6 addresses for network communication. Increasing end-users connected to the Internet leads to the exhaustion of IPv4 addresses. This is the reason why IP version 6 is introduced. Names (google.com) are convenient for humans and Numbers are convenient for machines. <br />
 What is the differene between IPv4 and IPv6?. <br />
@@ -637,33 +649,18 @@ What is the use of DHCP
 * assign IP address and helps IP address management. 
 * DHCP server maintain records of all IP address and assigns IP address to DHCP client. <br />
 A new machine doesnt have IP address. First it sents a DHCP message to the network and the DHCP server assigns the IP address to our machine. This will be our IP address and it will be sent with DNS querries to DNS name server. If you are using a private DNS nameserver, add it to the `/etc/resolv.conf` file. TCP/IP Transmission Control Protocol/Internet Protocol model is the base. DNS uses both UDP (standard) and TCP (used when data is greater than 512 byetes). port number 53 is used. 
-
 * **ping** command pings a host and get its ipv4 address.
-```
-ping amazon.com 
-```
 * **host** command finds IPv4, IPv6 address and DNS records (such as alias name) of a host
-```
-ping amazon.com 
-```
 * **ipconfig** displays current network configuration information, such as notebook local host IP address, ethernet address, subnet mask, default gateway and etc
-```
-ipconfig 
-```
 * **ipconfig/all**  show information about the network configuration and DHCP and DNS Settings
-```
-ipconfig/all 
-```
 * **nslookup** displays the DNS records or the domain address records and IP address of the given host name
-```
-nslookup google.com
-```
 Note that both ipconfig/all nslookup will show the DNS records or the domain address records.
 * **dhclient** used for assigning dynamic IP addresses.
 * **ipconfig /displaydns** displays the contents of PC DNS resolver cache. It contains a table with DNS records (host name, ip address) of already visited domain names. Example., DNS querries, IP address of visited website. If we are visting the same website next time, there is no need for nslookup, we can get the DNS record quickly and response will be faster. If the data for a website is not available, then the DNS querry will be sent to DNS nameserver and it will be stored in DNS cache. Clearing the browsing history or /flushdns will clear the cache.
 * **ipconfig /flushdns** removes the DNS resolver cache
 * **route** command shows and manipulates ip routing table
 * **port number** helps to transmit data between a network and a specified application. This number is used by TCP and UDP of IP suite. It is 16 bit unsigned integer (0-65535). Each computers have its own IP address and each application in them has its own port number. Some application like HTTPS (80) have same port number. The port number is assigned by OS to each processes.
+* **hostname -I** specifically displays the IP address(es) of our system. **netstat -r** or **route -n** show the "Gateway" IP address, which is the router's IP address. **ip route** find the router's IP address. Note that the 192.168.0.1 IP address is commonly used as the default gateway or router IP address within this 192.168.0.0/24 subnet. The 192.168.0.0 address is the network address, and 192.168.0.255 is the broadcast address. 192.168.0.1 and 192.168.0.255 are reserved. **broadcast address** is primarily used to send data, messages, and requests to all devices connected to a local network or subnet, enabling communication and discovery without needing to know individual IP addresses.  **default gateway or router IP** is for intercommunication that communicating to outside world.
 ```
 port number  -  application
 21 - FTP Server
@@ -677,7 +674,11 @@ port number  -  application
 ```
 * **tcpdump** allows one to analyze network traffic going via machines.
 * **netstat** diplays problems in the network and finds the amount of traffic in the network
-
+* **ifconfig**
+*  **ifup or ifdown**
+*  **NIC Network Interface Card** A NIC is a hardware component installed in a computer that provides a physical network connection, typically Ethernet or Wi-Fi. NICs allow the computer to connect to and communicate over a local area network (LAN) or wide area network (WAN). Common examples of NICs include Ethernet adapters that connect to wired Ethernet networks, and wireless network cards that provide Wi-Fi connectivity. The /etc/sysconfig/network-scripts/ifcfg-nic file is used to configure the settings for a specific network interface (NIC) on a Linux system. NICs are a fundamental component for enabling network connectivity on computers and other devices. **ethtool enp0s3**, **lo**, **virb0** virtual bridge 0 for NAT network address translation. **When you connect a device to a local network, the router (or DHCP server) on that network will assign a private IP address to the device's network interface.**
+* **ethtool** is the primary command-line tool in Linux for managing and configuring network interface cards (NICs) and their associated device drivers. NICs ifnormaiton can be seen via **ifconfig**
+* NIC bonding procedure : Identify the network interfaces (NICs) on the Linux system that you want to bond together
 How to configure ip address in router
 ```
 ip dns server - command
