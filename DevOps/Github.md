@@ -9,7 +9,11 @@
 * **gitk**  This is a repository browser tool for visualizing the commit history.
 * **git-gui** This provides a GUI for performing Git commands like commit, push, pull etc.
 * **git --version** shows the version of git
-* **git-scm.com** for git documentation. 
+* **git-scm.com** for git documentation.
+* **ssh key** provide a more secure way of authenticating.  `ssh-keygen -f remote-key` creates both public (`remote-key.pub`) and private key (`remote-key`). This key pair inside the `remote-key.pub` can then be used for secure authentication instead of password-based authentication. The private key is used by the client to prove its identity to the server. The public key is used by the server to verify the client's identity based on the digital signature created with the private key. The private key never leaves your local machine, eliminating the risk of password sniffing or brute-force attacks.
+  1. Copy the public key content to the file `~/.ssh/authorized_keys` 
+  2. `chmod 700 ~/.ssh` and `chmod 600 ~/.ssh/authorized_keys`
+  3. `ssh -i /home/naveenk/.ssh/id_rsa username@hostaddress`  
 
 ## Terminology
 ******************************************
