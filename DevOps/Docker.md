@@ -81,7 +81,8 @@ Linux namespaces, including the PID namespace, are a key feature that allows Doc
 14. **docker port mapping** Accessing Container Services: By mapping a host port to a container port, you can access services running inside the container from the host machine. For example, if you have a web server running on port 80 in the container, you can access it by connecting to localhost:80 on the host
 15. Docker uses control group to manage the resources.
 16. **detached container** in Docker refers to a container that is running in the background, without being attached to the terminal or console from which it was started.
-17. **.dockerignore**  file that excludes the files and folder. 
+17. **.dockerignore**  file that excludes the files and folder.
+18. **Dangling Images**: The old image doesn't get deleted immediately. Instead, it becomes a dangling image because it no longer has a tag associated with it. Docker keeps these dangling images in case they are still in use by other containers  
 ******************************
 
 ## Docker commands 
@@ -355,7 +356,17 @@ When you build an image from this Dockerfile and run a container, the behavior w
  docker run entrypoint-cmd
 ```
 The second CMD instruction ["Abhinav"] is not executed because the CMD instructions are used to provide default arguments, and the first CMD argument was already used.
-
+* Example
+```dockerfile
+FROM image
+CMD ["command1", "command2"]
+CMD ["command3", "command4"]
+```
+When you build an image from this Dockerfile and run a container using docker run image, only ["command3", "command4"] will be executed. To run multiple commands in a container, you can use one of the following approaches: Use the sh -c or bash -c command in the CMD instruction:
+```dockerfile
+FROM image
+CMD ["sh", "-c", "command1; command2"]
+```
 3. **docker compose yaml file format**
 Docker Compose will first read the configuration file, then build the images (if necessary), and finally run the containers based on the specified configuration.
 In the Compose file, the key is the service name, and the value is the configuration for that service, which includes the image name, build instructions, ports, links, and other settings.
