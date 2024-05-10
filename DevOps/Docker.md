@@ -146,6 +146,16 @@ Overall, multi-stage builds in Docker provide a way to optimize the build proces
   1. **docker run -it --name containername imagename /bin/bash** bash shell prompt of container
   2. **docker run -it containerid /bin/bash** shell prompt of container for already pulled image and created container. 
   3. **docker exec -it containerid /bin/bash** inside the container
+* **docker stats <CONTAINER_ID_OR_NAME> [<CONTAINER_ID_OR_NAME>...]** Output Explained
+```textfile
+ CONTAINER ID and NAME: The ID and name of the container.
+CPU %: The percentage of the host's CPU resources utilized by the container.
+MEM USAGE / LIMIT: The total memory the container is using, and the total amount it's allowed to use.
+MEM %: The percentage of the host's memory utilized by the container.
+NET I/O: The amount of data the container has received and sent over its network interface.
+BLOCK I/O: The amount of data the container has written to and read from block devices on the host.
+PIDS: The number of processes or threads the container has created.
+```    
 ******************************
 
 ### Docker storage and File systems
