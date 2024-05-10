@@ -40,6 +40,8 @@ The ipv6 option enables IPv6 support, and fixed-cidr-v6 specifies the IPv6 subne
 Save the file and restart the Docker daemon for the changes to take effect. Create an IPv6 Network. After enabling IPv6 support, you can create an IPv6 network using the docker network create command with the --ipv6 flag: **docker network create --ipv6 --subnet=<ipv6-subnet> <network-name>**  Replace <ipv6-subnet> with your desired IPv6 subnet (e.g., 2001:db8:2::/64) and <network-name> with the name of your new network. Run Containers with IPv6 Addressing When running containers, you can specify the --ip6 flag to assign an IPv6 address from the configured subnet, or use the --network flag to attach the container to the IPv6-enabled network you created: **docker run --ip6=2001:db8:2::10 --name my-ipv6-container my-image** or **docker run --network=my-ipv6-network --name my-ipv6-container my-image**. This will allow the container to communicate using IPv6 addresses. Enable IPv6 Forwarding (Optional) If you want containers to communicate with the outside world using IPv6, you need to enable IPv6 forwarding on the Docker host: **sysctl net.ipv6.conf.all.forwarding=1**. You may also need to configure iptables rules to allow forwarding.  By following these steps, you can enable IPv6 support in Docker and create IPv6-enabled networks for your containers to use IPv6 addressing and communication
 * Docker daemon logs using the following command: **sudo journalctl -u docker** or **grep -i docker /var/syslog** offers the issue in daemon's operation, whereas logs for a specific Docker container **docker logs <container_name_or_id>** for contaiener level logs
 * **hostname -I** specifically displays the IP address(es) of our system. **netstat -r** or **route -n** show the "Gateway" IP address, which is the router's IP address. **ip route** find the router's IP address. Note that the 192.168.0.1 IP address is commonly used as the default gateway or router IP address within this 192.168.0.0/24 subnet. The 192.168.0.0 address is the network address, and 192.168.0.255 is the broadcast address. 192.168.0.1 and 192.168.0.255 are reserved. **broadcast address** is primarily used to send data, messages, and requests to all devices connected to a local network or subnet, enabling communication and discovery without needing to know individual IP addresses.  **default gateway or router IP** is for intercommunication that communicating to outside world.
+* **docker system info** command provides a comprehensive overview of your Docker environment. You can also format the output using a custom template: **docker info --format '{{json .}}'** This will print the information in JSON format.
+
 ******************************
 
 ### Docker Terminology 
@@ -89,6 +91,7 @@ Linux namespaces, including the PID namespace, are a key feature that allows Doc
 
 ### Docker Image house keeping and running
 ******************************
+* **docker search <image-name>** searches for image.
 * **docker image ls** lists all the docker images in local machine
 * **docker pull software-name:version** pulls the docker image of the software for the given version Example python:latest
 * **docker rmi -f hello-world** removes the docker images forcefully (**-f**). **docker images | sed '1d' | awk '{print $3}' | xargs docker rmi** deletes all the images. 
@@ -112,7 +115,9 @@ The key benefit of using multi-stage builds is that it helps reduce the final Do
 This technique also improves the security of the final image, as it contains only the required dependencies, reducing the attack surface and potential vulnerabilities.
 Overall, multi-stage builds in Docker provide a way to optimize the build process and create smaller, more secure Docker images.
 * **tags** are used for versioning, testing purposes
-* There are a few ways to force a rebuild of a Docker image when the Dockerfile has been updated: Use the docker build command with the --no-cache option: **docker build --no-cache -t my-image .**, **docker-compose build --no-cache my-service**, 
+* There are a few ways to force a rebuild of a Docker image when the Dockerfile has been updated: Use the docker build command with the --no-cache option: **docker build --no-cache -t my-image .**, **docker-compose build --no-cache my-service**,
+* **docker save <IMAGE_NAME>:<TAG> | gzip > <FILE_NAME>.tar.gz** or **docker save <IMAGE_NAME>:<TAG> > <FILE_NAME>.tar** you can combine the docker save and compression steps into a single command using a pipe (|).
+
  ******************************
 
 ### Container house keeping and running commands
@@ -155,7 +160,8 @@ MEM %: The percentage of the host's memory utilized by the container.
 NET I/O: The amount of data the container has received and sent over its network interface.
 BLOCK I/O: The amount of data the container has written to and read from block devices on the host.
 PIDS: The number of processes or threads the container has created.
-```    
+```
+* **docker rename <CURRENT_NAME> <NEW_NAME>** rename a container
 ******************************
 
 ### Docker storage and File systems
