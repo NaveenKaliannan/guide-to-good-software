@@ -270,6 +270,11 @@ steps {
 }
 ****************************************
 
+## Plugins
+*******************************
+* **SSH plugin** To install and configure the SSH plugin in Jenkins, follow these steps: Go to "Manage Jenkins" > "Manage Plugins" . Click on the "Available" tab and search for "SSH" . Find the "SSH" plugin in the list and check the box next to it . Click the "Install without restart" button to install the plugin. Once the plugin is installed, you can configure it by going to "Manage Jenkins" > "Configure System" and finding the "SSH" section . Here you can set up the default SSH key to be used by all SSH configurations. To configure a specific SSH server: Click the "Add" button next to "SSH Servers". Fill in the Name, Hostname, Username, and Remote Directory for the SSH server. Click "Test Configuration" to verify the connection works. Add more server configurations if required. Save the changes. After configuring the SSH plugin, you can use it in your Jenkins jobs to execute commands on remote servers over SSH. 
+
+
 The Jenkins Build Health Weather Plugin offers a visual representation of the health of recent builds within your pipeline or branch. The plugin assigns weather icons based on the success rate of the last few builds, allowing for quick identification of potentially unstable pipelines or branches.
 
 ## Weather Icons
