@@ -129,7 +129,7 @@ Overall, multi-stage builds in Docker provide a way to optimize the build proces
 * **docker run -p dockerhostportnumber:dockercotainerportnumber software-name:version** runs the container in specified ports.
 * **docker run -d software-name** runs the container in background. To bring it to the front end, **docker attach ContainerID**
 * **docker run -d -v hostvolume:dockervolume --name containername -e enviornmentalvariable=value -p hostportnumber:containerportnumber  imagename**
-* **docker run --link source_container:alias runningcontainer** links the "example" container to the running container, and the running container would be able to access the "example" container using the alias "examplealias
+* **docker run --link source_container:alias runningcontainer** links the "example" container to the running container, and the running container would be able to access the "example" container using the alias "examplealias. Link is depreceed. But network allows one container to access another.
 * **docker run imagename cat /etc/*release*** gives the base image.
 * **docker run -e ENVIRONMENTAL_VARIABLE=input imagename** passes the environmental variable. The variable name can be **docker inspect containerID | grep "environmental variable"**
 * **docker run --name containername -e enviornmentalvariable=value -p hostportnumber:containerportnumber  imagename** 
@@ -232,7 +232,7 @@ when docker is installed, bridge, none and host networks are created. Bridge is 
 *  **docker inspect containerid | grep "NetworkMode"** displays the type of network used in the container.
 *  **docker inspect networkid | grep "Subnet"** displays the subnet info. networkid can be obtained from **docker network ls**.
 *  **docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=db_pass123 --network wp-mysql-network  mysql:5.6** creates a new container named mysql-db using the mysql:5.6 image, sets the MYSQL_ROOT_PASSWORD environment variable to db_pass123, and attaches the container to the wp-mysql-network network
-*  **docker run --network=wp-mysql-network -e DB_Host=mysql-db -e DB_Password=db_pass123 -p 38080:8080 --name webapp --link mysql-db:mysql-db -d kodekloud/simple-webapp-mysql** The docker run command creates a new container named webapp using the kodekloud/simple-webapp-mysql image, sets the DB_Host environment variable to mysql-db and the DB_Password environment variable to db_pass123, maps port 38080 on the host to port 8080 in the container, links the webapp container to the mysql-db container, and runs the container in detached mode (-d). The container is attached to the wp-mysql-network network, allowing it to communicate with the mysql-db container.
+*  **docker run --network=wp-mysql-network -e DB_Host=mysql-db -e DB_Password=db_pass123 -p 38080:8080 --name webapp --link mysql-db:mysql-db -d kodekloud/simple-webapp-mysql** The docker run command creates a new container named webapp using the kodekloud/simple-webapp-mysql image, sets the DB_Host environment variable to mysql-db and the DB_Password environment variable to db_pass123, maps port 38080 on the host to port 8080 in the container, links the webapp container to the mysql-db container, and runs the container in detached mode (-d). The container is attached to the wp-mysql-network network, allowing it to communicate with the mysql-db container. **Note that the link option is depreceted and network is recommened to connect containers** : `docker run --network=wp-mysql-network -e DB_Host=mysql-db -e DB_Password=db_pass123 -p 38080:8080 --name webapp -d kodekloud/simple-webapp-mysql` and `docker run --network=wp-mysql-network --name mysql-db -d mysql-db:mysql-db` will fix the problem. 
 * Connecting to multiple user-defined networks
 ```bash
 # Create two user-defined networks
@@ -385,7 +385,7 @@ CMD ["sh", "-c", "command1; command2"]
 ```
 3. **docker compose yaml file format**
 Docker Compose will first read the configuration file, then build the images (if necessary), and finally run the containers based on the specified configuration.
-In the Compose file, the key is the service name, and the value is the configuration for that service, which includes the image name, build instructions, ports, links, and other settings.
+In the Compose file, the key is the service name, and the value is the configuration for that service, which includes the image name, build instructions, ports, links (depreceted), and other settings.
 The version field is a top-level element in the Compose file that specifies the version of the Compose file format being used.
 The services field defines the different services (containers) that make up the application.
 ```yaml
