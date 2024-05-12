@@ -516,6 +516,33 @@ services:
 networks:
   net:
 ```
+* **Triangle like multi containers using multi networks**
+```yaml
+version: '3'
+
+networks:
+  network1:
+    driver: bridge
+  network2:
+    driver: bridge
+
+services:
+  container1:
+    image: nginx
+    networks:
+      - network1
+
+  container2:
+    image: nginx
+    networks:
+      - network1
+
+  container3:
+    image: nginx
+    networks:
+      - network1
+      - network2
+``` 
 
 ### orchestration
 * kubernetes, docker swarm, container orchestration for running multiple containers and monitoring them.
