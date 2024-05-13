@@ -21,6 +21,11 @@ This allows for a fully automated deployment process, where new features and bug
 Jenkins integrates with a wide range of tools and technologies to enable this end-to-end CI/CD pipeline, such as version control systems, build tools, container registries, and Kubernetes clusters
 ****************************************
 
+### Important terminology
+*****************************************
+* The **built-in node** comes when Jenkins is installed. It is a node that exists within the Jenkins controller process itself. The built-in node is a node that is automatically created and configured when you install Jenkins. It allows you to run jobs and tasks directly on the Jenkins controller machine without needing to set up any additional nodes or agents. However, running jobs on the built-in node is generally discouraged for security, performance, and scalability reasons. It is recommended to use separate agent nodes for executing jobs, while the Jenkins controller acts as the central management and coordination point. The built-in node has a configurable number of executors, which determines how many concurrent jobs or tasks can run on it. By default, the number of executors is set to the number of CPU cores on the Jenkins controller machine. You can set the number of executors to 0 to disable running tasks on the built-in node entirely
+
+
 ## Jenkins architecture
 Overview of the key components in the Jenkins architecture: 
 
