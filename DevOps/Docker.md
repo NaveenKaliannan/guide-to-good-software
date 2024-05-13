@@ -450,41 +450,29 @@ Using Labels for Filtering : Labels can be used to filter Docker objects. For ex
 * **docker-compose up** command runs the docker compose yaml file. **-d** option to run it in brackground.
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
 * **docker-compose start, restart stop, down containerid** to stop and start, delete services.
-* **create user**
+* **create user, run them** `docker build -t my_ssh_container .` , `docker run -d -p 2222:22 --name ssh_container my_ssh_container`, `ssh naveen@localhost -p 2222 -i private-key`
 ```Dockerfile
 FROM ubuntu:latest
 
-## Install required packages
-RUN apt-get update && \
-    apt-get install -y openssh-server sudo && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install SSH server and sudo
+RUN apt-get update && apt-get install -y openssh-server sudo && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-## Create a non-root user
-ENV USER_NAME=naveen
-ENV USER_UID=1000
-ENV USER_GID=1000
-ENV USER_PASSWORD=your_password
-RUN groupadd -g ${USER_GID} ${USER_NAME} && \
-    useradd -m -u ${USER_UID} -g ${USER_GID} -s /bin/bash ${USER_NAME} && \
+# Create a non-root user
+ARG USER_NAME=naveen
+ARG USER_PASSWORD="1234"
+RUN useradd -m -s /bin/bash ${USER_NAME} && \
     echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && \
     echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-## Set up SSH
-RUN mkdir /home/${USER_NAME}/.ssh && \
+# Set up SSH
+RUN mkdir /run/sshd && \
+    mkdir /home/${USER_NAME}/.ssh && \
     chmod 700 /home/${USER_NAME}/.ssh
+COPY key/remote-key.pub /home/${USER_NAME}/.ssh/authorized_keys
+RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/.ssh && chmod 600 /home/${USER_NAME}/.ssh/authorized_keys
 
-COPY remote-key.pub /home/${USER_NAME}/.ssh/authorized_keys
-RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/.ssh && \
-    chmod 600 /home/${USER_NAME}/.ssh/authorized_keys
-
-## Switch to non-root user
-USER ${USER_NAME}
-
-## Expose SSH port
+# Expose SSH port and start SSH server
 EXPOSE 22
-
-## Start SSH server
 CMD ["/usr/sbin/sshd", "-D"]
 ```
 * **Multi container** Sets up a Jenkins controller and a remote host container. The Jenkins controller is configured to persist data using a volume and automatically restart if needed. The remote host is built using a Dockerfile and also automatically restarts if needed. Both containers are connected to the same network for communication 
