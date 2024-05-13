@@ -1,6 +1,6 @@
 # Jenkins
 ****************************************
-Jenkins is an open-source continuous integration and continuous delivery (CI/CD) automation server that helps automate various stages in the software development process.
+Jenkins is an open-source continuous integration and continuous delivery (CI/CD) automation server that helps automate various stages in the software development process. The Jenkins architecture is designed for distributed build environments
 It can clean up data, and to do lot of jobs. 
 ****************************************
 
@@ -20,6 +20,32 @@ Deploy the new application to the production environment running on Kubernetes w
 This allows for a fully automated deployment process, where new features and bug fixes can be delivered to users quickly and reliably.\
 Jenkins integrates with a wide range of tools and technologies to enable this end-to-end CI/CD pipeline, such as version control systems, build tools, container registries, and Kubernetes clusters
 ****************************************
+
+## Jenkins architecture
+Overview of the key components in the Jenkins architecture: 
+
+### Master Node
+The Jenkins master is the central, controlling node that handles and monitors the execution of jobs/pipelines. It consists of the following main components:
+* **Web Server**: Provides a user interface to configure Jenkins, create/manage jobs, view reports, etc. It runs on a Java servlet container like Jetty or Tomcat.
+* **Controller**: Orchestrates and schedules jobs, dispatches work to executors on master or slave nodes, monitors their execution, and handles results.
+* **Job/Project Definitions**: Defines the jobs/pipelines with their configurations, such as source code repository, build triggers, build steps, etc.
+* **Workspaces**: Temporary directories on the master's filesystem where jobs are checked out and executed.
+* **Plugins**: Jenkins has a vast plugin ecosystem that extends its capabilities for various tasks like source control integration, notifications, deployments, etc.
+
+### Slave/Agent Nodes
+Jenkins slave nodes are remote machines that communicate with the master and execute jobs/pipelines. They can be physical or virtual machines, containers, or cloud instances. Slave nodes have the following components:
+* **Executors**: Carry out the actual work by running the job's build steps within separate workspaces.
+* **Workspaces**: Like the master, slaves have temporary workspaces to check out code and run build steps.
+* **Launchers**: Handle the communication between the master and slave, transferring input/output data, files, and executing processes on the slave.
+
+The master schedules jobs and assigns executors on slaves based on their availability and labels (e.g., operating system, hardware). Slaves regularly communicate their status back to the master.
+Key Architectural Aspects
+* **Distributed Builds**: By utilizing multiple slave nodes, Jenkins can run parallel builds, tests, and deployments, improving overall throughput and efficiency.
+* **Plugins Architecture**: Jenkins' modular architecture allows extending its functionality through plugins developed by the community or third-parties.
+* **Job/Pipeline Organization**: Jobs/pipelines encapsulate the entire build process, from source code checkout to testing, building, and deployment.
+* **Master-Slave Communication**: The master and slaves communicate over TCP/IP using remoting-based or agent-based protocols like JNLP, WebSocket, or CLI.
+* **Security**: Jenkins supports various authentication and authorization mechanisms, including its user database, LDAP, OAuth, and role-based access control.
+
 
 ### Installation of Jenkins via Docker and important links
 ****************************************
@@ -130,6 +156,35 @@ multibranchPipelineJob('my-repo') {
 ****************************************
 The **Pipeline** script always starts with the pipeline block.
 The **agent** block specifies which Jenkins node/agent the Pipeline will run on.
+```groovy
+// Run the entire pipeline on any available agent
+pipeline {
+    agent any
+    // pipeline stages...
+}
+
+// Run the entire pipeline on an agent with the 'my-label' label 
+pipeline {
+    agent { label 'my-label' }
+    // pipeline stages...
+}
+
+// Run a specific stage on a Docker container
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            agent {
+                docker { image 'maven:3.8.1' }
+            }
+            steps {
+                // build steps
+            }
+        }
+        // other stages
+    }
+}
+```
 The **stages** block contains one or more stage blocks, each representing a stage in the Pipeline like building, testing, etc.
 Inside each **stage** block, the **steps** block contains the actual commands/instructions to be executed in that stage.
 The **deleteDir** step deletes the specified directory.
