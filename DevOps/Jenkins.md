@@ -161,8 +161,10 @@ multibranchPipelineJob('my-repo') {
 
 ### Pipeline instructions from jenkins.io
 ****************************************
-The **Pipeline** script always starts with the pipeline block.
-The **agent** block specifies which Jenkins node/agent the Pipeline will run on.
+* **Pipeline** script always starts with the pipeline block.
+
+* The **agent block** specifies which Jenkins node/agent the Pipeline will run on. There are two types of agent nodes: master and slave nodes. The master node (also called the Jenkins controller) is created by default when Jenkins is installed. Any number of slave nodes can be created manually in Manage Jenkins -> Manage Nodes. Slave node can be a container, or a phyical machine or a remote machine. 
+
 ```groovy
 // Run the entire pipeline on any available agent
 pipeline {
@@ -192,8 +194,122 @@ pipeline {
     }
 }
 ```
-The **stages** block contains one or more stage blocks, each representing a stage in the Pipeline like building, testing, etc.
-Inside each **stage** block, the **steps** block contains the actual commands/instructions to be executed in that stage.
+* The **stages** block organizes and structures the different phases of a Pipeline job like building, testing, etc. Inside each **stage** block, the **steps** block contains the actual commands/instructions to be executed in that stage.
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                // Build steps go here
+            }
+        }
+        stage('Test') {
+            steps {
+                // Test steps go here 
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Deploy steps go here
+            }
+        }
+    }
+}
+```
+Running stages in parallel.
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Parallel Tests') {
+            parallel {
+                stage('Unit Tests') {
+                    steps {
+                        // Unit test steps
+                    }
+                }
+                stage('Integration Tests') {
+                    steps {
+                        // Integration test steps
+                    }
+                }
+            }
+        }
+    }
+}
+```
+Dynamic stage execution
+```groovy
+def stageNames = ['Stage 1', 'Stage 2', 'Stage 3']
+
+pipeline {
+    agent any
+    
+    stages {
+        stage('Generate Stages') {
+            steps {
+                script {
+                    stageNames.each { stageName ->
+                        stage(stageName) {
+                            steps {
+                                echo "This is ${stageName}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+* **tools** Global Tool Configuration in Jenkins allows you to centrally manage and configure different versions of tools and technologies that your Jenkins jobs or pipelines may require.\
+This declares the use of Maven 3.6.3 and JDK 11 tools for the entire Pipeline. The tools will be automatically configured and available in the PATH. 
+```groovy
+pipeline {
+    agent any
+    tools {
+        maven 'Maven 3.6.3' 
+        jdk 'JDK 11'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+    }
+}
+```
+Scripted Pipeline : This uses the tool step to get the home directories of Maven and JDK, adds them to the PATH environment variable, and then executes the Maven command.
+```groovy
+node {
+    def mvnHome = tool 'Maven 3.6.3'
+    def jdkHome = tool 'JDK 11'
+    
+    env.PATH = "${mvnHome}/bin:${jdkHome}/bin:${env.PATH}"
+    
+    stage('Build') {
+        sh 'mvn clean install'
+    }
+}
+```
+Using withEnv : The withEnv step allows you to set environment variables for a specific block of code. Here, it prepends the Maven and JDK tool paths to the existing PATH.
+```groovy
+node {
+    stage('Build') {
+        withEnv(["PATH+MAVEN=${tool 'Maven 3.6.3'}/bin", "PATH+JDK=${tool 'JDK 11'}/bin"]) {
+            sh 'mvn clean install'
+        }
+    }
+}
+```
+Dynamic Tool Configuration : This dynamically configures the Maven and JDK tools using their respective types, allowing for more flexible tool configuration.
+```groovy
+def mvnHome = tool name: 'Maven 3.6.3', type: 'hudson.tasks.Maven$MavenInstallation'
+def jdkHome = tool name: 'JDK 11', type: 'hudson.model.JDK'
+```
+
 The **deleteDir** step deletes the specified directory.
 The **dir** step is used to change the current working directory, similar to the cd command in bash/shell scripts
 * **Jenkinsfile** from github (source code management) can be used in the pipeline via SCM option. Note that the file should ends with Jenkinsfile, prod.Jenkinsfile, test.Jenkinsfile, Multiple Jenkins can also be included.
