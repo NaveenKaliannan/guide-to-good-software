@@ -475,9 +475,12 @@ RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/.ssh && chmod 600 /hom
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
 ```
-* **Multi container** Sets up a Jenkins controller and a remote host container. The Jenkins controller is configured to persist data using a volume and automatically restart if needed. The remote host is built using a Dockerfile and also automatically restarts if needed. Both containers are connected to the same network for communication 
+* **Multi container** Sets up a Jenkins controller and a remote host container. The Jenkins controller is configured to persist data using a volume and automatically restart if needed. The remote host is built using a Dockerfile and also automatically restarts if needed. Both containers are connected to the same network for communication. The Jenkins application provides the core functionality for automation and the Jenkins controller is the central "brain" that orchestrates the entire distributed build environment, including scheduling jobs, assigning agents, monitoring their state, and collecting results. 
 ```
 version: '3'
+
+networks:
+  net:
 
 services:
   jenkins:
@@ -487,22 +490,23 @@ services:
       - "8080:8080"
       - "50000:50000"  # Add this line to expose the Jenkins JNLP port
     volumes:
-      - $PWD/jenkins_home:/var/jenkins_home
+      - $PWD/jenkins:/var/jenkins_home
     networks:
       - net
     restart: unless-stopped  # Automatically restart the container if it stops
+    depends_on:
+      - remote_host    
 
   remote_host:
     container_name: remote-host
     build:
-      context: ./  # Specify the correct path to the above Dockerfile context (./ or folder path)
-      dockerfile: Dockerfile  # Specify the name of the above Dockerfile (if it's not 'Dockerfile')
+      context: ./  # Specify the correct path to the Dockerfile context
+      dockerfile: Dockerfile  # Specify the name of the Dockerfile (if it's not 'Dockerfile')
+    ports:
+      - "2222:22"
     networks:
       - net
     restart: unless-stopped  # Automatically restart the container if it stops
-
-networks:
-  net:
 ```
 * **Triangle like multi containers using multi networks**
 ```yaml
