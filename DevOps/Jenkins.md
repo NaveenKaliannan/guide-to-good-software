@@ -263,6 +263,178 @@ pipeline {
     }
 }
 ```
+* Inside the **steps** section of a Jenkinsfile, you can execute various commands and scripts. Here are some common commands that can be executed:
+```groovy
+steps {
+    sh '''
+        echo "Running shell script"
+        ls -l
+        ./build.sh
+    '''
+    bat '''
+        echo "Running batch script"
+        dir
+        build.bat
+    '''
+    script {
+        def output = sh(script: 'ls -l', returnStdout: true).trim()[1]
+        echo "Output: ${output}"
+    }
+    echo 'Hello World'
+    sh 'echo "Running shell command"'
+    stash includes: 'target/**/*', name: 'app'
+    unstash 'app'
+    archiveArtifacts artifacts: 'target/**/*'
+    sh 'scripts/build.sh'
+    bat 'scripts/deploy.bat'
+    load 'scripts/utils.groovy'
+    sh '''
+        echo "Executing multi-line command"
+        mkdir build
+        cd build
+        cmake ..
+        make
+    '''
+    // Shell script
+    sh '''
+        echo "Running shell script"
+        mkdir output
+        ls -l > output/files.txt
+    '''
+
+    // Groovy script
+    script {
+        def files = sh(script: 'ls -1', returnStdout: true).trim().split('\n')
+        echo "Files in directory: ${files.join(', ')}"[1]
+    }
+
+    // Jenkins pipeline step
+    echo 'Hello World'
+
+    // Invoking external script
+    sh 'scripts/build.sh'
+
+    // Multi-line command
+    sh '''
+        echo "Compiling code"
+        gcc -o app main.c
+        ./app
+    '''
+}
+```
+* **Retry** First bug code will be retried 3 time, while the latter (correct code) will be executed only once.
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Hello') {
+            steps {
+                retry(3) {
+                    sh 'eco "Hello, World!"'
+                }
+            }
+        }
+    }
+}
+
+pipeline {
+    agent any
+    stages {
+        stage('Hello') {
+            steps {
+                retry(3) {
+                    sh 'echo "Hello, World!"'
+                }
+            }
+        }
+    }
+}
+``` 
+* **timeout** The commands inside the time out after the given time period.  
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Timeout Example') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    sh '''
+                        echo "Starting long-running task..."
+                        sleep 120 # Simulating a task that takes 2 minutes #+ sleep 120 Cancelling nested steps due to timeout
+                        echo "Long-running task completed successfully."
+                    '''
+                }
+            }
+        }
+        stage('Success') {
+            steps {
+                echo "Pipeline executed successfully!"
+            }
+        }
+    }
+}
+```
+* **Enviornment and Credentials**  How to set credentials?.  Manage Jenkins -> Credentials -> System -> Global Credentials -> Add credentials -> Secrect text
+```groovy
+pipeline {
+    agent any
+    
+    environment {
+        MY_VAR = 'Hello, World!'
+        BUILD_USER = credentials('jenkins-user')
+    }
+    
+    stages {
+        stage('Print Environment Variables') {
+            steps {
+                sh 'echo "MY_VAR value: ${MY_VAR}"'
+                sh 'echo "BUILD_USER value: ${BUILD_USER}"'
+            }
+        }
+    }
+}
+```
+* **Post actions** in Jenkins are steps that can be executed after the main build or stage execution, based on the outcome of the build or stage
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building the application...'
+                // Simulate a successful build
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing the application...'
+                // Simulate a failed test
+                error 'Test failed'
+            }
+        }
+    }
+    post {
+        always {
+            echo 'This will always run'
+        }
+        success {
+            echo 'This will run only if the build succeeds'
+        }
+        failure {
+            echo 'This will run only if the build fails'
+        }
+        unstable {
+            echo 'This will run only if the build is unstable'
+        }
+        changed {
+            echo 'This will run only if the build status changes'
+        }
+        aborted {
+            echo 'This will run only if the build is aborted'
+        }
+    }
+}
+``` 
 * **tools** Global Tool Configuration in Jenkins allows you to centrally manage and configure different versions of tools and technologies that your Jenkins jobs or pipelines may require.\
 This declares the use of Maven 3.6.3 and JDK 11 tools for the entire Pipeline. The tools will be automatically configured and available in the PATH. 
 ```groovy
