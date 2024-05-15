@@ -436,23 +436,48 @@ pipeline {
 }
 ``` 
 * **tools** Global Tool Configuration in Jenkins allows you to centrally manage and configure different versions of tools and technologies that your Jenkins jobs or pipelines may require.\
-This declares the use of Maven 3.6.3 and JDK 11 tools for the entire Pipeline. The tools will be automatically configured and available in the PATH. 
+ Manage Jenkins" > "Global Tool Configuration -> install automatically or set the path directions of installed version
 ```groovy
 pipeline {
     agent any
     tools {
-        maven 'Maven 3.6.3' 
-        jdk 'JDK 11'
+        maven 'maven3_9_6'
     }
     stages {
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                sh '''
+                mvn --version
+                '''
             }
         }
     }
 }
 ```
+* **timstamps** prints the time info for all the outputs
+```groovy
+pipeline {
+    agent any
+    
+    options {
+        timestamps()
+    }
+    
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "Building the application..."'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'echo "Running tests..."'
+            }
+        }
+    }
+}
+``` 
 Scripted Pipeline : This uses the tool step to get the home directories of Maven and JDK, adds them to the PATH environment variable, and then executes the Maven command.
 ```groovy
 node {
