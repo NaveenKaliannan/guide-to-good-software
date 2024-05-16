@@ -374,7 +374,7 @@ pipeline {
     }
 }
 ```
-* **Enviornment and Credentials**  How to set credentials?.  Manage Jenkins -> Credentials -> System -> Global Credentials -> Add credentials -> Secrect text
+* **Enviornment and Credentials**  How to set credentials?.  Manage Jenkins -> Credentials -> System -> Global Credentials -> Add credentials -> Secrect text. **printenv** prints all the environmental variables. 
 ```groovy
 pipeline {
     agent any
@@ -389,6 +389,51 @@ pipeline {
             steps {
                 sh 'echo "MY_VAR value: ${MY_VAR}"'
                 sh 'echo "BUILD_USER value: ${BUILD_USER}"'
+                sh 'printenv' # prints the all the enviornmental variable
+            }
+        }
+    }
+}
+```
+* **when** is like a if condition and allows you to control the execution flow of your pipeline based on certain conditions
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Example') {
+            steps {
+                echo 'Running steps'
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                when {
+                    environment name: 'DEPLOY_ENV', value: 'production'
+                    echo 'Sending notification to team'
+                }
+            }
+        }
+    }
+}
+```
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Example') {
+            steps {
+                script {
+                    when {
+                        branch 'main'
+                        echo 'Running on main branch'
+                    }
+                    when {
+                        not { branch 'main' }
+                        echo 'Running on a non-main branch'
+                    }
+                }
             }
         }
     }
@@ -477,7 +522,55 @@ pipeline {
         }
     }
 }
-``` 
+```
+* **skipDefaultCheckout**  allows one to skip the automatic checkout of the source code repository at the start of the pipeline execution
+```
+pipeline {
+    agent any
+    options {
+        skipDefaultCheckout true  // Skip automatic source checkout
+    }
+    stages {
+        stage('Build') {
+            steps {
+                // Explicitly check out source code if needed
+                checkout scm
+                
+                // Build steps...
+            }
+        }
+        stage('Test') {
+            steps {
+                // No need to check out source code for this stage
+                
+                // Test steps...
+            }
+        }
+    }
+}
+```
+```groovy
+pipeline {
+    agent any
+    options {
+        skipDefaultCheckout true
+    }
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        checkout scm
+                        // Build steps for main branch...
+                    } else {
+                        // Build steps for other branches without source code...
+                    }
+                }
+            }
+        }
+    }
+}
+```
 Scripted Pipeline : This uses the tool step to get the home directories of Maven and JDK, adds them to the PATH environment variable, and then executes the Maven command.
 ```groovy
 node {
