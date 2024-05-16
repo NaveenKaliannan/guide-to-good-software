@@ -263,7 +263,7 @@ pipeline {
     }
 }
 ```
-* Inside the **steps** section of a Jenkinsfile, you can execute various commands and scripts. Here are some common commands that can be executed:
+* Inside the **steps** section of a Jenkinsfile, you can execute various commands and scripts. **the steps block is used to execute simple steps like running a shell command (sh) and calling a method from a shared library. Inside the script block is used to incorporate Groovy scripting.** Here are some common commands that can be executed:
 ```groovy
 steps {
     sh '''
@@ -396,6 +396,27 @@ pipeline {
 }
 ```
 * **when** is like a if condition and allows you to control the execution flow of your pipeline based on certain conditions
+```groovy
+pipeline {
+    agent any
+    
+    stages {
+        stage('Example') {
+            steps {
+                script {
+                    def isProduction = env.BRANCH_NAME == 'main'
+                    
+                    if (isProduction) {
+                        echo 'Deploying to production environment'
+                    } else {
+                        echo 'Deploying to non-production environment'
+                    }
+                }
+            }
+        }
+    }
+}
+``` 
 ```groovy
 pipeline {
     agent any
