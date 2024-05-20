@@ -450,7 +450,7 @@ Using Labels for Filtering : Labels can be used to filter Docker objects. For ex
 * **docker-compose up** command runs the docker compose yaml file. **-d** option to run it in brackground.
 * **docker-compose -f docker-compose-LocalExecutor.yml up -d** is for running multiple container applications.  YAML file is used for configuration purposes.
 * **docker-compose start, restart stop, down containerid** to stop and start, delete services.
-* **create user, run them** `docker build -t my_ssh_container .` , `docker run -d -p 2222:22 --name ssh_container my_ssh_container`, `ssh naveen@localhost -p 2222 -i private-key`
+* **create user, run them** `docker build -t my_ssh_container .` , `docker run -d -p 2222:22 --name ssh_container my_ssh_container`, `ssh naveen@localhost -p 2222 -i private-key` for host machine and `ssh naveen@containername` from a container
 ```Dockerfile
 FROM ubuntu:latest
 
