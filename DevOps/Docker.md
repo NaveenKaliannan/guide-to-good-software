@@ -174,7 +174,7 @@ Image layer is always read only. Contaienr only is read and write.
 * Bind mounts  **docker run -v /home/naveenk/mydata:/var/lib/mysql mysql** or **docker run --mount type==bind,source=/home/naveenk/mydata,target=/var/lib/mysql mysql**  offer more flexibility by allowing you to directly access the host's filesystem. Mount option by creating **docker volume create testvolume**,  **docker run --mount type==bind,source=testvolume,target=/var/lib/mysql mysql**
 * **docker run -v mydata:/var/lib/mysql mysql** stores all the data in mydata folder.
 * **docker system df** or **docker system df -v** to see the memory used by images inside docker
-* Docker provides three main types of mounts for managing data in containers: volumes, bind mounts, and tmpfs mounts. Note that A **Docker secret mount** is a way to securely pass sensitive data like passwords, API keys, or SSH keys to a Docker container during the build process, without exposing them in the final Docker image. `RUN --mount=type=secret,id=netrc,dst=/app/.netrc true`, `docker build --secret id=netrc,src=/path/to/.netrc -t my-app . (not docker compose up)` `docker run --mount=type=secret,id=netrc,dst=/app/.netrc my-app` Note : Secrets mounted using --mount=type=secret in a Dockerfile are only available during the build process and are not persisted in the final image. This is especially important when building images that may contain private repositories, API keys, or other sensitive data. **Secrets mounted using Docker Compose are available to the running container. you can easily define and distribute sensitive data to the necessary services without compromising security**
+* Docker provides three main types of mounts for managing data in containers: volumes, bind mounts, and tmpfs mounts. 
   1. Volumes are the recommended way to persist data in Docker. They are managed by Docker and are stored in a part of the host filesystem (/var/lib/docker/volumes/ on Linux) that is designed to be managed by Docker.
 ```bash
 # Create a volume
@@ -215,6 +215,19 @@ volumes:
   volume1:
   volume2:
 ```
+* Note that A **Docker secret mount** is a way to securely pass sensitive data like passwords, API keys, or SSH keys to a Docker container during the build process, without exposing them in the final Docker image. `RUN --mount=type=secret,id=netrc,dst=/app/.netrc true`, `docker build --secret id=netrc,src=/path/to/.netrc -t my-app . (not docker compose up)` `docker run --mount=type=secret,id=netrc,dst=/app/.netrc my-app` Note : Secrets mounted using --mount=type=secret in a Dockerfile are only available during the build process and are not persisted in the final image. This is especially important when building images that may contain private repositories, API keys, or other sensitive data. **Secrets mounted using Docker Compose are available to the running container. you can easily define and distribute sensitive data to the necessary services without compromising security**
+
+1. Case 1 : Mounting Secrets During the Build Process in a Dockerfile
+   
+**With secret mount**   `docker build --build-arg SSH_PASSPHRASE=your_passphrase --secret id=ssh-key,src=key/remote-key -t my-app .`, `docker run`
+```dockerfile
+```
+**Without secret mount**  docker build --build-arg SSH_PASSPHRASE=<your-passphrase> -t my-image
+```dockerfile
+```
+2. Case 2: Mounting Secrets with Docker Compose
+```
+``` 
 ******************************
 
 ### Docker networking
