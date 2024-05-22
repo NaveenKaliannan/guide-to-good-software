@@ -41,7 +41,6 @@ Save the file and restart the Docker daemon for the changes to take effect. Crea
 * Docker daemon logs using the following command: **sudo journalctl -u docker** or **grep -i docker /var/syslog** offers the issue in daemon's operation, whereas logs for a specific Docker container **docker logs <container_name_or_id>** for contaiener level logs
 * **hostname -I** specifically displays the IP address(es) of our system. **netstat -r** or **route -n** show the "Gateway" IP address, which is the router's IP address. **ip route** find the router's IP address. Note that the 192.168.0.1 IP address is commonly used as the default gateway or router IP address within this 192.168.0.0/24 subnet. The 192.168.0.0 address is the network address, and 192.168.0.255 is the broadcast address. 192.168.0.1 and 192.168.0.255 are reserved. **broadcast address** is primarily used to send data, messages, and requests to all devices connected to a local network or subnet, enabling communication and discovery without needing to know individual IP addresses.  **default gateway or router IP** is for intercommunication that communicating to outside world.
 * **docker system info** command provides a comprehensive overview of your Docker environment. You can also format the output using a custom template: **docker info --format '{{json .}}'** This will print the information in JSON format.
-
 ******************************
 
 ### Docker Terminology 
@@ -287,7 +286,44 @@ CMD ["sh", "-c", "sleep 100s"]
 ```
 2. Case 2: Mounting Secrets with Docker Compose
 ```
+```
+**ssh mount type**  `RUN --mount=type=ssh,id=git-ssh \ git clone git@github.com:user/private-repo.git /app`, `docker build --ssh default=/path/to/ssh/socket -t myapp .` The --ssh default=/path/to/ssh/socket flag mounts the SSH socket located at /path/to/ssh/socket into the build container, allowing the Git clone operation to authenticate using the SSH keys loaded into the Docker engine. The SSH agent manages the keys on the host, not within Docker itself. The SSH socket provides a secure communication channel for Docker on the host to access the agent. Containers can leverage the host's SSH agent for authentication during the build process, but don't store the keys themselves.
+* **Add SSH Key to Docker Engine:** `docker-credential-helper-ssh add ~/.ssh/id_rsa  # Replace with your private key path`
+* **Find SSH Socket Path:** `docker info`
+```Dockerfile
+FROM python:3.9
+
+RUN apt-get update && apt-get install -y git
+
+# Mount SSH agent for authentication
+RUN --mount=type=ssh,id=ssh-agent \
+    git clone git@github.com:user/private-repo.git /app
+
+WORKDIR /app
 ``` 
+* **Build the Image:** `docker build --ssh default=/path/to/docker/ssh.sock -t my-python-app .  # Replace path with actual socket path`
+**Cache Mounts**  Installs the packages example git here from the host machine (cache). not downloading from the cloud.  If Git is not installed on the host machine, the Dockerfile instructions that attempt to install Git within the Docker container will fail.
+
+```Dockerfile
+# Use the official Ubuntu image as the base
+FROM ubuntu:latest
+
+# Install Git
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && \
+    apt-get install -y git && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the application code
+COPY . .
+
+# Run the application (replace with your command)
+CMD ["bash"]
+```
+**Configuration Mounts** Mounts a configuration file or directory from the host into the container to customize runtime configuration
 ******************************
 
 ### Docker networking
