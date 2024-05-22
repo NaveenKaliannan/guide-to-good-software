@@ -14,7 +14,8 @@
   1. Copy the public key content to the file `~/.ssh/authorized_keys` 
   2. `chmod 700 ~/.ssh` and `chmod 600 ~/.ssh/authorized_keys`
   3. `ssh -i /home/naveenk/.ssh/id_rsa username@hostaddress`  
-
+* **ssh agent** like a manager who stores keys, passphrase and used for authentication purposes. Start the SSH agent: `eval "$(ssh-agent -s)"`, Add the key to the agent: `ssh-add ~/.ssh/id_rsa  # Replace with your actual key path if different`, Verifying Key Addition: `ssh-add -l`. Connecting to a Machine: `ssh user@remote_machine_address` The SSH agent typically runs for your current shell session. You can set it to start automatically at login by adding the `eval "$(ssh-agent -s)"` command to your shell configuration file .bashrc. **SSH Agent:** Acts as a secure vault that stores your private SSH keys in memory. The agent creates the socket in a temporary location on your system.  **SSH Agent Socket:* Provides a secure communication channel between the SSH client and the agent. **SSH Client Program (e.g., ssh):** Initiates the connection to the remote machine. It interacts with the SSH agent socket to request access to your private key for authentication. When you run an SSH command, the client program connects to the socket. The agent verifies your identity (often by asking for your key passphrase). If verification is successful, the agent provides the key to the client program, allowing passwordless login to the remote machine.
+ 
 ## Terminology
 ******************************************
 * **repository** is the complete project and metadata stored by Git, including all commits, branches, and file versions.
