@@ -219,11 +219,71 @@ volumes:
 
 1. Case 1 : Mounting Secrets During the Build Process in a Dockerfile
    
-**With secret mount**   `docker build --build-arg SSH_PASSPHRASE=your_passphrase --secret id=ssh-key,src=key/remote-key -t my-app .`, `docker run`
+**With secret mount**   `docker build --secret id=privatekey,src=key/withoutpassphrase/id_rsa -t my-app -f Dockerfile_netrc .` and `docker run -it my-app /bin/bash`
 ```dockerfile
+# Specify the base image for your project
+FROM ubuntu:latest
+
+# Set working directory
+WORKDIR /app
+
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y git openssh-client
+
+# Add the remote server's host key to the known_hosts file
+RUN mkdir -p /root/.ssh
+RUN ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
+
+# Mount the private SSH key as a secret
+#COPY key/withoutpassphrase/id_rsa /root/.ssh/id_rsa
+RUN --mount=type=secret,id=privatekey,dst=/root/.ssh/id_rsa true
+
+# Clone the repository
+RUN --mount=type=secret,id=privatekey,dst=/root/.ssh/id_rsa true && \
+    git clone git@github.com:gitusername/practice-purpose.git /app/ && \
+    echo '# Your code changes go here' >> README.md && \
+    git config --global user.email 'emailaddress' && \
+    git config --global user.name 'gitusername' && \
+    git add . && \
+    git commit -m 'Updated code via Docker container' && \
+    git push origin master
+
+# Command to keep the container running
+CMD ["sh", "-c", "sleep 100s"]
 ```
-**Without secret mount**  docker build --build-arg SSH_PASSPHRASE=<your-passphrase> -t my-image
+**Without secret mount** `docker build --secret id=privatekey,src=key/withoutpassphrase/id_rsa -t my-app -f Dockerfile_netrc .` and `docker run -it my-app /bin/bash`
 ```dockerfile
+# Specify the base image for your project
+FROM ubuntu:latest
+
+# Set working directory
+WORKDIR /app
+
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y git openssh-client
+
+# Add the remote server's host key to the known_hosts file
+RUN mkdir -p /root/.ssh
+RUN ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
+
+# Mount the private SSH key as a secret
+COPY key/withoutpassphrase/id_rsa /root/.ssh/id_rsa
+#RUN --mount=type=secret,id=privatekey,dst=/root/.ssh/id_rsa true
+
+# Clone the repository
+RUN --mount=type=secret,id=privatekey,dst=/root/.ssh/id_rsa true && \
+    git clone git@github.com:gitusername/practice-purpose.git /app/ && \
+    echo '# Your code changes go here' >> README.md && \
+    git config --global user.email 'emailaddress' && \
+    git config --global user.name 'gitusername' && \
+    git add . && \
+    git commit -m 'Updated code via Docker container' && \
+    git push origin master
+
+# Command to keep the container running
+CMD ["sh", "-c", "sleep 100s"]
 ```
 2. Case 2: Mounting Secrets with Docker Compose
 ```
