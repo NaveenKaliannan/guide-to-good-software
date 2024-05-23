@@ -214,10 +214,9 @@ volumes:
   volume1:
   volume2:
 ```
-* Note that A **Docker secret mount** is a way to securely pass sensitive data like passwords, API keys, or SSH keys to a Docker container during the build process, without exposing them in the final Docker image. `RUN --mount=type=secret,id=netrc,dst=/app/.netrc true`, `docker build --secret id=netrc,src=/path/to/.netrc -t my-app . (not docker compose up)` `docker run --mount=type=secret,id=netrc,dst=/app/.netrc my-app` Note : Secrets mounted using --mount=type=secret in a Dockerfile are only available during the build process and are not persisted in the final image. This is especially important when building images that may contain private repositories, API keys, or other sensitive data. **Secrets mounted using Docker Compose are available to the running container. you can easily define and distribute sensitive data to the necessary services without compromising security**
-
+* Note that A **Docker secret mount** is a way to securely pass sensitive data like passwords, API keys, or SSH keys to a Docker container during the build process, without exposing them in the final Docker image. Note : Secrets mounted using --mount=type=secret in a Dockerfile are only available during the build process and are not persisted in the final image. This is especially important when building images that may contain private repositories, API keys, or other sensitive data.
+  
 1. Case 1 : Mounting Secrets During the Build Process in a Dockerfile
-   
 **With secret mount**   `docker build --secret id=privatekey,src=key/withoutpassphrase/id_rsa -t my-app -f Dockerfile_netrc .` and `docker run -it my-app /bin/bash`
 ```dockerfile
 # Specify the base image for your project
@@ -285,7 +284,56 @@ RUN --mount=type=secret,id=privatekey,dst=/root/.ssh/id_rsa true && \
 CMD ["sh", "-c", "sleep 100s"]
 ```
 2. Case 2: Mounting Secrets with Docker Compose
-```
+```Dockerfile
+version: '3.7'
+
+networks:
+  net:
+
+secrets:
+  key:
+    file: key/withoutpassphrase/id_rsa
+
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - $PWD/jenkins:/var/jenkins_home
+    networks:
+      - net
+    restart: unless-stopped
+
+  remote_host:
+    container_name: remote-host
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "2222:22"
+    networks:
+      - net
+    restart: unless-stopped
+
+  key_test:
+    container_name: key_test
+    build:
+      context: .
+      dockerfile: Dockerfile_key
+      secrets: ## This secret is mounted only during the build process and will never be seen in docker container
+        - source: key
+          target: /root/.ssh/id_rsa
+    secrets: ## This secret is mounted only during the docker run and it can be seen via docker exec command
+      - source: key
+        target: /root/.ssh/id_rsa
+    networks:
+      - net
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
 ```
 **ssh mount type**  `RUN --mount=type=ssh,id=git-ssh \ git clone git@github.com:user/private-repo.git /app`, `docker build --ssh default=/path/to/ssh/socket -t myapp .` The --ssh default=/path/to/ssh/socket flag mounts the SSH socket located at /path/to/ssh/socket into the build container, allowing the Git clone operation to authenticate using the SSH keys loaded into the Docker engine. The SSH agent manages the keys on the host, not within Docker itself. The SSH socket provides a secure communication channel for Docker on the host to access the agent. Containers can leverage the host's SSH agent for authentication during the build process, but don't store the keys themselves.
 * **Add SSH Key to Docker Engine:** `docker-credential-helper-ssh add ~/.ssh/id_rsa  # Replace with your private key path`
