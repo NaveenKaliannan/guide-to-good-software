@@ -80,7 +80,22 @@ Linux namespaces, including the PID namespace, are a key feature that allows Doc
 12. **Accessing the application** via port numbers and IP address. Each container has unique internal IP address and host number by default. Docker host contains an ip address and various port numbers. Via browser, use the docker host ip address and specific port number, one can access the application. Before this, one has to map the free port of docker host to the container port via **-p dockerhostportnumner:containerportnumber**
 13. **Storing the data in docker host rather than docker container** can be achieved using the **-v */opt/datadir:/var/lib/mysql*, meaningfully **-v dockerhostvolume:dockercontainervolume**
 14. **docker port mapping** Accessing Container Services: By mapping a host port to a container port, you can access services running inside the container from the host machine. For example, if you have a web server running on port 80 in the container, you can access it by connecting to localhost:80 on the host
-15. Docker uses control group to manage the resources.
+15. Docker uses control group to manage the resources. **Cgroups (Control Groups)** in Linux are a kernel feature that allows you to allocate, limit, and prioritize system resources like CPU, memory, disk I/O, and network bandwidth among process groups. Cgroups provide a way to organize processes into hierarchical groups and manage the resources allocated to each group. Cgroups are typically accessed through the cgroup virtual filesystem (/sys/fs/cgroup). Tools like systemd, Docker, and Kubernetes leverage cgroups to manage resource allocation for services, containers, and pods One can leverage cgroups to set CPU and memory constraints for Docker containers directly in the Dockerfile itself. The limits help ensure the container doesn't monopolize resources on the host. `cat /proc/self/cgroup` list the cgroups for the current process. `ls /sys/fs/cgroup/` view the cgroup hierarchy on the cgroup filesystem. `sudo mkdir /sys/fs/cgroup/cpu/my_cgroup` create a new cgroup under the cpu subsystem
+```dockerfile
+FROM ubuntu:20.04
+
+# Set CPU limits
+# --cpus - Number of CPUs (fractional values are permitted, e.g. 0.5)
+# --cpuset-cpus - CPUs to use (0-3, 0,1)
+CMD ["--cpus=0.5", "--cpuset-cpus=0,1"]
+
+# Set memory limits 
+# -m - Memory limit (format: <number>[<unit>])
+CMD ["--memory=512m"]
+
+# Start a CPU stress process to test limits
+CMD ["stress", "--cpu", "2", "--vm-bytes", "256M", "--vm-hang", "0"]
+```  
 16. **detached container** in Docker refers to a container that is running in the background, without being attached to the terminal or console from which it was started.
 17. **.dockerignore**  file that excludes the files and folder.
 18. **Dangling Images**: The old image doesn't get deleted immediately. Instead, it becomes a dangling image because it no longer has a tag associated with it. Docker keeps these dangling images in case they are still in use by other containers  
