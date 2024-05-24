@@ -26,8 +26,6 @@ Key characteristics of a Kubernetes pod:
 
 # Architecture of Kubernetes 
 ******************************
-* **Nodes** Nodes are the physical or virtual machines where the containers will be launched. Each worker node runs a kubelet, which is the agent responsible for interacting with the Kubernetes master components. 
-* **Cluster** A Kubernetes cluster is a set of nodes that run containerized applications. The cluster is managed by the Kubernetes master components.
 * **Master** node is a node where Kubernetes installed and it mangaes the cluster, which contains set of nodes. The master server contain kube-apiserver that makes them master. It conatins the etcd, controller, scheduler as well.
 * when K8s is installed, we are installing the following components: **API server, etcd, kubelet, container runtime, controller, scheduler**
 * **API server** The API server is the front-end for the Kubernetes control plane. It exposes the Kubernetes API, which allows users, management devices, and the cluster's internal components to interact with the cluster.
@@ -36,7 +34,10 @@ Key characteristics of a Kubernetes pod:
 * **scheduler** is responsible for distributing work or containers across the nodes in the cluster. It watches for newly created Pods with no assigned node, and selects a node for them to run on.
 * **container runtime** is the software that is responsible for running containers. Kubernetes supports several container runtimes, such as Docker, containerd, and CRI-O.
 * **kubelet** is the primary "node agent" that runs on each node. It watches for Pods that have been assigned to its node, and ensures that the containers in those Pods are healthy and running.
+* **Nodes** Nodes are the physical or virtual machines where the containers will be launched. Each worker node runs a kubelet, which is the agent responsible for interacting with the Kubernetes master components.  The Nodes server contain kublet that makes them nodes.
+* **Cluster** A Kubernetes cluster is a set of nodes that run containerized applications. The cluster is managed by the Kubernetes master components. 
 ******************************
+* **kubectl** is a command-line interface and primary tool for interacting with and controlling Kubernetes clusters, enabling deployment, inspection, and management of applications and cluster resources. It communicates with the Kubernetes API server by sending commands and instructions to control the cluster state
 * **kubectl run --hello-minikube** This command is used to run a simple Hello Minikube application in a Kubernetes cluster. It creates a Deployment and a Service, and then outputs the URL to access the Hello Minikube application.
 * **kubectl cluster-info** command does provide information about the status of the Kubernetes cluster, including the URLs of the API server, the Kubernetes dashboard (if enabled), and any additional services running in the cluster.
 * **kubectl get nodes** This command will list all the nodes in the cluster and their current status (e.g., Ready, NotReady, etc.).
