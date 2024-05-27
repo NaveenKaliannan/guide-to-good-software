@@ -74,4 +74,5 @@ spec:
         - containerPort: 8080
 ******************************
 
-
+# Networking
+Kubernetes assigns IP addresses to pods from a predefined range called the pod CIDR (Classless Inter-Domain Routing). Kubernetes networking is achieved via various solutions, including Cisco's offerings as well as other third-party networking providers. Kubernetes itself does not provide a built-in networking implementation. Instead, it relies on external Container Network Interface (CNI) plugins to handle pod-to-pod networking within a cluster. Some popular CNI plugins include: Calico (open-source, used by Cisco Intersight Kubernetes Service) Flannel Weave Net Cilium. Other vendors like VMware (NSX-T), Juniper (Contrail), and cloud providers like AWS (VPC CNI), Azure (Azure CNI), and GCP (GCP CNI) also offer their own CNI plugins for Kubernetes networking
