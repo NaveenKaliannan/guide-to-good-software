@@ -17,3 +17,50 @@
 Analyzing trends and patterns to identify potential security issues or optimize network performance
 
 ### 
+
+### Data integreity and security
+* **md5sum and sha1sum** are command-line utilities used to calculate and verify cryptographic hash functions for files on Unix-like operating systems, including Linux. A cryptographic hash function is a mathematical algorithm that takes an input data of arbitrary size and produces a fixed-size output, known as a hash value. Commonly used cryptographic hash functions include MD5 (now considered insecure), SHA-1 (also insecure for some applications), SHA-2 (SHA-256, SHA-512), and SHA-3. The choice of hash function depends on the specific security requirements, desired hash length, and performance considerations for a given application. 256-bit (32-byte) hash outputs are considered secure enough for most applications. Common hash function output sizes recommended by standards and experts are 256 bits (SHA-256, SHA3-256) and 512 bits (SHA-512, SHA3-512). These are considered sufficiently secure for most use cases. The choice of hash length depends on the specific security requirements and performance considerations of the application. For most general-purpose applications, 256-bit hashes strike a good balance between security and efficiency.
+```bash
+#!/bin/bash
+
+# Function to calculate SHA-256 hash
+calculate_sha256() {
+    local file="$1"
+    sha256sum "$file" | awk '{print $1}'
+}
+
+# Function to calculate SHA-3 hash
+calculate_sha3() {
+    local file="$1"
+    rhash --sha3-256 "$file"
+}
+
+# Function to process a single file
+process_file() {
+    local file="$1"
+
+    echo "Processing file: $file"
+
+    sha256_hash=$(calculate_sha256 "$file")
+    echo "SHA-256: $sha256_hash"
+
+    sha3_hash=$(calculate_sha3 "$file")
+    echo "SHA-3: $sha3_hash"
+
+    echo ""
+}
+
+# Main script
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 <file1> [file2] [file3] ..."
+    exit 1
+fi
+
+for file in "$@"; do
+    if [ -f "$file" ]; then
+        process_file "$file"
+    else
+        echo "Error: $file is not a regular file"
+    fi
+done
+```
