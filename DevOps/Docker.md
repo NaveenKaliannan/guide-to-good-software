@@ -395,6 +395,25 @@ when docker is installed, bridge, none and host networks are created. Bridge is 
 * **bridge** network is achieved by default when **docker run containername** is executed. It is a private network, and series is around in the series 172.17.. Containers can access all the ips of container inside the docker host.
 * **none** network is achieved when specifing **docker run containername --network==none** is executed. Not attached to any network and not accessible to outside world. 
 * **host** network is achieved when specifing **docker run containername --network==host** is executed. The containers can accessed externally via host network, without port mapping. Hence, the ports are common to all the containers.
+* **Macvlan Network**  A macvlan network assigns a unique MAC address to each container, making them appear as physical devices on the host's network. This allows containers to bypass the host's routing and directly communicate with the physical network. Useful when you need your containers to look like physical hosts on the network. Requires support from the underlying host's networking configuration. Create a macvlan network `docker network create -d macvlan --subnet 192.168.1.0/24 --gateway 192.168.1.1 -o parent=eth0 pub_net`. Run a container in the macvlan network `docker run --rm --net pub_net alpine`
+```dockerfile
+# Use the latest Alpine image
+FROM alpine:latest
+
+# Install iproute2 package
+RUN apk add --no-cache iproute2
+
+# Run a command to inspect network interfaces
+CMD ["ip", "addr"]
+```
+* An **overlay network** is a software-defined network that allows containers to communicate across different Docker hosts as if they were on the same network. This network spans multiple Docker daemons (hosts) and is managed by Docker Swarm, enabling seamless communication between containers. Create an overlay network `docker network create --driver overlay nginx-net` Deploy a replicated Nginx service across Swarm nodes `docker service create --name nginx --network nginx-net --replicas 2 nginx`
+```dockerfile
+# Use the official Nginx image
+FROM nginx:latest
+
+# Copy custom HTML
+COPY index.html /usr/share/nginx/html/index.html
+```
 * **docker network create --driver bridge --subnet ipaddress custom-isolated-network** creates own bridge network.
 *  **docker network ls** lists all the network 
 *  **docker inspect containername or imagename**
