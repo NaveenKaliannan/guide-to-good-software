@@ -728,6 +728,12 @@ services:
       - network1
       - network2
 ``` 
+* **Base image** Ubuntu, Alpine, Debian
+  1. Ubuntu : Based on the Ubuntu Linux distribution. Relatively large base image size (e.g., ~70MB for Ubuntu 22.04). Includes a wide range of pre-installed packages and libraries. Suitable for applications that require a more comprehensive set of tools and dependencies
+  2. Alpine : Based on a lightweight, security-focused Linux distribution. Very small base image size (e.g., ~5MB for Alpine 3.17). Includes a minimal set of packages and libraries. Suitable for applications with minimal dependencies or when image size is a critical concern. May require installing additional packages during the build process
+  3. Debian : Based on the Debian Linux distribution. Base image size is smaller than Ubuntu but larger than Alpine (e.g., ~120MB for Debian 11 Bullseye). Includes a good balance of pre-installed packages and libraries. Suitable for applications that require a moderate set of dependencies.
+  4. Fedora : Based on the Fedora Linux distribution. Base image size is comparable to Ubuntu (e.g., ~200MB for Fedora 37). Includes a wide range of pre-installed packages and libraries. Suitable for applications that require a comprehensive set of tools and dependencies.
+  5. Distroless : Minimal base images provided by Google. Extremely small base image size (e.g., ~10MB for distroless/static). Includes only the necessary components to run a specific application. Suitable for applications with minimal dependencies and a focus on security and small image size.
 
 ### orchestration
 * kubernetes, docker swarm, container orchestration for running multiple containers and monitoring them.
