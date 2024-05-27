@@ -46,7 +46,7 @@ Key characteristics of a Kubernetes pod:
 
 # Command
 ******************************
-* **kubectl run <name> --image=<image> [options]** create and run a particular Docker image in a Kubernetes pod. `<name>` is the name you want to assign to the pod.
+* **kubectl run name --image=image [options]** create and run a particular Docker image in a Kubernetes pod. `<name>` is the name you want to assign to the pod.
 * **kubectl get pods** list of all pods in the current namespace.   or **kubectl get pods -o wide**   To get more detailed information about the pods
 ******************************
 
