@@ -1,6 +1,5 @@
 # YAML file
-
-YAML (Yet Another Markup Language) is a human-readable text-based format used extensively in Kubernetes for defining and configuring various Kubernetes resources. 
+YAML uses indentation and whitespace to denote structure, while JSON uses brackets and braces. YAML (Yet Another Markup Language) is a human-readable text-based format used extensively in Kubernetes for defining and configuring various Kubernetes resources. 
 * It is the primary way to define and manage Kubernetes resources, such as Pods, Deployments, Services, ConfigMaps, and etc.
 * YAML files are structured using a hierarchical key-value format, making them more readable and easier to understand compared to JSON
 * Common Kubernetes YAML file components include apiVersion, kind, metadata, spec, and status. The spec section defines the desired state of the resource
