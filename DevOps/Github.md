@@ -22,6 +22,7 @@
 * **HEAD->master** means the pointer refer to the current location in master. **git switch branch-name** switches to give branch. Then the pointer refer to the given branch **HEAD->branch-name**. **git checkout commitID** switches to an commit. Now the pointer refer to the commit. **cat .git/HEAD** reference particular commit **Commit hash value**. 
 * **origin** means cloud. **origin/branch-name** means branch in cloud. **branch-name** means branch in local machine.
 * **detached HEAD** not in the tip of the branch but in a specific commit.
+* **Git uses SHA-1** to hash the files, folders, commits and etc. The SHA-1 hashing funciton takes input data or values and provides the hash keys as an output. Example Hash Key for `Naveen Kumar Kaliannan` is `f8007b9a9d497d67fe67f6cfb441b8f86f085d5e`. **echo 'Naveen Kumar Kaliannan' | git hash-object --stdin** shows the key, **git cat-file -p  'ca0f485d1b190b8f0945ebbb6529a6b46bbd21b6'** shows the value. **git hash-object file or folder or text** gives the key. 
 
 ## Important difference in commands
 ******************************************
