@@ -16,6 +16,10 @@ Tools that offers version control for the Binaries or Executables : [JFrog Artif
 
 Tools to quickly build, test, deploy and run applications: [Docker](https://www.docker.com/)
 
+Tools to scale up/down applications: [Kubernetes](https://www.Kubernetes.io/)
+
+Tools to developing, scheduling, and monitoring batch-oriented workflows : [Apache Airflow](https://airflow.apache.org/)
+
 Tools for autonomous building, testing, deploying, CI/CD: [Jenkins](https://www.jenkins.io/)
 
 Gnuplot templates to create high quality graphics and graphs: [xy plots](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter5/translational-KE/translational-KE.pdf), [Mutliple xy plots](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter4/induced-seperated/PFFMD/mgcl2-total-induced_PFFMD.pdf), [histogram](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter6/Hbond-population/Fig3.gp)
