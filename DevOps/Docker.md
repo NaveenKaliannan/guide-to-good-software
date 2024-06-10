@@ -576,6 +576,33 @@ When you build an image from this Dockerfile and run a container using docker ru
 FROM image
 CMD ["sh", "-c", "command1; command2"]
 ```
+Simple docker file for web page creation
+```Dockerfile
+# Use the official Nginx image as the base image
+FROM nginx:latest
+
+# Copy the HTML file to the Nginx HTML directory
+COPY index.html /usr/share/nginx/html/
+
+# Expose port 80 for HTTP traffic
+EXPOSE 80
+
+# Start Nginx when the container runs
+CMD ["nginx", "-g", "daemon off;"]
+```
+HTML page
+```html
+html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello World</title>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+  </body>
+</html>
+```
 3. **docker compose yaml file format**
 Docker Compose will first read the configuration file, then build the images (if necessary), and finally run the containers based on the specified configuration.
 In the Compose file, the key is the service name, and the value is the configuration for that service, which includes the image name, build instructions, ports, links (depreceted), and other settings.
