@@ -1,5 +1,8 @@
 # [APACHE AirFlow](https://www.udemy.com/course/apache-airflow/)
 
+
+Apache AirFlow is an workflow management platform that allows one to schedule, and monitor pipelines as code.
+
 AirFlow DAG is a collection of tasks with directional dependencies, making workflows simple to schedule and track. Basically, it consists of a list of tasks/executions. Each tasks depends on tasks that are closer to it and has an executable. Dependencies in this context essentially refer to which task will execute first and which tasks are interdependent. DAG has the benefit of being simple to manage, collaborate with, automate and test. Python language is used to write the AirFlow DAGs. The best applications of AirFlow DAGS are in ETL, backups, data pipelines, and ML pipelines.
 
 ### Advantages of AirFLow
