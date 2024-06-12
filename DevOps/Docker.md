@@ -176,6 +176,7 @@ BLOCK I/O: The amount of data the container has written to and read from block d
 PIDS: The number of processes or threads the container has created.
 ```
 * **docker rename <CURRENT_NAME> <NEW_NAME>** rename a container
+* **docker --privileged** flag grants a container root capabilities and unrestricted access to all devices on the host system. Mounting /dev: The container can access and mount all devices on the host, including disk devices. Capabilities: The container gains all capabilities available on the host, including CAP_SYS_ADMIN for modifying kernel parameters and overriding security policies. Cgroups: The cgroup restrictions enforced by the device cgroup controller are lifted, giving the container access to all devices on the host. Privileged mode is primarily intended for debugging and running nested Docker instances (Docker-in-Docker) but should be avoided in production environments due to the significant security risks involved
 ******************************
 
 ### Docker storage and File systems
