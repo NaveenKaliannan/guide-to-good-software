@@ -19,7 +19,27 @@
   3. **sudo systemctl restart docker**
   4. Check the ownership and permissions of the Docker socket file **sudo ls -l /var/run/docker.sock**. The socket file should be owned by the "root" user and the "docker" group. If not, you can change the ownership: **sudo chown root:docker /var/run/docker.sock**
 - Verify that the Docker daemon is running: **sudo systemctl status docker**
+- Mounting docker.sock for communicating with docker dameon in host machine `docker build -t docker-host-cli .`, and `docker run -v /var/run/docker.sock:/var/run/docker.sock -it docker-host-cli`
+```Dockerfile
+FROM alpine:latest
 
+# Install Docker CLI
+RUN apk add --no-cache docker-cli
+
+# Run a shell by default
+CMD ["sh"]
+```
+- Mounting docker.sock and docker binary to container using Docker Outside of Docker or Docker-in-Docker approaches. `docker build -t my-dood-container .` and `docker run --privileged -v /var/run/docker.sock:/var/run/docker.sock -it my-dood-container`. Docker-in-Docker approach designed for running Docker inside Docker containers.
+```
+# Use Docker's official Docker image as the base image. It installs the  Docker CLI and necessary dependencies
+FROM docker:latest
+
+## Use Docker's official Docker-in-Docker image as the base image
+##FROM docker:latest-dind
+
+# Set the default command to start an interactive shell
+CMD ["sh"]
+```  
 * **docker-compose installation**
    1. sudo curl -L "https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
    2. sudo chmod +x /usr/local/bin/docker-compose
