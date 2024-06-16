@@ -118,7 +118,9 @@ CMD ["stress", "--cpu", "2", "--vm-bytes", "256M", "--vm-hang", "0"]
 ```  
 16. **detached container** in Docker refers to a container that is running in the background, without being attached to the terminal or console from which it was started.
 17. **.dockerignore**  file that excludes the files and folder.
-18. **Dangling Images**: The old image doesn't get deleted immediately. Instead, it becomes a dangling image because it no longer has a tag associated with it. Docker keeps these dangling images in case they are still in use by other containers  
+18. **Dangling Images**: The old image doesn't get deleted immediately. Instead, it becomes a dangling image because it no longer has a tag associated with it. Docker keeps these dangling images in case they are still in use by other containers
+19. **NAT (Network Address Translation)** in Docker is a mechanism that allows containers to share the host's IP address and access external networks, while being isolated from each other. Here's how it works: Docker creates a virtual ethernet bridge (docker0 by default) to which all containers are connected. When a container tries to communicate with an external IP, the request is forwarded to the docker0 interface. Docker then performs Source NAT (SNAT) on the outgoing packets, replacing the container's private IP with the host's public IP address. **When a device on the private network attempts to access the internet, the NAT device translates the private IP address to a public IP address before forwarding the request. This allows multiple devices on the private network to share a single public IP address**
+
 ******************************
 
 ## Docker commands 
@@ -775,7 +777,62 @@ services:
     networks:
       - network1
       - network2
-``` 
+```
+* **a simple docker-compose.yml file that runs two containers, one for the frontend (depends on the backend, exposed to the outside world) and one for the backend (not exposed to the outside world)** `docker-compose up -d` will build the backend and frontend containers and start them in detached mode (-d). You can then access the frontend at http://localhost:8080. The frontend will be able to communicate with the backend using the URL http://backend:3000 (as specified in the REACT_APP_BACKEND_URL environment variable). Note that the backend container is not exposed to the outside world, so you won't be able to access it directly from your host machine. It's only accessible from within the Docker network, which includes the frontend container.
+```yaml
+version: '3'
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend:3000
+    depends_on:
+      - backend
+
+networks:
+  default:
+    driver: bridge
+```
+**Backend**
+```dockerfile
+# backend/Dockerfile
+FROM node:14-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+CMD ["npm", "start"]
+```
+**Frontend**
+```dockerfile
+# frontend/Dockerfile
+FROM node:14-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+CMD ["npm", "start"]
+```
+Note that the Containers without dependencies will start first, followed by containers that depend on those initial containers.
 * **Base image** Ubuntu, Alpine, Debian
   1. Ubuntu : Based on the Ubuntu Linux distribution. Relatively large base image size (e.g., ~70MB for Ubuntu 22.04). Includes a wide range of pre-installed packages and libraries. Suitable for applications that require a more comprehensive set of tools and dependencies
   2. Alpine : Based on a lightweight, security-focused Linux distribution. Very small base image size (e.g., ~5MB for Alpine 3.17). Includes a minimal set of packages and libraries. Suitable for applications with minimal dependencies or when image size is a critical concern. May require installing additional packages during the build process
