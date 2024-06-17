@@ -210,6 +210,7 @@ Image layer is always read only. Contaienr only is read and write.
 * **docker volume create mydata** creates a folder in data. mydata folder is inside  /var/lib/docker/volumes. all the data generated from docker run will stored in this folder rather than the default folder created by docker contaienr name. The data will be available even when the container is deleted. Docker volumes are the recommended option for persisting data in Docker containers, as they are managed by Docker and provide better performance. **docker volume create testvolume** **docker volume ls**, **docker volume inspect** shows the mountpoint, **docker volume rm testvolume**
 * Bind mounts  **docker run -v /home/naveenk/mydata:/var/lib/mysql mysql** or **docker run --mount type==bind,source=/home/naveenk/mydata,target=/var/lib/mysql mysql**  offer more flexibility by allowing you to directly access the host's filesystem. Mount option by creating **docker volume create testvolume**,  **docker run --mount type==bind,source=testvolume,target=/var/lib/mysql mysql**
 * **docker run -v mydata:/var/lib/mysql mysql** stores all the data in mydata folder.
+* **docker run -v /host/path:/container/path:ro image** mounts the file in read only option. 
 * **docker system df** or **docker system df -v** to see the memory used by images inside docker
 * Docker provides three main types of mounts for managing data in containers: volumes, bind mounts, and tmpfs mounts. 
   1. Volumes are the recommended way to persist data in Docker. They are managed by Docker and are stored in a part of the host filesystem (/var/lib/docker/volumes/ on Linux) that is designed to be managed by Docker.
@@ -839,6 +840,69 @@ Note that the Containers without dependencies will start first, followed by cont
   3. Debian : Based on the Debian Linux distribution. Base image size is smaller than Ubuntu but larger than Alpine (e.g., ~120MB for Debian 11 Bullseye). Includes a good balance of pre-installed packages and libraries. Suitable for applications that require a moderate set of dependencies.
   4. Fedora : Based on the Fedora Linux distribution. Base image size is comparable to Ubuntu (e.g., ~200MB for Fedora 37). Includes a wide range of pre-installed packages and libraries. Suitable for applications that require a comprehensive set of tools and dependencies.
   5. Distroless : Minimal base images provided by Google. Extremely small base image size (e.g., ~10MB for distroless/static). Includes only the necessary components to run a specific application. Suitable for applications with minimal dependencies and a focus on security and small image size.
+
+### Traefik in Docker
+*************************************
+Traefik is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy with Docker. Traefik will automatically create a route so that when requests come in for example.com, they get forwarded to that container. By integrating so tightly with Docker, Traefik eliminates much of the manual networking and routing setup you'd typically have to do when deploying Docker applications. It automatically handles tasks like service discovery, load balancing, SSL termination, etc. **One would typically set up Traefik on the server side to handle incoming requests from client side and route them to the appropriate backend services** The backend service will process the request and send the response back to Traefik. Traefik will then forward the response back to the client, who will receive the requested content in their web browser. here is a simple example:
+`docker-compose up -d`, `http://localhost:8080/` or `http://localhost:80/` for seeing the TraefiK dashboard, http://localhost/ for seeing the web content from the server. 
+* **html content**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Simple Web Page</title>
+</head>
+<body>
+    <h1>Welcome to My Simple Web Page</h1>
+    <p>This is a simple HTML page served by an Nginx Docker container.</p>
+</body>
+</html>
+```
+* **Dockerfile**
+```Dockerfile
+# Use the official Nginx image as the base image
+FROM nginx:latest
+
+# Copy the HTML file to the Nginx HTML directory
+COPY index.html /usr/share/nginx/html/
+
+# Expose port 80 for HTTP traffic
+#EXPOSE 80
+
+# Start Nginx when the container runs
+CMD ["nginx", "-g", "daemon off;"]
+```
+* **Docker compose file**
+```yaml
+version: '3'
+
+services:
+  traefik:
+    image: traefik:v2.9
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # The :ro at the end specifies that the mount should be read-only.
+    command:
+      - "--providers.docker"
+      - "--entrypoints.webname.address=:80"
+      - "--api.insecure=true"
+
+## --providers.docker : This option enables the Docker provider in Traefik. The Docker provider allows Traefik to automatically discover services running in Docker containers and configure routing rules based on labels. When this option is enabled, Traefik will monitor the Docker API for changes in running containers and update its configuration accordingly.
+## --entrypoints.web.address=:80  This option configures the web entrypoint in Traefik. Entrypoints are the entry points for incoming traffic in Traefik.The web entrypoint is configured to listen on port 80 for HTTP traffic. The address=:80 part specifies that the web entrypoint should listen on all available network interfaces on port 80.
+## --api.insecure=true This option enables the Traefik API in insecure mode. The Traefik API provides a way to interact with Traefik, such as retrieving configuration information or triggering reloads. Setting insecure=true allows accessing the API over an HTTP connection, which is not recommended for production environments. It is typically used for testing and development purposes to easily access the Traefik API without setting up HTTPS.
+  web-app:
+    build: .
+    labels:
+      - "traefik.http.routers.web-app.rule=Host(`example.com`) || Host(`localhost`)"
+      - "traefik.http.routers.web-app.entrypoints=webname"
+### The label traefik.http.routers.web-app.rule=Host(example.com) || Host(localhost) tells Traefik to match the request if the host header is either example.com or localhost
+### The label traefik.http.routers.web-app.entrypoints=web specifies that Traefik should use the web-app entrypoint to forward the request. In this case, the web-app entrypoint is configured to listen on port 80 (HTTP).
+networks:
+  default:
+    name: traefik-network
+```
 
 ### orchestration
 * kubernetes, docker swarm, container orchestration for running multiple containers and monitoring them.
