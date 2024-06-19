@@ -18,16 +18,35 @@ AirFlow DAG is a collection of tasks with directional dependencies, making workf
 9. Dynamic and Flexible in nature. The number and types of tasks can be dynamically created based on data from a database query or external API. Airflow supports dynamic task parameterization using Jinja templating, allowing task properties like command arguments or file paths to be dynamically set based on variables or external data sources, enhancing flexibility.
 ******************************
 
+### How to install Apache AirFlow
+******************************
+1. Via Docker: [docker pull apache/airflow](https://hub.docker.com/r/apache/airflow)
+2. Via PIP installation: [pip3 install apache-airflow[all]](https://airflow.readthedocs.io/en/1.9.0/installation.html)
+3. When Apache Airflow is installed, several files and directories are created in the Airflow home directory (typically `/usr/local/airflow`). Here are some of the key files and directories that are created:
+* **airflow.cfg**: The main configuration file for Airflow. It contains various settings like the executor type, database connection, logging settings, and more.
+* **airflow.db**: The SQLite database file used by Airflow to store metadata, if SQLite is configured as the backend.
+* **dags**: The directory where DAG (Directed Acyclic Graph) files are stored. DAG files define the workflows and tasks in Airflow.
+* **logs**: The directory where Airflow logs are stored, including task logs and scheduler logs.
+* **plugins**: The directory for custom plugins, which can extend Airflow's functionality.
+* **unittests.cfg**: A configuration file used for unit tests.
+* **webserver_config.py**: The configuration file for the Airflow webserver.
+* **airflow-webserver.pid**: A file containing the process ID of the running Airflow webserver.
+* **airflow-scheduler.pid**: A file containing the process ID of the running Airflow scheduler.
+* **airflow-worker.pid**: A file containing the process ID of a running Airflow worker process (if applicable).
+******************************
+
 ### Terminology 
 ******************************
-1. DAGS - A DAG (Directed Acyclic Graph) is a core concept in Apache Airflow that represents a workflow or data pipeline. The graph is composed of a series of linked nodes. Every node is an activity that relies on other tasks to run. Everything has been carefully arranged. Which operations should be carried out in parallel and in series is a decision that programmers must make. Significant time will be saved. What to keep in mind to create DAGS:
+1. DAGS - A DAG (Directed Acyclic Graph) is a core concept in Apache Airflow that represents a workflow or data pipeline. The graph is composed of a series of linked nodes. Every node is an activity that relies on other tasks to run. Everything has been carefully arranged. Which operations should be carried out in parallel and in series is a decision that programmers must make. Significant time will be saved. 
+
+What to keep in mind to create DAGS:
 * The tasks **without dependencies** (also called `root tasks` or `upstream tasks`) are executed first, and then the tasks **with dependencies** (also called `downstream tasks`) are connected and executed based on their upstream dependencies.
 2. Operator - It assists with the execution of tasks. PythonOperator can be used to execute Python scripts. For each operation, responsive operators can be selected and used.
 ******************************
 
 ### Core Compoenents of AirFLow
 ******************************
-1. [MetaData](https://selectfrom.dev/airflow-metadata-how-to-gather-key-runtime-statistics-in-real-time-5575d8740621) (a relational database) - holds the records of DAG runs, task status, schedule interval, previous and subsequent runs, start and end times, duration, task state, and historical DAG runs.
+1. **MetaData** holds the records of DAG runs, task status, schedule interval, previous and subsequent runs, start and end times, duration, task instance record, task state (e.g., running, success, failed), connection details (e.g., hostnames, credentials), store and retrieve key-value pairs (variables), XCom values, audit logs and historical DAG runs. Few examples of metadata databases used in Apache Airflow : SQLite (development and testing purposes), PostgreSQL (better performance, concurrency, and reliability), MySQL (good performance and is widely adopted), Amazon RDS (provisioning, backups, and scaling), Google Cloud SQL (automatic backups, high availability, and easy scaling). Both Amazon RDS, Google Cloud SQL support PostgreSQL and MySQL as database engines. 
 2. Scheduler - triggers the tasks at the appropriate time and in the planned manner. It determines which tasks must be completed, when they must be completed, and their priority for completion. It is managed by master node. The scheduler is continuously running and checks to see if any DAGS need to be run before beginning the DAG run.
 3. Webserver/UI/HTTP interface, which allows for full workflow monitoring. can be viewed completely. Webserver runs and communicates with the metadata. It is managed by master node.
 4. Executor -  execute tasks at the bottom. Executors receive information from the scheduler when to execute tasks. Once the task fails/success/all status, the information is sent to metadata. Different types of executor: sequential, Kubernetes, local, single-node, multi-node runners. If you use a single node, it is managed by the master node, otherwise by multiple nodes. Always choose one or more nodes depending on the size of the problem
@@ -46,11 +65,7 @@ services:
 The version : '3.7' in the first line is the dockor Compose file format specification. 
 ******************************
 
-### How to install Apache AirFlow
-******************************
-1. Via Docker: [docker pull apache/airflow](https://hub.docker.com/r/apache/airflow)
-2. Via PIP installation: [pip3 install apache-airflow[all]](https://airflow.readthedocs.io/en/1.9.0/installation.html)
-******************************
+
 
 ### Task/Operator
 **Operator**: A template class for doing some work. The (PythonOperator, BashOperator, KubernetesPodOperator) operators execute (Python functions, bash commands, Docker image in a Kubernetes Pod). Note that the abstract BaseOperator class is what all operators inherited from.
