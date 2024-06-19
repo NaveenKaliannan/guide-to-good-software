@@ -15,11 +15,13 @@ AirFlow DAG is a collection of tasks with directional dependencies, making workf
 6. By adjusting the variables and connections, it can be made dynamic.
 7. Improved scaling
 8. Large community, significant growth.
+9. Dynamic and Flexible in nature. The number and types of tasks can be dynamically created based on data from a database query or external API. Airflow supports dynamic task parameterization using Jinja templating, allowing task properties like command arguments or file paths to be dynamically set based on variables or external data sources, enhancing flexibility.
 ******************************
 
 ### Terminology 
 ******************************
-1. DAGS - The graph is composed of a series of linked nodes. Every node is an activity that relies on other tasks to run. Everything has been carefully arranged. Which operations should be carried out in parallel and in series is a decision that programmers must make. Significant time will be saved.
+1. DAGS - A DAG (Directed Acyclic Graph) is a core concept in Apache Airflow that represents a workflow or data pipeline. The graph is composed of a series of linked nodes. Every node is an activity that relies on other tasks to run. Everything has been carefully arranged. Which operations should be carried out in parallel and in series is a decision that programmers must make. Significant time will be saved. What to keep in mind to create DAGS:
+* The tasks **without dependencies** (also called `root tasks` or `upstream tasks`) are executed first, and then the tasks **with dependencies** (also called `downstream tasks`) are connected and executed based on their upstream dependencies.
 2. Operator - It assists with the execution of tasks. PythonOperator can be used to execute Python scripts. For each operation, responsive operators can be selected and used.
 ******************************
 
