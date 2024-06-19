@@ -46,14 +46,41 @@ What to keep in mind to create DAGS:
 
 ### Core Compoenents of AirFLow
 ******************************
-1. **MetaData** holds the records of DAG runs, task status, schedule interval, previous and subsequent runs, start and end times, duration, task instance record, task state (e.g., running, success, failed), connection details (e.g., hostnames, credentials), store and retrieve key-value pairs (variables), XCom values, audit logs and historical DAG runs. 
+1. **MetaData** holds the records of DAG runs, task status, schedule interval, previous and subsequent runs, start and end times, duration, task instance record, task state (e.g., running, success, failed), connection details (e.g., hostnames, credentials), store and retrieve key-value pairs (variables), XCom values, audit logs and historical DAG runs. Airflow metadata database is typically a separate service from the Airflow components like the scheduler, webserver, and workers. They are not part of master node. 
 
 **Few examples of metadata databases used in Apache Airflow** : `SQLite` (comes with default, no paralleization, development and testing purposes, not for production), `PostgreSQL` (better performance, concurrency, and reliability), `MySQL` (good performance and is widely adopted), Amazon RDS (provisioning, backups, and scaling), `Google Cloud SQL` (automatic backups, high availability, and easy scaling). Both Amazon RDS, Google Cloud SQL support PostgreSQL and MySQL as database engines. 
 
-2. **Scheduler** triggers the tasks at the appropriate time and in the planned manner. It determines which tasks must be completed, when they must be completed, and their priority for completion. It is managed by master node. The scheduler is continuously running and checks to see if any DAGS need to be run before beginning the DAG run.
-3. Webserver/UI/HTTP interface, which allows for full workflow monitoring. can be viewed completely. Webserver runs and communicates with the metadata. It is managed by master node.
-4. Executor -  execute tasks at the bottom. Executors receive information from the scheduler when to execute tasks. Once the task fails/success/all status, the information is sent to metadata. Different types of executor: sequential, Kubernetes, local, single-node, multi-node runners. If you use a single node, it is managed by the master node, otherwise by multiple nodes. Always choose one or more nodes depending on the size of the problem
-6. Queuing system (only distributed system/many executors) - tasks from scheduler
+2. **Scheduler** triggers the tasks at the appropriate time and in the planned manner. It determines which tasks must be completed, when they must be completed, and their priority for completion. It is managed by master node. The scheduler is continuously running and checks to see if any DAGS need to be run before beginning the DAG run. Life cycle of Scheduler:
+- DAG Parsing: The scheduler periodically scans the DAG_FOLDER directory for Python files containing DAG definitions. It parses these files and creates in-memory DAG objects.
+- DAG Scheduling: The scheduler determines when a DAG needs to be run based on its schedule or external triggers. It creates a DAG run, which represents a specific execution of the DAG for a given logical date (execution_date).
+- Task Scheduling: For each DAG run, the scheduler creates task instances based on the tasks defined in the DAG and their dependencies. Task instances are scheduled to run when their dependencies are met.
+- Task Queuing: Scheduled task instances are enqueued for execution by the executor component.
+- Task State Updates: The scheduler monitors the state of task instances and updates their status in the metadata database based on feedback from the executors and workers.
+
+**Interactions with Other Components**
+
+- DAG Files: The scheduler parses Python files containing DAG definitions from the DAG_FOLDER directory.
+- Metadata Database: The scheduler reads and writes to this database to manage the lifecycle of DAGs and tasks.
+- Executor: The scheduler enqueues (add a task to a queue) tasks for the executor to pick up and assign to workers.
+- Workers:  Workers report task status back to the scheduler through the executor.
+- Web Server: The web server reads metadata from the database, which is updated by the scheduler.
+
+4. **Webserver/UI/HTTP interface**, which allows for full workflow monitoring. can be viewed completely. Webserver runs and communicates with the metadata. It is managed by master node. It is built using Flask. 
+5. **Executor** -  execute tasks at the bottom. Executors receive information from the scheduler when to execute tasks. Once the task fails/success/all status, the information is sent to metadata. Different types of executor: sequential, Kubernetes, Celery, local (completes tasks in parallel that run on a single machine), single-node, multi-node runners. If you use a single node, then the single executor is managed by the master node and the master node will be in local machine. Multi nodes are good for scalability and this means more executor. For multi nodes, we need to set up slave nodes, which should be another machine, like Jenkins. Master node should be local machine. If the Executors are remote machine, then the Scheduler and WebServer will belong to master node in local machine.
+
+- LocalExecutor: Runs tasks in parallel on the same machine as the Airflow scheduler and webserver, using multiprocessing. Suitable for small to medium-sized workflows on a single machine.
+- SequentialExecutor: Runs tasks sequentially, one at a time, on the same machine as the scheduler. Mainly used for development and testing purposes.
+- CeleryExecutor: Distributes tasks across multiple worker nodes using a message queue (e.g., RabbitMQ). Allows for horizontal scaling across a cluster of machines.
+- KubernetesExecutor: Runs tasks as Kubernetes pods on a Kubernetes cluster, providing excellent scalability and resource isolation.
+
+Workers are the processes or nodes that actually execute the tasks assigned by the executor. The nature of workers depends on the type of executor used:
+- For the LocalExecutor, workers are separate processes running on the same machine as the scheduler.
+- For the CeleryExecutor, workers are separate processes running on different machines in a cluster, waiting for task execution commands from the message queue.
+- For the KubernetesExecutor, each worker is a pod running in the Kubernetes cluster.
+ 
+6. **Queuing system** (only distributed system/many executors) - tasks from scheduler. Example, Redis, RabbitmQ
+
+ 
 ******************************
 
 ### Important AIRFLOW Files You Should Know About
