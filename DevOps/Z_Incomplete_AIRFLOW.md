@@ -33,6 +33,22 @@ AirFlow DAG is a collection of tasks with directional dependencies, making workf
 * **airflow-webserver.pid**: A file containing the process ID of the running Airflow webserver.
 * **airflow-scheduler.pid**: A file containing the process ID of the running Airflow scheduler.
 * **airflow-worker.pid**: A file containing the process ID of a running Airflow worker process (if applicable).
+4. Docker Directories
+* **Dockerfile**: This file contains instructions for building a custom Docker image for Airflow. It allows you to add dependencies, install additional packages, or make other modifications to the base Airflow image.
+* **docker-compose.yaml**: This file defines the services, networks, and volumes for running Airflow in a multi-container environment. It can be configured for different executors:
+* **For LocalExecutor**: Runs tasks on the same machine as the Airflow scheduler and web server, making it ideal for local development and testing. The local folder ./dags should be mounted to /usr/local/airflow/dags in docker volume mount, because the latter path will be used AirFlow Apache. By default, modern Airflow Docker images expect the DAGs to be located in **/opt/airflow/dags**
+* **For CeleryExecutor**: Distributes tasks across multiple worker nodes, suitable for production environments with higher scalability requirements.
+* **./dags**: This directory is mounted to /opt/airflow/dags in the Docker container. It's where you place your DAG (Directed Acyclic Graph) definition files, which define your Airflow workflows.
+* **./logs**: This mounted directory contains logs from task execution and the Airflow scheduler, allowing you to monitor and troubleshoot your workflows.
+* **./config**: This directory can contain custom configurations, including: **airflow.cfg**: The main Airflow configuration file, where you can set default parameters such as the executor type, timezone, concurrency limits, and DAG folder location.
+* **airflow_local_settings.py**: Used for configuring cluster policies or custom log parsers.
+* **./plugins**: This mounted directory is where you can place custom Airflow plugins to extend its functionality.
+* **entrypoint.sh**: This script is typically called when the Docker container starts. It runs prerequisites, initializes the Airflow database if necessary, and starts the Airflow services (webserver, scheduler, etc.).
+When using Docker Compose, these directories and files work together to create a fully functional Airflow environment. The docker-compose.yaml file orchestrates the services, while the mounted directories allow for easy management of DAGs, logs, and configurations from the host machine
+Verify DAGs Loading: After starting the Airflow services, you can verify that your DAGs are being loaded by running:
+```bash
+airflow dags list
+```
 ******************************
 
 ### Terminology 
@@ -79,8 +95,6 @@ Workers are the processes or nodes that actually execute the tasks assigned by t
 - For the KubernetesExecutor, each worker is a pod running in the Kubernetes cluster.
  
 6. **Queuing system** (only distributed system/many executors) - tasks from scheduler. Example, Redis, RabbitmQ
-
- 
 ******************************
 
 ### Important AIRFLOW Files You Should Know About
