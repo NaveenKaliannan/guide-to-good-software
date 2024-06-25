@@ -18,48 +18,6 @@ AirFlow DAG is a collection of tasks with directional dependencies, making workf
 9. Dynamic and Flexible in nature. The number and types of tasks can be dynamically created based on data from a database query or external API. Airflow supports dynamic task parameterization using Jinja templating, allowing task properties like command arguments or file paths to be dynamically set based on variables or external data sources, enhancing flexibility.
 ******************************
 
-### How to install Apache AirFlow
-******************************
-1. Via Docker: [docker pull apache/airflow](https://hub.docker.com/r/apache/airflow)
-2. Via PIP installation: [pip3 install apache-airflow[all]](https://airflow.readthedocs.io/en/1.9.0/installation.html)
-3. When Apache Airflow is installed, several files and directories are created in the Airflow home directory (typically `/usr/local/airflow`). Here are some of the key files and directories that are created:
-* **airflow.cfg**: The main configuration file for Airflow. It contains various settings like the executor type, database connection, logging settings, and more.
-* **airflow.db**: The SQLite database file used by Airflow to store metadata, if SQLite is configured as the backend.
-* **dags**: The directory where DAG (Directed Acyclic Graph) files are stored. DAG files define the workflows and tasks in Airflow.
-* **logs**: The directory where Airflow logs are stored, including task logs and scheduler logs.
-* **plugins**: The directory for custom plugins, which can extend Airflow's functionality.
-* **unittests.cfg**: A configuration file used for unit tests.
-* **webserver_config.py**: The configuration file for the Airflow webserver.
-* **airflow-webserver.pid**: A file containing the process ID of the running Airflow webserver.
-* **airflow-scheduler.pid**: A file containing the process ID of the running Airflow scheduler.
-* **airflow-worker.pid**: A file containing the process ID of a running Airflow worker process (if applicable).
-4. Docker Directories
-* **Dockerfile**: This file contains instructions for building a custom Docker image for Airflow. It allows you to add dependencies, install additional packages, or make other modifications to the base Airflow image.
-* **docker-compose.yaml**: This file defines the services, networks, and volumes for running Airflow in a multi-container environment. It can be configured for different executors:
-* **For LocalExecutor**: Runs tasks on the same machine as the Airflow scheduler and web server, making it ideal for local development and testing. The local folder ./dags should be mounted to /usr/local/airflow/dags in docker volume mount, because the latter path will be used AirFlow Apache. By default, modern Airflow Docker images expect the DAGs to be located in **/opt/airflow/dags**
-* **For CeleryExecutor**: Distributes tasks across multiple worker nodes, suitable for production environments with higher scalability requirements.
-* **./dags**: This directory is mounted to /opt/airflow/dags in the Docker container. It's where you place your DAG (Directed Acyclic Graph) definition files, which define your Airflow workflows.
-* **./logs**: This mounted directory contains logs from task execution and the Airflow scheduler, allowing you to monitor and troubleshoot your workflows.
-* **./config**: This directory can contain custom configurations, including: **airflow.cfg**: The main Airflow configuration file, where you can set default parameters such as the executor type, timezone, concurrency limits, and DAG folder location.
-* **airflow_local_settings.py**: Used for configuring cluster policies or custom log parsers.
-* **./plugins**: This mounted directory is where you can place custom Airflow plugins to extend its functionality.
-* **entrypoint.sh**: This script is typically called when the Docker container starts. It runs prerequisites, initializes the Airflow database if necessary, and starts the Airflow services (webserver, scheduler, etc.).
-When using Docker Compose, these directories and files work together to create a fully functional Airflow environment. The docker-compose.yaml file orchestrates the services, while the mounted directories allow for easy management of DAGs, logs, and configurations from the host machine
-Verify DAGs Loading: After starting the Airflow services, you can verify that your DAGs are being loaded by running:
-```bash
-airflow dags list
-```
-******************************
-
-### Terminology 
-******************************
-1. DAGS - A DAG (Directed Acyclic Graph) is a core concept in Apache Airflow that represents a workflow or data pipeline. The graph is composed of a series of linked nodes. Every node is an activity that relies on other tasks to run. Everything has been carefully arranged. Which operations should be carried out in parallel and in series is a decision that programmers must make. Significant time will be saved. 
-
-What to keep in mind to create DAGS:
-* The tasks **without dependencies** (also called `root tasks` or `upstream tasks`) are executed first, and then the tasks **with dependencies** (also called `downstream tasks`) are connected and executed based on their upstream dependencies.
-2. Operator - It assists with the execution of tasks. PythonOperator can be used to execute Python scripts. For each operation, responsive operators can be selected and used.
-******************************
-
 ### Core Compoenents of AirFLow
 ******************************
 1. **MetaData** holds the records of DAG runs, task status, schedule interval, previous and subsequent runs, start and end times, duration, task instance record, task state (e.g., running, success, failed), connection details (e.g., hostnames, credentials), store and retrieve key-value pairs (variables), XCom values, audit logs and historical DAG runs. Airflow metadata database is typically a separate service from the Airflow components like the scheduler, webserver, and workers. They are not part of master node. 
@@ -98,17 +56,98 @@ Workers are the processes or nodes that actually execute the tasks assigned by t
 6. **Queuing system** (only distributed system/many executors) - tasks from scheduler. Example, Redis, RabbitmQ
 ******************************
 
-### Important AIRFLOW Files You Should Know About
+### How to install Apache AirFlow
 ******************************
-1. **docker-compose** gets the Airflow up and running. It contain various information such as services, networks, environment variables, volumes, software name, software verson and etc. A simple file is given below. 
+1. Via Docker: [docker pull apache/airflow](https://hub.docker.com/r/apache/airflow)
+2. Via PIP installation: [pip3 install apache-airflow[all]](https://airflow.readthedocs.io/en/1.9.0/installation.html)
+3. When Apache Airflow is installed, several files and directories are created in the Airflow home directory (typically `/usr/local/airflow`). Here are some of the key files and directories that are created:
+* **airflow.cfg**: The main configuration file for Airflow. It contains various settings like the executor type, database connection, logging settings, and more.
+* **airflow.db**: The SQLite database file used by Airflow to store metadata, if SQLite is configured as the backend.
+* **dags**: The directory where DAG (Directed Acyclic Graph) files are stored. DAG files define the workflows and tasks in Airflow.
+* **logs**: The directory where Airflow logs are stored, including task logs and scheduler logs.
+* **plugins**: The directory for custom plugins, which can extend Airflow's functionality.
+* **unittests.cfg**: A configuration file used for unit tests.
+* **webserver_config.py**: The configuration file for the Airflow webserver.
+* **airflow-webserver.pid**: A file containing the process ID of the running Airflow webserver.
+* **airflow-scheduler.pid**: A file containing the process ID of the running Airflow scheduler.
+* **airflow-worker.pid**: A file containing the process ID of a running Airflow worker process (if applicable).
+4. Docker Directories
+* **Dockerfile**: This file contains instructions for building a custom Docker image for Airflow. It allows you to add dependencies, install additional packages, or make other modifications to the base Airflow image.
+* **docker-compose.yaml**: This file defines the services, networks, and volumes for running Airflow in a multi-container environment. It can be configured for different executors:
+* **For LocalExecutor**: Runs tasks on the same machine as the Airflow scheduler and web server, making it ideal for local development and testing. The local folder ./dags should be mounted to /usr/local/airflow/dags in docker volume mount, because the latter path will be used AirFlow Apache. By default, modern Airflow Docker images expect the DAGs to be located in **/opt/airflow/dags**
+* **For CeleryExecutor**: Distributes tasks across multiple worker nodes, suitable for production environments with higher scalability requirements.
+* **./dags**: This directory is mounted to /opt/airflow/dags in the Docker container. It's where you place your DAG (Directed Acyclic Graph) definition files, which define your Airflow workflows.
+* **./logs**: This mounted directory contains logs from task execution and the Airflow scheduler, allowing you to monitor and troubleshoot your workflows.
+* **./config**: This directory can contain custom configurations, including: **airflow.cfg**: The main Airflow configuration file, where you can set default parameters such as the executor type, timezone, concurrency limits, and DAG folder location.
+* **airflow_local_settings.py**: Used for configuring cluster policies or custom log parsers.
+* **./plugins**: This mounted directory is where you can place custom Airflow plugins to extend its functionality.
+* **entrypoint.sh**: This script is typically called when the Docker container starts. It runs prerequisites, initializes the Airflow database if necessary, and starts the Airflow services (webserver, scheduler, etc.).
+When using Docker Compose, these directories and files work together to create a fully functional Airflow environment. The docker-compose.yaml file orchestrates the services, while the mounted directories allow for easy management of DAGs, logs, and configurations from the host machine
+Verify DAGs Loading: After starting the Airflow services, you can verify that your DAGs are being loaded by running:
+```bash
+airflow dags list
 ```
-version: '3.7'
-services:
-    python:
-        image: python
-```
-The version : '3.7' in the first line is the dockor Compose file format specification. 
 ******************************
+
+### Terminology 
+******************************
+1. **DAGS** - A DAG (Directed Acyclic Graph) is a core concept in Apache Airflow that represents a workflow or data pipeline. The graph is composed of a series of linked nodes. Every node is an activity that relies on other tasks to run. Everything has to be carefully arranged. Which operations should be carried out in parallel and in series is a decision that programmers must make to save time and computaional resources.
+2. **Operator** - It assists with the execution of tasks. PythonOperator can be used to execute Python scripts. For each operation, responsive operators can be selected and used.
+******************************
+
+
+
+### Apache AirFlow important functions, Libraries and etc
+*************************************
+**What to keep in mind to create DAGS**:
+* The tasks **without dependencies** (also called `root tasks` or `upstream tasks`) are executed first, and then the tasks **with dependencies** (also called `downstream tasks`) are connected and executed based on their upstream dependencies.
+
+**Libraries**
+* **from airflow import DAG** from Airflow to define the DAG
+* **from airflow.operators.bash_operator import BashOperator** to run Bash commands
+* **from datetime import datetime, timedelta**  for date and time operations
+
+**DAG creation** 
+* The following dictionary defines default arguments for the DAG: **owner**: The person responsible for the DAG. **depends_on_past**: If True, task instances will run sequentially. **start_date**: The date from which the DAG should start running. **email**: Email address for notifications. **email_on_failure and email_on_retry**: Control email notifications. **retries**: Number of retries if a task fails.
+**retry_delay**: Time to wait between retries.
+* The second statement creates a DAG named "tutorial" with the specified default arguments and a daily schedule. 
+```python
+default_args = {
+    "owner": "airflow",
+    "depends_on_past": False,
+    "start_date": datetime(2024, 6, 25),
+    "email": ["airflow@airflow.com"],
+    "email_on_failure": False,
+    "email_on_retry": False,
+    "retries": 1,
+    "retry_delay": timedelta(minutes=5),
+}
+dag = DAG("tutorial", default_args=default_args, schedule_interval=timedelta(1))
+```
+**tasks**
+* The DAG is scheduled to run daily, with **t1 running first, followed by t2 and t3 in parallel**. Note that By default, if no retry configuration is specified, Airflow will make only one attempt to execute a task. This means there are no automatic retries. When you specify retries = 1 for a task or in the DAG's default arguments, Airflow will make a total of two attempts: The initial attempt and One retry attempt if the initial attempt fails. If retries = 2: 3 total attempts (1 initial + 2 retries).
+```python
+t1 = BashOperator(task_id="print_date", bash_command="date", dag=dag)
+t2 = BashOperator(task_id="sleep", bash_command="sleep 5", retries=3, dag=dag)
+templated_command = """
+    {% for i in range(5) %}
+        echo "{{ ds }}"
+        echo "{{ macros.ds_add(ds, 7)}}"
+        echo "{{ params.my_param }}"
+    {% endfor %}
+"""
+t3 = BashOperator(
+    task_id="templated",
+    bash_command=templated_command,
+    params={"my_param": "Parameter I passed in"},
+    dag=dag,
+)
+t2.set_upstream(t1)
+t3.set_upstream(t1)
+
+
+```
+
 
 
 
@@ -132,6 +171,13 @@ xcom_push and xcom_pull
 task_instance.xcom_pull(task_ids='task_name')
 task_instance.xcom_push(task_ids='task_name')
 ```
+
+
+
+
+
+
+
 ## Plugins
 Note that to create a plugin, a creation of derived class using the airflow.plugins_manager.AirflowPlugin as an base class is mandatory, and refer the object that we want to plug into airflow. A simple example is shown below:
 ```
