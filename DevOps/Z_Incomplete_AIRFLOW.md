@@ -91,8 +91,34 @@ airflow dags list
 
 ### Terminology 
 ******************************
-1. **DAGS** - A DAG (Directed Acyclic Graph) is a core concept in Apache Airflow that represents a workflow or data pipeline. The graph is composed of a series of linked nodes. Every node is an activity that relies on other tasks to run. Everything has to be carefully arranged. Which operations should be carried out in parallel and in series is a decision that programmers must make to save time and computaional resources.
-2. **Operator** - It assists with the execution of tasks. PythonOperator can be used to execute Python scripts. For each operation, responsive operators can be selected and used.
+* **DAGs** define when and in what order to do it
+* **operators** An operator packages all the code and logic needed to perform a specific task in a DAG. An operator packages all the code and logic needed to perform a specific task. For example, the PythonOperator encapsulates the logic for executing a Python function, handling input arguments, and managing the execution environment. Users can simply provide the function and its arguments, and the operator takes care of the rest.
+```python
+from airflow.models import BaseOperator
+from airflow.utils.decorators import apply_defaults
+
+class BashOperator(BaseOperator):
+    template_fields = ('bash_command',)
+    template_ext = ('.sh', '.bash',)
+    ui_color = '#f0ede4'
+
+    @apply_defaults
+    def __init__(self, bash_command, xcom_push=False, *args, **kwargs):
+        super(BashOperator, self).__init__(*args, **kwargs)
+        self.bash_command = bash_command
+        self.xcom_push = xcom_push
+
+    def execute(self, context):
+        self.log.info('Running command: %s', self.bash_command)
+        # Logic to execute the bash command
+        # This could involve using subprocess to run the command
+        result = subprocess.run(self.bash_command, shell=True, check=True, stdout=subprocess.PIPE)
+        if self.xcom_push:
+            return result.stdout
+```
+**Class Definition** : BashOperator inherits from `BaseOperator`. **Template Fields**: template_fields specifies which fields can be templated using Jinja. template_ext allows for file-based templating. **Initialization**: The __init__ method initializes the operator with the bash_command and other parameters. apply_defaults decorator is used to handle default arguments. **Execution Logic**: The execute method contains the logic to run the bash command. It uses subprocess.run to execute the command and handle the output.
+**Operators in Apache Airflow are indeed Python classes that encapsulate the logic for a specific unit of work. When you create an instance of an operator within a DAG (Directed Acyclic Graph), it becomes a task. These tasks are then executed by the Airflow executor. The scheduler schedules taks based on the DAG’s schedule interval.**
+* **executors** determine how and where the work gets done
 ******************************
 
 
