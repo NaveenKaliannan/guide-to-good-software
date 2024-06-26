@@ -131,6 +131,7 @@ class BashOperator(BaseOperator):
 **Libraries**
 * **from airflow import DAG** from Airflow to define the DAG
 * **from airflow.operators.bash_operator import BashOperator** to run Bash commands
+* **from airflow.operators.python_operator import PythonOperator** to run python statements
 * **from datetime import datetime, timedelta**  for date and time operations
 
 **DAG creation** 
@@ -150,7 +151,7 @@ default_args = {
 }
 dag = DAG("tutorial", default_args=default_args, schedule_interval=timedelta(1))
 ```
-**tasks**
+**Tasks**
 * The DAG is scheduled to run daily, with **t1 running first, followed by t2 and t3 in parallel**. Note that By default, if no retry configuration is specified, Airflow will make only one attempt to execute a task. This means there are no automatic retries. When you specify retries = 1 for a task or in the DAG's default arguments, Airflow will make a total of two attempts: The initial attempt and One retry attempt if the initial attempt fails. If retries = 2: 3 total attempts (1 initial + 2 retries).
 ```python
 t1 = BashOperator(task_id="print_date", bash_command="date", dag=dag)
@@ -170,11 +171,33 @@ t3 = BashOperator(
 )
 t2.set_upstream(t1)
 t3.set_upstream(t1)
-
-
 ```
+* Create a folder and test it whether it exists or not. Note that /tmp/airflowtmpuaxwbwzp is a temporary directory created by Airflow for task execution and for each tasks new folder, not your home directory. The temporary directory and its contents are typically deleted automatically by Airflow after the task finishes execution. Use the `$HOME` environment variable instead of the tilde (~). The host mounted folder will be mounted in /usr/local/airflow, which is `$HOME`. 
+```python
+def Hi():
+    print("Hi! Naveen")
 
+t1 = PythonOperator(
+    task_id='Hi',
+    python_callable=Hi,
+    dag=dag
+)
 
+t2 = BashOperator(
+    task_id="mkdir_directory", 
+    bash_command="mkdir -p $HOME/dags/test_folder", 
+    dag=dag
+)
+
+t3 = BashOperator(
+    task_id="check_directory",
+    bash_command='ls -la $HOME/dags; if [ -d "$HOME/dags/test_folder" ]; then echo "test_folder found"; else echo "test_folder not found"; fi',
+    retries=3,
+    dag=dag
+)
+
+t1 >> t2 >> t3
+```
 
 
 ### Task/Operator
