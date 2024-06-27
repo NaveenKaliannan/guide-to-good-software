@@ -54,6 +54,10 @@ Workers are the processes or nodes that actually execute the tasks assigned by t
 - For the KubernetesExecutor, each worker is a pod running in the Kubernetes cluster.
  
 6. **Queuing system** (only distributed system/many executors) - tasks from scheduler. Example, Redis, RabbitmQ
+7. **AirFlow CLI** interacts with the Airflow software primarily through direct command execution and database interactions, rather than using socket files like docker.sock. For example, when you run `airflow dags list`, the CLI communicates with the Airflow metadata database to retrieve and display the list of DAGs. Airflow doesn't typically use socket files for CLI interactions. Instead, it relies on:
+- HTTP/HTTPS API: For remote interactions, Airflow uses a REST API. This is particularly relevant when using the CLI with services like Amazon MWAA.
+- Database Connections: Many CLI operations involve direct database connections rather than socket files.
+- Process Management: For services like the webserver and scheduler, Airflow uses standard process management techniques rather than socket files.
 ******************************
 
 ### How to install Apache AirFlow
