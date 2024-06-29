@@ -188,7 +188,38 @@ print(my_list[0])  # Prints the first element
 * **from decimal import Decimal** precise_num = Decimal('0.1') High-precision decimal numbers
 * **from fractions import Fraction** frac = Fraction(1, 3)  # represents 1/3 Rational numbers
 * **from datetime import datetime** now = datetime.now() Date and time representation
+* **iterators** An iterator is an object that allows you to iterate over a sequence (such as a list, tuple, or string) one element at a time. It is a fundamental concept in Python and is used extensively in various parts of the language.
+```python
+my_list = [1, 2, 3, 4, 5]
+my_iterator = iter(my_list)
 
+#Once you have an iterator, you can iterate over it using a for loop or the next() function. Here's an example:
+for element in my_iterator:
+    print(element)
+print(next(my_iterator))  # prints 1
+print(next(my_iterator))  # prints 2
+print(next(my_iterator))  # prints 3
+
+## Iterator Class
+class MyIterator:
+    def __init__(self, data):
+        self.data = data
+        self.index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index >= len(self.data):
+            raise StopIteration
+        element = self.data[self.index]
+        self.index += 1
+        return element
+
+my_iterator = MyIterator([1, 2, 3, 4, 5])
+for element in my_iterator:
+    print(element)
+```
 ### Inputs
 * **t = input("Argument")** In Python, the input() function always returns a string by default, regardless of what type of data the user enters. This is an important characteristic to understand when working with user input in Python.
 ```python
@@ -257,6 +288,9 @@ print(message)
 # Ternary operator with more complex expression
 discount = 20 if is_student and age < 25 else 10 if age >= 60 else 0
 print(f"Your discount is: {discount}%")
+
+name = ""
+greeting = name if name else "Hello, stranger!"
 ```
 * **Loops**
 ```python
@@ -337,4 +371,252 @@ comprehension_time = timeit.timeit(using_comprehension, number=1000)
 print(f"Append method time: {append_time:.6f} seconds")
 print(f"List comprehension time: {comprehension_time:.6f} seconds")
 print(f"List comprehension is {append_time / comprehension_time:.2f}x faster")
+``` 
+* **Destructuring**, also known as unpacking, is a feature in Python that allows you to assign multiple values to multiple variables in a single operation. It works with tuples, lists, and dictionaries.
+```python
+# Tuple unpacking
+print("Tuple unpacking:")
+point = (3, 4)
+x, y = point
+print(f"x: {x}, y: {y}")
+
+# List unpacking
+print("\nList unpacking:")
+colors = ['red', 'green', 'blue']
+color1, color2, color3 = colors
+print(f"color1: {color1}, color2: {color2}, color3: {color3}")
+
+# Dictionary unpacking
+print("\nDictionary unpacking (keys):")
+person = {'name': 'John', 'age': 30, 'city': 'New York'}
+name, age, city = person.keys()
+print(f"name: {name}, age: {age}, city: {city}")
+
+print("\nDictionary unpacking (values):")
+name, age, city = person.values()
+print(f"name: {name}, age: {age}, city: {city}")
+
+print("\nDictionary unpacking (items):")
+(name, age), city = person.items()
+print(f"name: {name}, age: {age}, city: {city}")
+
+# Unpacking with wildcards
+print("\nUnpacking with wildcards:")
+numbers = [1, 2, 3, 4, 5]
+first, *middle, last = numbers
+print(f"first: {first}, middle: {middle}, last: {last}")
+
+# Unpacking nested tuples
+print("\nUnpacking nested tuples:")
+nested_tuple = ((1, 2), (3, 4))
+((a, b), (c, d)) = nested_tuple
+print(f"a: {a}, b: {b}, c: {c}, d: {d}")
+
+# Unpacking nested dictionaries
+print("\nUnpacking nested dictionaries:")
+nested_dict = {'person': {'name': 'John', 'age': 30}, 'address': {'city': 'New York'}}
+person, address = nested_dict.items()
+name, age = person['person'].values()
+city = address['address']['city']
+print(f"name: {name}, age: {age}, city: {city}")
+
+# Unpacking in for loops
+print("\nUnpacking in for loops (tuples):")
+points = [(1, 2), (3, 4), (5, 6)]
+for x, y in points:
+    print(f"x: {x}, y: {y}")
+
+print("\nUnpacking in for loops (dictionaries):")
+people = [
+    {'name': 'John', 'age': 30},
+    {'name': 'Jane', 'age': 25},
+    {'name': 'Bob', 'age': 35}
+]
+for person in people:
+    name, age = person.values()
+    print(f"name: {name}, age: {age}")
+
+data = (10, 20, 30)
+a, _, b = data
+print(a)  # Output: 10
+print(b)  # Output: 30
+
+point = (1, 2, 3, 4, 5)
+x, *_, y = point
+print(x)  # Output: 1
+print(y)  # Output: 5
+
+data = [(1, 2), (3, 4), (5, 6)]
+for a, _ in data:
+    print(a)
+
+numbers = [1, 2, 3, 4, 5]
+first, *rest = numbers
+print(first)  # Output: 1
+print(rest)   # Output: [2, 3, 4, 5]
+
+word = "python"
+first, *middle, last = word
+print(first)   # Output: 'p'
+print(middle)  # Output: ['y', 't', 'h', 'o']
+print(last)    # Output: 'n'
+
+point = (1, 2, 3, 4, 5)
+x, *y, z = point
+print(x)  # Output: 1
+print(y)  # Output: [2, 3, 4]
+print(z)  # Output: 5
+
+nested_list = [[1, 2], [3, 4], [5, 6]]
+first, *middle, last = nested_list
+print(first)    # Output: [1, 2]
+print(middle)   # Output: [[3, 4]]
+print(last)     # Output: [5, 6]
+```
+* **Function**  In Python, when a function does not have an explicit return statement or if the return statement is reached without any value specified, the function implicitly returns None
+```python
+# Function with pass statement
+def empty_function():
+    pass
+
+# Calling the empty function
+empty_function()
+
+# Function that returns None
+def say_hello(name):
+    print(f"Hello, {name}!")
+
+# Calling the function that returns None
+result = say_hello("Alice")
+print(result)  # Output: Hello, Alice!
+
+# Function that performs simple math
+def add_numbers(a, b):
+    return a + b
+
+# Calling the math function
+num1 = 10
+num2 = 20
+sum_of_numbers = add_numbers(num1, num2)
+print(f"The sum of {num1} and {num2} is: {sum_of_numbers}")
+
+# Function that performs subtraction
+def subtract_numbers(a, b):
+    return a - b
+
+# Calling the subtraction function
+num3 = 30
+num4 = 15
+difference = subtract_numbers(num3, num4)
+print(f"The difference between {num3} and {num4} is: {difference}")
+
+# Function that performs multiplication
+def multiply_numbers(a, b):
+    return a * b
+
+# Calling the multiplication function
+num5 = 5
+num6 = 6
+product = multiply_numbers(num5, num6)
+print(f"The product of {num5} and {num6} is: {product}")
+
+# Function that performs division
+def divide_numbers(a, b):
+    if b == 0:
+        return None
+
+# Default parameters
+def greet(name, greeting="Hello"):
+    print(f"{greeting}, {name}!")
+
+# Calling the function with required argument
+greet("Alice")
+# Output: Hello, Alice!
+```
+* **Lambda functions**, also known as anonymous functions, are small, one-line short functions in Python that can take any number of arguments but can only have one expression. They are defined using the lambda keyword and are useful when you need a simple function for a short period of time. **lambda arguments: expression**
+```python
+# Simple lambda function
+square = lambda x: x**2
+print(square(5))  # Output: 25
+
+# Lambda function with multiple arguments
+add_numbers = lambda x, y: x + y
+result = add_numbers(10, 20)
+print(result)  # Output: 30
+
+# Using lambda functions with built-in functions
+numbers = [1, 2, 3, 4, 5]
+doubled_numbers = list(map(lambda x: x*2, numbers))
+print(doubled_numbers)  # Output: [2, 4, 6, 8, 10]
+
+# Filtering using lambda functions
+even_numbers = list(filter(lambda x: x%2 == 0, numbers))
+print(even_numbers)  # Output: [2, 4]
+
+# Sorting using lambda functions
+people = [
+    {"name": "Alice", "age": 25},
+    {"name": "Bob", "age": 30},
+    {"name": "Charlie", "age": 20}
+]
+
+sorted_people = sorted(people, key=lambda person: person["age"])
+print(sorted_people)
+# Output: [
+#     {"name": "Charlie", "age": 20},
+#     {"name": "Alice", "age": 25},
+#     {"name": "Bob", "age": 30}
+# ]
+
+# Nested lambda functions
+adder = lambda x: lambda y: x + y
+add_five = adder(5)
+result = add_five(10)
+print(result)  # Output: 15
+
+# Lambda function with if-else
+is_even = lambda x: "Even" if x % 2 == 0 else "Odd"
+print(is_even(7))  # Output: Odd
+print(is_even(8))  # Output
+```
+* **map**  The map() function in Python is used to apply a function of one argument to each item of a list, tuple, or string. It returns an iterator that applies the function to every item of the iterable and returns a list of the results. An iterator is an object that can be iterated upon, meaning you can traverse through all the values.
+```python
+# map(function, iterable)
+numbers = [1, 2, 3, 4, 5]
+squared_numbers = list(map(lambda x: x**2, numbers))
+print(squared_numbers)  # Output: [1, 4, 9, 16, 25]
+``` 
+* **Unpacking arguments** The `*` operator is used to unpack positional arguments. The `**` operator is used to unpack keyword arguments.
+```python
+def my_function(*args):
+    for arg in args:
+        print(arg)
+
+my_function('hello', 'world', 'python')
+
+def my_function(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+my_function(name='John', age=30, city='New York')
+
+def my_function(*args, **kwargs):
+    for arg in args:
+        print(arg)
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+my_function('hello', 'world', name='John', age=30, city='New York')
+
+def my_function(a, b, c):
+    print(a, b, c)
+
+my_list = [1, 2, 3]
+my_function(*my_list)  # Output: 1 2 3
+
+def my_function(a, b, c):
+    print(a, b, c)
+
+my_dict = {'a': 1, 'b': 2, 'c': 3}
+my_function(**my_dict)  # Output: 1 2 3
 ``` 
