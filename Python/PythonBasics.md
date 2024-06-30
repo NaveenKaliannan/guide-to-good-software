@@ -586,7 +586,8 @@ numbers = [1, 2, 3, 4, 5]
 squared_numbers = list(map(lambda x: x**2, numbers))
 print(squared_numbers)  # Output: [1, 4, 9, 16, 25]
 ``` 
-* **Unpacking arguments** The `*` operator is used to unpack positional arguments. The `**` operator is used to unpack keyword arguments.
+* **Unpacking arguments** The `*` operator is used to unpack positional arguments. The `**` operator is used to unpack keyword arguments. Positional arguments:
+These are arguments passed to a function in a specific order that matches the order of parameters defined in the function. Keyword arguments: These are arguments passed to a function using the parameter names, followed by an equals sign and the value.
 ```python
 def my_function(*args):
     for arg in args:
@@ -620,3 +621,187 @@ def my_function(a, b, c):
 my_dict = {'a': 1, 'b': 2, 'c': 3}
 my_function(**my_dict)  # Output: 1 2 3
 ``` 
+* **Object Oriented Method**
+```python
+class Car:
+    def __init__(self, make, model, year):
+        self.make = make
+        self.model = model
+        self.year = year
+        self.speed = 0
+
+    def accelerate(self):
+        self.speed += 5
+        return f"{self.make} {self.model} is now going {self.speed} mph"
+
+    def brake(self):
+        if self.speed >= 5:
+            self.speed -= 5
+        else:
+            self.speed = 0
+        return f"{self.make} {self.model} slowed down to {self.speed} mph"
+
+    def honk(self):
+        return f"{self.make} {self.model} goes 'Beep beep!'"
+
+# Creating instances of the Car class
+my_car = Car("Toyota", "Corolla", 2020)
+friend_car = Car("Honda", "Civic", 2019)
+
+# Using the methods
+print(my_car.accelerate())
+print(my_car.accelerate())
+print(my_car.brake())
+print(my_car.honk())
+
+print(friend_car.accelerate())
+print(friend_car.honk())
+```
+* **Magic Methods**  **__init__**: Constructor, **__str__**: String representation, **__repr__**: Detailed string representation, **__len__**: Length of the object, **__getitem__**: Accessing items with indexing, **__call__**: Making the object callable, **__eq__**: Equality comparison, **__lt__**: Less than comparison (also enables sorting), **__add__**: Addition operation, **__enter__** and **__exit__**: Context manager protocol.
+```python
+class Book:
+    def __init__(self, title, author, pages):
+        self.title = title
+        self.author = author
+        self.pages = pages
+        self.current_page = 1
+
+    def __str__(self):
+        return f"'{self.title}' by {self.author}"
+
+    def __repr__(self):
+        return f"Book(title='{self.title}', author='{self.author}', pages={self.pages})"
+
+    def __len__(self):
+        return self.pages
+
+    def __getitem__(self, page):
+        if 1 <= page <= self.pages:
+            return f"Content of page {page}"
+        else:
+            raise IndexError("Page number out of range")
+
+    def __call__(self):
+        return f"Reading '{self.title}'..."
+
+    def __eq__(self, other):
+        if isinstance(other, Book):
+            return self.title == other.title and self.author == other.author
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, Book):
+            return self.pages < other.pages
+        return NotImplemented
+
+    def __add__(self, other):
+        if isinstance(other, Book):
+            return self.pages + other.pages
+        return NotImplemented
+
+    def __enter__(self):
+        print(f"Opening '{self.title}'")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(f"Closing '{self.title}'")
+
+# Creating instances
+book1 = Book("Python Basics", "John Doe", 200)
+book2 = Book("Advanced Python", "Jane Smith", 300)
+
+# Demonstrating magic methods
+print(str(book1))  # __str__
+print(repr(book2))  # __repr__
+
+print(len(book1))  # __len__
+
+print(book1[50])  # __getitem__
+
+print(book2())  # __call__
+
+print(book1 == Book("Python Basics", "John Doe", 200))  # __eq__
+print(book1 < book2)  # __lt__
+
+print(book1 + book2)  # __add__
+
+# Context manager
+with Book("Context Managers in Python", "Alice Johnson", 150) as book:
+    print("Reading inside the context manager")
+
+# Additional examples
+print(f"Book 1 is {book1}")  # Uses __str__
+print(f"Book 2 representation: {book2!r}")  # Uses __repr__
+
+try:
+    print(book1[500])  # This will raise an IndexError
+except IndexError as e:
+    print(f"Error: {e}")
+
+# Comparing and sorting books
+books = [book1, book2, Book("Python Cookbook", "David Beazley", 250)]
+sorted_books = sorted(books)
+print("Sorted books by number of pages:")
+for book in sorted_books:
+    print(f"{book.title}: {book.pages} pages")
+```
+```python
+class MyClass:
+    def __init__(self, value):
+        self.value = value
+
+    def __add__(self, other):
+        return self.value + other.value
+
+obj1 = MyClass(5)
+obj2 = MyClass(10)
+
+# This line:
+result = obj1 + obj2
+
+# Is equivalent to this behind the scenes:
+result = MyClass.__add__(obj1, obj2)
+```
+* **Instance Methods:** Definition: Instance methods are defined with the self parameter, which refers to the instance of the class. Use Cases: Accessing and modifying instance attributes. Performing operations that are specific to the instance of the class. Calling other instance methods or class methods.
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def greet(self):
+        print(f"Hello, my name is {self.name} and I'm {self.age} years old.")
+```
+In this example, the greet() method is an instance method that can access and use the name and age attributes of the Person instance.
+* **Class Methods:** Definition: Class methods are defined with the cls parameter, which refers to the class itself. Use Cases: Accessing and modifying class attributes. Implementing alternative constructors or factory methods. Performing operations that are specific to the class, rather than the instance.
+```python
+class Person:
+    population = 0
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        Person.population += 1
+
+    @classmethod
+    def get_population(cls):
+        return cls.population
+```
+In this example, the get_population() method is a class method that can access and return the population class attribute.
+* **Static Methods:** Definition: Static methods are defined without any implicit parameters (like self or cls). Use Cases: Providing utility functions that don't need to access instance or class attributes.
+Grouping related functions within a class for better organization. Implementing mathematical or logical operations that don't depend on the class or instance state.
+```python
+import math
+
+class Circle:
+    def __init__(self, radius):
+        self.radius = radius
+
+    def area(self):
+        return self.calculate_area(self.radius)
+
+    @staticmethod
+    def calculate_area(radius):
+        return math.pi * radius ** 2
+```
+In this example, the calculate_area() method is a static method that can be called without an instance of the Circle class. It performs a mathematical calculation that doesn't depend on any instance or class attributes.
