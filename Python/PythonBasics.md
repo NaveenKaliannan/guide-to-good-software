@@ -220,6 +220,71 @@ my_iterator = MyIterator([1, 2, 3, 4, 5])
 for element in my_iterator:
     print(element)
 ```
+* **type hint** Type hints in Python are a way to annotate variables, function parameters, and return values with type information
+```python
+from typing import List, Dict, Tuple, Set, Optional, Union
+import pandas as pd
+import numpy as np
+
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+
+def add_numbers(a: int, b: int) -> int:
+    return a + b
+
+def is_even(num: int) -> bool:
+    return num % 2 == 0
+
+def get_length(sequence: Union[str, List[int]]) -> int:
+    return len(sequence)
+
+def get_first_element(sequence: Tuple[int, ...]) -> int:
+    return sequence[0]
+
+def count_unique(items: Set[str]) -> int:
+    return len(items)
+
+def get_name(person: Dict[str, str]) -> str:
+    return person["name"]
+
+def process_data(data: Optional[List[int]]) -> List[int]:
+    if data is None:
+        return []
+    else:
+        return [x * x for x in data]
+
+def create_pandas_dataframe(data: List[Dict[str, int]]) -> pd.DataFrame:
+    return pd.DataFrame(data)
+
+def create_numpy_array(data: List[List[float]]) -> np.ndarray:
+    return np.array(data)
+
+def get_numpy_array_element(arr: np.ndarray, i: int, j: int) -> float:
+    return arr[i, j]
+
+# Usage examples
+print(greet("Alice"))  # type: str
+print(add_numbers(3, 4))  # type: int
+print(is_even(7))  # type: bool
+print(get_length("hello"))  # type: int
+print(get_length([1, 2, 3]))  # type: int
+print(get_first_element((10, 20, 30)))  # type: int
+print(count_unique({"apple", "banana", "cherry"}))  # type: int
+print(get_name({"name": "Bob", "age": 30}))  # type: str
+print(process_data([1, 2, 3]))  # type: List[int]
+print(process_data(None))  # type: List[int]
+
+# Pandas DataFrame example
+data = [{"name": "Alice", "age": 25}, {"name": "Bob", "age": 30}]
+df = create_pandas_dataframe(data)  # type: pd.DataFrame
+print(df)
+
+# NumPy array example
+arr = create_numpy_array([[1.0, 2.0], [3.0, 4.0]])  # type: np.ndarray
+print(arr)
+print(get_numpy_array_element(arr, 1, 1))  # type: float
+```
+
 ### Inputs
 * **t = input("Argument")** In Python, the input() function always returns a string by default, regardless of what type of data the user enters. This is an important characteristic to understand when working with user input in Python.
 ```python
@@ -657,7 +722,8 @@ print(my_car.honk())
 print(friend_car.accelerate())
 print(friend_car.honk())
 ```
-* **Magic Methods**  **__init__**: Constructor, **__str__**: String representation, **__repr__**: Detailed string representation, **__len__**: Length of the object, **__getitem__**: Accessing items with indexing, **__call__**: Making the object callable, **__eq__**: Equality comparison, **__lt__**: Less than comparison (also enables sorting), **__add__**: Addition operation, **__enter__** and **__exit__**: Context manager protocol.
+* **Magic Methods** Magic methods are special methods in Python that start and end with double underscores, like __init__ or __str__. They are also called "dunder" (double underscore) methods.
+  **__init__**: Constructor, **__str__**: String representation, **__repr__**: Detailed string representation, **__len__**: Length of the object, **__getitem__**: Accessing items with indexing, **__call__**: Making the object callable, **__eq__**: Equality comparison, **__lt__**: Less than comparison (also enables sorting), **__add__**: Addition operation, **__enter__** and **__exit__**: Context manager protocol. Arithmetic operators like __add__, __sub__, __mul__: Overload operators for objects. Magic methods provide a way to make your custom objects behave more like built-in types in Python. For example, overloading the + operator with __add__ allows you to add your own objects together.  Magic methods are automatically invoked by Python when certain operations are performed on an object. You don't call them directly, but rather Python calls them under the hood when the corresponding operation is used.
 ```python
 class Book:
     def __init__(self, title, author, pages):
@@ -805,3 +871,142 @@ class Circle:
         return math.pi * radius ** 2
 ```
 In this example, the calculate_area() method is a static method that can be called without an instance of the Circle class. It performs a mathematical calculation that doesn't depend on any instance or class attributes.
+* **class inheritance** Inheritance is a fundamental concept in object-oriented programming (OOP) that allows a new class to be based on an existing class
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        print(f"{self.name} makes a sound.")
+
+class Dog(Animal):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def speak(self):
+        print(f"{self.name} barks.")
+
+class Cat(Animal):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def speak(self):
+        print(f"{self.name} meows.")
+
+# Creating instances
+animal = Animal("Generic Animal")
+dog = Dog("Buddy")
+cat = Cat("Whiskers")
+
+# Calling methods
+animal.speak()  # Output: Generic Animal makes a sound.
+dog.speak()  # Output: Buddy barks.
+cat.speak()  # Output: Whiskers meows.
+```
+* **Class composition** in Python refers to the practice of building complex objects by combining simpler objects, rather than through inheritance.
+```python
+class Engine:
+    def __init__(self, horsepower):
+        self.horsepower = horsepower
+
+    def start(self):
+        print("Engine started")
+
+class Car:
+    def __init__(self, color, engine):
+        self.color = color
+        self.engine = engine
+
+    def drive(self):
+        self.engine.start()
+        print(f"Driving a {self.color} car")
+
+# Create an engine object
+engine = Engine(200)
+
+# Create a car object, passing the engine object as a parameter
+car = Car("Red", engine)
+
+# Drive the car
+car.drive()
+```
+* **Absolute and relative import**
+```python
+from project.module1 import function1
+from .module2 import function2
+from ..package1.module3 import function3
+```
+* **Erros**
+```python
+# SyntaxError
+def greet(name):
+    print("Hello, " + name!)  # Missing closing parenthesis
+
+# NameError 
+print(x)  # x is not defined
+
+# TypeError
+print(5 + "hello")  # Cannot concatenate int and str
+def add(a, b):
+    return a + b
+add(1, 2, 3)  # TypeError: add() takes 2 positional arguments but 3 were given
+
+# IndexError
+my_list = [1, 2, 3]
+print(my_list[3])  # Index out of range
+
+# KeyError
+my_dict = {"name": "Alice", "age": 25}
+print(my_dict["city"])  # Key "city" does not exist
+
+# ZeroDivisionError
+print(10 / 0)  # Division by zero
+
+# ImportError
+from math import sqrt2  # sqrt2 does not exist in math module
+print(sqrt2(4))
+
+a, b = [1, 2, 3]  # ValueError: too many values to unpack (expected 2)
+
+import math
+math.sqrt(-1)  # ValueError: math domain error
+
+int("hello")  # ValueError: invalid literal for int() with base 10: 'hello'
+```
+* **first-class functions**
+```python
+def greet(name):
+    return f"Hello, {name}!"
+
+def apply_twice(func, arg):
+    return func(arg) + func(arg)
+
+# Using first-class functions
+greeting = greet
+print(greeting("Alice"))  # Output: Hello, Alice!
+
+result = apply_twice(greet, "Bob")
+print(result)  # Output: Hello, Bob!Hello, Bob!
+```
+* **Decorators** can be used to add a wide range of functionality to functions, such as logging, caching, authentication
+```python
+def print_password(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        print(f"The password is: {result}")
+        return result
+    return wrapper
+
+@print_password
+def get_password():
+    return "mySecurePassword123"
+
+# Usage
+password = get_password()
+# Output:
+# The password is: mySecurePassword123
+```
+When get_password is called, the wrapper function is executed instead of the original get_password function. Inside the wrapper, the original get_password is called with () (no arguments), and its result is stored in result. The print(f"The password is: {result}") statement is executed, printing the password. Finally, the result is returned from the wrapper function and assigned to the password variable.
+ * **Design patterns** provide proven solutions to common design problems. They promote code reuse, flexibility, and maintainability by separating concerns and defining clean interfaces between components
+ **Creational Patterns** Factory Method Abstract Factory  Builder Prototype Singleton **Structural Patterns** Adapter Bridge  Composite Decorator Facade Flyweight Proxy **Behavioral Patterns** Chain of Responsibility Command Interpreter Iterator Mediator Memento Observer State Strategy Template Method Visitor
