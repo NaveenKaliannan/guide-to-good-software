@@ -284,6 +284,31 @@ arr = create_numpy_array([[1.0, 2.0], [3.0, 4.0]])  # type: np.ndarray
 print(arr)
 print(get_numpy_array_element(arr, 1, 1))  # type: float
 ```
+* `__name__` variable in Python is a special variable that holds the name of the current module. It's commonly used to determine whether a script is being run directly or being imported as a module. The `if __name__ == "__main__"`: idiom in Python is a common pattern used to control the execution of code when a script is run directly versus when it's imported as a module. when you run the script directly, then the `__name__` is assigned with `__main__` but when you import and execute then the `__name__` is assigned with **my_script**.
+```python
+# Example file: my_script.py
+
+print(f"The value of __name__ is: {__name__}")
+
+def greet(name):
+    return f"Hello, {name}!"
+
+def main():
+    print("This is the main function")
+    print(greet("Alice"))
+
+if __name__ == "__main__":
+    print("This script is being run directly")
+    main()
+else:
+    print("This script is being imported as a module")
+
+def main():
+    print("This is the main function")
+
+if __name__ == "__main__":
+    main()
+``` 
 
 ### Inputs
 * **t = input("Argument")** In Python, the input() function always returns a string by default, regardless of what type of data the user enters. This is an important characteristic to understand when working with user input in Python.
