@@ -203,7 +203,11 @@ t3 = BashOperator(
 
 t1 >> t2 >> t3
 ```
-* **Trigger Rules** allow you to control the execution of tasks based on the outcomes of their dependencies
+**Sub DAGS**
+```python
+```
+
+**Trigger Rules** allow you to control the execution of tasks based on the outcomes of their dependencies. Real-world examples : Error Handling and Notifications, Cleanup Operations: Use the all_done trigger rule for cleanup tasks that should run regardless of the upstream task statuses. Partial Failure Handling: In scenarios where you want to continue executing subsequent tasks even if some upstream tasks fail, you can use the all_done trigger rule. Fallback Mechanisms: Use the all_failed trigger rule to execute a fallback task when all primary attempts fail. This can be useful for implementing retry logic or alternative processing paths. **The final_task is set with trigger_rule=TriggerRule.ALL_DONE will execute after previous tasks have completed, regardless of whether they succeeded or failed**
 ```python
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
@@ -252,12 +256,18 @@ with DAG('trigger_rule_example', start_date=datetime(2023, 1, 1)) as dag:
         bash_command='echo "Task 7 completed successfully"',
         trigger_rule=TriggerRule.NONE_SKIPPED
     )
+
+final_task = PythonOperator(
+    task_id='final_task',
+    python_callable=process_results,
+    trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS
+)
     
     task1 >> [task2, task3]
     task2 >> task4
     task3 >> task5
     [task4, task5] >> task6
-    [task2, task3, task4, task5] >> task7
+    [task2, task3, task4, task5] >> task7 >> final_task
 
 #task1: This task always succeeds.
 #task2: This task will only run if task1 succeeds. It uses the TriggerRule.ONE_SUCCESS trigger rule.
