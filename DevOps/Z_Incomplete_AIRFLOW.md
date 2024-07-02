@@ -58,6 +58,7 @@ Workers are the processes or nodes that actually execute the tasks assigned by t
 - HTTP/HTTPS API: For remote interactions, Airflow uses a REST API. This is particularly relevant when using the CLI with services like Amazon MWAA.
 - Database Connections: Many CLI operations involve direct database connections rather than socket files.
 - Process Management: For services like the webserver and scheduler, Airflow uses standard process management techniques rather than socket files.
+8. **.airflowignore** file ignore files and folders.
 ******************************
 
 ### How to install Apache AirFlow
@@ -202,6 +203,114 @@ t3 = BashOperator(
 
 t1 >> t2 >> t3
 ```
+* **Trigger Rules** allow you to control the execution of tasks based on the outcomes of their dependencies
+```python
+from airflow import DAG
+from airflow.operators.bash_operator import BashOperator
+from airflow.utils.trigger_rule import TriggerRule
+from datetime import datetime
+
+with DAG('trigger_rule_example', start_date=datetime(2023, 1, 1)) as dag:
+    
+    task1 = BashOperator(
+        task_id='task1',
+        bash_command='echo "Task 1 completed successfully"'
+    )
+    
+    task2 = BashOperator(
+        task_id='task2',
+        bash_command='echo "Task 2 completed successfully"',
+        trigger_rule=TriggerRule.ONE_SUCCESS
+    )
+    
+    task3 = BashOperator(
+        task_id='task3',
+        bash_command='echo "Task 3 completed successfully"',
+        trigger_rule=TriggerRule.ONE_FAILED
+    )
+    
+    task4 = BashOperator(
+        task_id='task4',
+        bash_command='echo "Task 4 completed successfully"',
+        trigger_rule=TriggerRule.ALL_SUCCESS
+    )
+    
+    task5 = BashOperator(
+        task_id='task5',
+        bash_command='echo "Task 5 completed successfully"',
+        trigger_rule=TriggerRule.ALL_FAILED
+    )
+    
+    task6 = BashOperator(
+        task_id='task6',
+        bash_command='echo "Task 6 completed successfully"',
+        trigger_rule=TriggerRule.ALL_DONE
+    )
+    
+    task7 = BashOperator(
+        task_id='task7',
+        bash_command='echo "Task 7 completed successfully"',
+        trigger_rule=TriggerRule.NONE_SKIPPED
+    )
+    
+    task1 >> [task2, task3]
+    task2 >> task4
+    task3 >> task5
+    [task4, task5] >> task6
+    [task2, task3, task4, task5] >> task7
+
+#task1: This task always succeeds.
+#task2: This task will only run if task1 succeeds. It uses the TriggerRule.ONE_SUCCESS trigger rule.
+#task3: This task will only run if task1 fails. It uses the TriggerRule.ONE_FAILED trigger rule.
+#task4: This task will only run if both task2 and task1 succeed. It uses the TriggerRule.ALL_SUCCESS trigger rule.
+#task5: This task will only run if both task3 and task1 fail. It uses the TriggerRule.ALL_FAILED trigger rule.
+#task6: This task will run regardless of the outcome of the other tasks. It uses the TriggerRule.ALL_DONE trigger rule.
+#task7: The TriggerRule.NONE_SKIPPED trigger rule ensures that task7 will only run if none of its upstream tasks are skipped. This means that if any of the upstream tasks (task2, task3, task4, or task5) are skipped, task7 will not run.
+```
+* **Zombie task" or a "Hung task** if the tasks in the metadata have a "running" status but the executor is not functioning. Use the airflow tasks clean command: This command can be used to clean up zombie tasks in the Airflow metadata. Use the airflow dags delete command with the --yes flag: This command can be used to delete a DAG and its tasks, including any zombie tasks. Implement a task timeout: You can implement a task timeout to ensure that tasks are terminated after a certain period of time if they are not progressing. Use a task sensor: You can use a task sensor to monitor the status of tasks and terminate them if they are running for too long without making progress.
+* **Undead tasks** are tasks that are still running in the executor, but their status is not being properly reflected in the Airflow metadata. This can happen due to various reasons, such as:
+Communication issues between the scheduler and executor: If there are problems with the communication channels between the Airflow scheduler and the executor, task status updates may not be properly propagated to the metadata. Executor issues: If the executor itself is not functioning correctly, it may not be able to properly update the task status in the metadata. Database issues: If there are problems with the database used by Airflow to store metadata, task status updates may not be persisted correctly. Airflow version incompatibilities: If you are using different versions of Airflow components (e.g., scheduler and executor), it can lead to issues with task status updates.
+* **Plugins** extends airflow functionalities
+Note that to create a plugin, a creation of derived class using the airflow.plugins_manager.AirflowPlugin as an base class is mandatory, and refer the object that we want to plug into airflow. A simple example is shown below:
+```
+from airflow.models.baseoperator import BaseOperator, BaseOperatorLink
+from airflow.plugins_manager import AirflowPlugin
+
+class MyDashboardLink(BaseOperatorLink):
+    name = "Google"
+    def get_link(self, operator: BaseOperator, *, ti_key: TaskInstanceKey):
+        return "https://www.google.com"
+
+class MyDashboardLink2(BaseOperatorLink):
+    name = "Google"
+    def get_link(self, operator: BaseOperator, *, ti_key: TaskInstanceKey):
+        return "https://www.fb.com"
+
+class MyFirstOperator(BaseOperator):
+    operator_extra_links = (GoogleLink(),)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def execute(self, context):
+        self.log.info("Hello World!")
+
+def test_function():
+    operator = MyFirstOperator()
+    operator.operator_extra_links = MyDashboardLink2()
+
+# Defining the plugin class
+class MyDashboardExtraLinkPlugin(AirflowPlugin):
+    name = "extra_link_plugin"
+    operator_extra_links = [
+        MyDashboardLink(),
+    ]
+
+class MyDashboard2ExtraLinkPlugin(AirflowPlugin):
+    name = "extra_link_plugin"
+    operator_extra_links = [
+        MyDashboardLink2(),
+    ]
+```
 
 
 ### Task/Operator
@@ -231,49 +340,145 @@ task_instance.xcom_push(task_ids='task_name')
 
 
 
-## Plugins
-Note that to create a plugin, a creation of derived class using the airflow.plugins_manager.AirflowPlugin as an base class is mandatory, and refer the object that we want to plug into airflow. A simple example is shown below:
+
+## Best Practices in Apache AirFlow
+* **Modularize your DAGs**:
+```python
+# extract_data.py
+from airflow.operators.python_operator import PythonOperator
+
+def extract_data():
+    # Code to extract data from a source
+    pass
+
+extract_data_task = PythonOperator(
+    task_id='extract_data',
+    python_callable=extract_data,
+)
 ```
-from airflow.models.baseoperator import BaseOperator, BaseOperatorLink
-from airflow.plugins_manager import AirflowPlugin
+In this example, we have a separate file called extract_data.py that contains a single task for extracting data. By breaking down the workflow into smaller, reusable components, we can make our code more maintainable and easier to understand. If we need to reuse the data extraction logic in multiple DAGs, we can simply import the extract_data_task and add it to our DAG definitions.
+* **Use Airflow Variables and Connections**:
+```python
+# dag.py
+from airflow.models import Variable
 
-
-class MyDashboardLink(BaseOperatorLink):
-    name = "Google"
-
-    def get_link(self, operator: BaseOperator, *, ti_key: TaskInstanceKey):
-        return "https://www.google.com"
-
-class MyDashboardLink2(BaseOperatorLink):
-    name = "Google"
-
-    def get_link(self, operator: BaseOperator, *, ti_key: TaskInstanceKey):
-        return "https://www.fb.com"
-
-class MyFirstOperator(BaseOperator):
-
-    operator_extra_links = (GoogleLink(),)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def execute(self, context):
-        self.log.info("Hello World!")
-
-def test_function():
-    operator = MyFirstOperator()
-    operator.operator_extra_links = MyDashboardLink2()
-
-# Defining the plugin class
-class MyDashboardExtraLinkPlugin(AirflowPlugin):
-    name = "extra_link_plugin"
-    operator_extra_links = [
-        MyDashboardLink(),
-    ]
-
-class MyDashboard2ExtraLinkPlugin(AirflowPlugin):
-    name = "extra_link_plugin"
-    operator_extra_links = [
-        MyDashboardLink2(),
-    ]
+db_password = Variable.get('db_password')
 ```
+Airflow's Variables feature allows us to store configuration settings outside of our DAG code. In this example, we're retrieving the value of the db_password variable using Variable.get(). By storing sensitive information like database passwords as variables, we can keep our DAG code clean and secure. Variables can be managed through the Airflow UI or the CLI, making it easy to update their values without modifying the DAG code.
+* **Implement Airflow Sensors**:
+```python
+# dag.py
+from airflow.sensors.s3_key_sensor import S3KeySensor
+
+wait_for_file = S3KeySensor(
+    task_id='wait_for_file',
+    bucket_key='path/to/file.txt',
+    wildcard_match=True,
+    poke_interval=10,
+    timeout=60 * 60 * 24 * 7,  # 7 days
+)
+```
+Sensors in Airflow allow us to wait for specific conditions to be met before proceeding with our workflow. In this example, we're using the S3KeySensor to wait for a file to appear in an S3 bucket. The bucket_key parameter specifies the path to the file, and wildcard_match=True allows us to use wildcards in the file path. The poke_interval and timeout parameters control how often the sensor checks for the file and how long it should wait before timing out, respectively. Using sensors helps us handle dependencies and external events more gracefully in our workflows.
+* **Leverage Airflow Hooks**:
+```python
+# dag.py
+from airflow.hooks.postgres_hook import PostgresHook
+
+def run_sql():
+    hook = PostgresHook(postgres_conn_id='my_postgres_conn')
+    hook.get_records('SELECT * FROM table;')
+
+run_sql_task = PythonOperator(
+    task_id='run_sql',
+    python_callable=run_sql,
+)
+```
+Airflow's Hooks provide a consistent interface for interacting with various data sources and services. In this example, we're using the PostgresHook to execute an SQL query against a PostgreSQL database. By encapsulating the database connection logic in the hook, we can simplify our DAG code and make it more reusable. If we need to interact with a different database or service, we can use a different hook without modifying the DAG code.
+* **Use Airflow Macros**:
+```python
+# dag.py
+from datetime import datetime
+
+def print_date():
+    print(f'Current date: {datetime.now().strftime("%Y-%m-%d")}')
+
+print_date_task = PythonOperator(
+    task_id='print_date',
+    python_callable=print_date,
+)
+```
+Airflow's built-in macros provide useful functions and variables that can help us write more dynamic and flexible DAGs. In this example, we're using the datetime module to get the current date and print it. While this is a simple example, macros can be used for more complex tasks, such as generating file paths based on the current date or dynamically setting task dependencies based on some condition. Using macros can make our DAG code more expressive and easier to maintain.
+* **Implement Airflow Operators**:
+```python
+# dag.py
+from airflow.operators.bash_operator import BashOperator
+
+bash_task = BashOperator(
+    task_id='run_bash_script',
+    bash_command='path/to/script.sh',
+)
+```
+Airflow's Operators encapsulate specific tasks or actions within our workflows. In this example, we're using the BashOperator to execute a Bash script. By using the appropriate operator for each task, we can make our DAG code more expressive and easier to understand. Airflow provides a wide range of built-in operators for common tasks, such as running Python code, executing SQL queries, and triggering external systems. Using the right operators can help us write cleaner and more maintainable DAG code.
+* **Manage Dependencies with Airflow TaskGroups**:
+```python
+# dag.py
+from airflow.utils.task_group import TaskGroup
+
+with TaskGroup('data_validation') as data_validation:
+    validate_table1 = PythonOperator(
+        task_id='validate_table1',
+        python_callable=validate_table1,
+    )
+    validate_table2 = PythonOperator(
+        task_id='validate_table2',
+        python_callable=validate_table2,
+    )
+```
+TaskGroups in Airflow allow us to group related tasks together, making it easier to manage dependencies and control the execution of our workflows. In this example, we're using a TaskGroup called data_validation to group two data validation tasks: validate_table1 and validate_table2. By organizing our tasks into TaskGroups, we can create a more structured and hierarchical representation of our workflow, which can be especially useful for complex DAGs with many tasks. TaskGroups also provide additional features, such as the ability to set dependencies between TaskGroups and control their execution order.
+* **Utilize Airflow Branching and Conditional Logic**:
+```python
+# dag.py
+from airflow.operators.python_operator import BranchPythonOperator
+
+def choose_path(**kwargs):
+    condition = kwargs['ti'].xcom_pull(task_ids='check_condition')
+    if condition:
+        return 'path_a'
+    else:
+        return 'path_b'
+
+branch_task = BranchPythonOperator(
+    task_id='choose_path',
+    python_callable=choose_path,
+)
+```
+Airflow's branching and conditional logic features allow us to create more complex and dynamic workflows that can adapt to different scenarios. In this example, we're using the BranchPythonOperator to conditionally execute different tasks based on the output of a Python function called choose_path(). The choose_path() function retrieves a value from the check_condition task using xcom_pull() and decides which path to take based on the condition. The BranchPythonOperator then routes the workflow to the appropriate downstream tasks. Using branching and conditional logic, we can create more flexible and adaptable DAGs that can handle a variety of scenarios.
+* **Monitor Airflow with Logging and Alerting**:
+```python
+# dag.py
+from airflow.operators.email_operator import EmailOperator
+
+email_task = EmailOperator(
+    task_id='send_email_alert',
+    to='admin@example.com',
+    subject='Airflow Alert',
+    html_content='<h3>Task failure alert</h3>',
+)
+```
+Implementing robust logging and alerting mechanisms is crucial for monitoring the health and performance of our Airflow deployments. In this example, we're using the EmailOperator to send an email alert when a task fails. By configuring the to, subject, and html_content parameters, we can customize the alert message and recipient. Airflow provides extensive logging capabilities out of the box, and we can also integrate with external monitoring and alerting systems to get a comprehensive view of our workflows. Setting up proper logging and alerting helps us quickly identify and resolve issues in our Airflow deployments.
+* **Optimize Airflow Resource Utilization**:
+```python
+# dag.py
+from airflow.operators.python_operator import PythonOperator
+
+def resource_intensive_task():
+    # Code that requires significant resources
+    pass
+
+task = PythonOperator(
+    task_id='resource_intensive',
+    python_callable=resource_intensive_task,
+    resources={'cpu': 2, 'ram': 4096},
+)
+```
+Carefully managing Airflow's resources, such as worker pools and resource limits, is essential for ensuring efficient and reliable workflow execution. In this example, we're using the resources parameter of the PythonOperator to specify the CPU and memory requirements for a resource-intensive task. By setting appropriate resource limits for each task, we can ensure that our workflows are executed on worker nodes with sufficient resources, preventing issues like out-of-memory errors or CPU exhaustion. Airflow's resource management features allow us to optimize resource utilization and improve the overall performance and stability of our deployments.
