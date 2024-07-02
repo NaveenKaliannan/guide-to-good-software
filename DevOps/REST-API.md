@@ -51,7 +51,12 @@ services:
     volumes:
       - .:/app
 ```
-
+* **.flaskenv** file should be placed in the root directory of your Flask project
+```bash
+FLASK_APP=app.py
+FLASK_ENV=development
+DATABASE_URL=postgresql://user:password@localhost/mydb
+``` 
 
 
 
