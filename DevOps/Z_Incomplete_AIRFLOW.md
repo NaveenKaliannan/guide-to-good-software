@@ -203,6 +203,22 @@ t3 = BashOperator(
 
 t1 >> t2 >> t3
 ```
+* **Data Pipelines**
+```csv
+EmployeeID,Name,Department,Salary
+1,John Doe,Engineering,75000
+2,Jane Smith,Marketing,65000
+3,Emily Davis,Sales,70000
+4,Michael Brown,Engineering,80000
+5,Jessica Wilson,HR,60000
+6,Daniel Johnson,Marketing,72000
+7,Laura Martinez,Sales,68000
+8,David Lee,Engineering,77000
+9,Sarah Kim,HR,63000
+10,James White,Sales,71000
+``` 
+
+
 **Sub DAGS**
 ```python
 ```
