@@ -124,6 +124,31 @@ class BashOperator(BaseOperator):
 **Class Definition** : BashOperator inherits from `BaseOperator`. **Template Fields**: template_fields specifies which fields can be templated using Jinja. template_ext allows for file-based templating. **Initialization**: The __init__ method initializes the operator with the bash_command and other parameters. apply_defaults decorator is used to handle default arguments. **Execution Logic**: The execute method contains the logic to run the bash command. It uses subprocess.run to execute the command and handle the output.
 **Operators in Apache Airflow are indeed Python classes that encapsulate the logic for a specific unit of work. When you create an instance of an operator within a DAG (Directed Acyclic Graph), it becomes a task. These tasks are then executed by the Airflow executor. The scheduler schedules taks based on the DAG’s schedule interval.**
 * **executors** determine how and where the work gets done
+* **params, op_kwargs** dictionary that allows you to pass arguments to the commands.
+```python
+t1 = BashOperator(
+    task_id='example_task',
+    bash_command='echo {{ params.greeting }} {{ params.name }}',
+    params={
+        'greeting': 'Hello',
+        'name': 'John Doe'
+    },
+    dag=dag
+)
+
+def greet(greeting, name):
+    print(f"{greeting}, {name}!")
+
+t1 = PythonOperator(
+    task_id='example_task',
+    python_callable=greet,
+    op_kwargs={
+        'greeting': 'Hello',
+        'name': 'John Doe'
+    },
+    dag=dag
+)
+``` 
 ******************************
 
 
@@ -134,6 +159,7 @@ class BashOperator(BaseOperator):
 * The tasks **without dependencies** (also called `root tasks` or `upstream tasks`) are executed first, and then the tasks **with dependencies** (also called `downstream tasks`) are connected and executed based on their upstream dependencies.
 
 **Libraries**
+* **import os** to access the environment variables in Python `os.path.join(os.environ['HOME'], 'sql_data', 'data.csv')` fix the $HOME issue.
 * **from airflow import DAG** from Airflow to define the DAG
 * **from airflow.operators.bash_operator import BashOperator** to run Bash commands
 * **from airflow.operators.python_operator import PythonOperator** to run python statements
@@ -216,8 +242,140 @@ EmployeeID,Name,Department,Salary
 8,David Lee,Engineering,77000
 9,Sarah Kim,HR,63000
 10,James White,Sales,71000
-``` 
+```
+```yaml
+version: '3.7'
+services:
+    postgres:
+        image: postgres:12 # postgres:12-alpine is lightest version
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+        logging:
+            options:
+                max-size: 10m
+                max-file: "3"
+                
 
+    mysql:                
+        image: mysql:5.7 # mysql:8-oracle is lightest version
+        environment: 
+            - MYSQL_ROOT_PASSWORD=root
+        volumes:
+            - ./sql_data:/sql_data
+              
+ 
+    webserver:
+        image: puckel/docker-airflow:1.10.9
+        restart: always
+        depends_on:
+            - postgres
+            - mysql
+        environment:
+            - INSTALL_MYSQL=y
+            - LOAD_EX=n
+            - EXECUTOR=Local
+            - AIRFLOW__SMTP__SMTP_HOST=smtp.gmail.com
+            - AIRFLOW__SMTP__SMTP_USER=example@gmail.com
+            - AIRFLOW__SMTP__SMTP_PASSWORD=hgejkggdkatngfwk
+            - AIRFLOW__SMTP__SMTP_PORT=587
+            - AIRFLOW__SMTP__SMTP_MAIL_FROM=airflow
+        logging:
+            options:
+                max-size: 10m
+                max-file: "3"
+        volumes:
+            - ./dags:/usr/local/airflow/dags
+            - ./sql_data:/usr/local/airflow/sql_data
+            - ./sql_files:/usr/local/airflow/sql_files
+            # - ./plugins:/usr/local/airflow/plugins
+        ports:
+            - "8080:8080"
+        command: webserver
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+```
+```python
+import os
+from airflow import DAG
+from airflow.operators.bash_operator import BashOperator
+from airflow.operators.python_operator import PythonOperator
+from datetime import datetime, timedelta
+
+import pandas as pd
+
+
+default_args = {
+    "owner": "airflow",
+    "depends_on_past": False,
+    "start_date": datetime(2024, 6, 26),
+    "email": ["airflow@airflow.com"],
+    "email_on_failure": False,
+    "email_on_retry": False,
+    "retries": 1,
+    "retry_delay": timedelta(minutes=5),
+    # 'queue': 'bash_queue',
+    # 'pool': 'backfill',
+    # 'priority_weight': 10,
+    # 'end_date': datetime(2016, 1, 1),
+}
+
+dag = DAG("store_dag", default_args=default_args, schedule_interval='@daily', catchup=False)
+
+input_file = os.path.join(os.environ['HOME'], 'sql_data', 'data.csv') 
+output_file = os.path.join(os.environ['HOME'], 'sql_data', 'updated_data.csv')
+
+t1 = BashOperator(
+    task_id='check_file_exists',
+    bash_command='ls /usr/local/airflow; ls; env; pwd; shasum {{ params.input_file }}; touch {{ params.output_file }}',
+    params={
+        'input_file': input_file,
+        'output_file': output_file
+    },
+    retries=2,
+    retry_delay=timedelta(seconds=15),
+    dag=dag
+)
+
+def calculate_tax_and_write(input_file, output_file):
+    # Read the CSV file using pandas
+    df = pd.read_csv(input_file)
+    
+    # Calculate the tax based on salary
+    df['Tax'] = df['Salary'] * 0.18
+    
+    # Write the updated data to the output file
+    df.to_csv(output_file, index=False)
+
+
+t2 = PythonOperator(
+    task_id='calculate_tax',
+    python_callable=calculate_tax_and_write,
+    op_kwargs={'input_file': input_file, 'output_file': output_file},
+    dag=dag
+)
+
+
+t3 = BashOperator(
+    task_id='check_file_exists_again',
+    bash_command='cat {{ params.input_file }}; cat {{ params.output_file }}',
+    params={
+        'input_file': input_file,
+        'output_file': output_file
+    },
+    retries=2,
+    retry_delay=timedelta(seconds=15),
+    dag=dag
+)
+
+
+t1 >> t2 >> t3
+
+```
 
 **Sub DAGS**
 ```python
