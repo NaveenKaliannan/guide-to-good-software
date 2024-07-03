@@ -32,6 +32,10 @@ For accelerated graphics features, VMware recommends two virtual CPUs and 4 GB o
 - Remote via PUTTY, WISCP
 - Terminal
 
+# Installing packages
+* **dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -nr | head -n 200** shows the top 200 big packages in linux.
+* **deborphan --guess-all** find orphaned packages that are no longer needed
+
 ## Linux directory structure 
 Filesystem is a system that manages the files in OS. OS stores files in organized way.
 Linux directory structure starts with /, the root directory. <br />
