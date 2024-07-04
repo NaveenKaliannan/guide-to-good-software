@@ -148,7 +148,16 @@ t1 = PythonOperator(
     },
     dag=dag
 )
-``` 
+```
+* **AirFlow ClI commands** (Command Line Interface) interacts with the Airflow daemon (scheduler) through the Airflow REST API, not through socket files
+  1. The `airflow scheduler` command starts the Airflow scheduler daemon.
+  2. The `airflow webserver` command starts the Airflow webserver
+  3. The airflow webserver command starts the Airflow webserver
+  4. The CLI allows you to list, add, and delete connections using commands like `airflow connections list`, `airflow connections add`, and `airflow connections delete`
+  5. The CLI provides commands like `airflow dags list`, `airflow dags show`, and `airflow dags state` to list, display, and check the state of DAGs.
+  6. The `airflow tasks clear` command allows you to clear the state of task instances within a DAG.
+  7. You can pause a DAG using the `airflow dags pause` command and unpause it using the `airflow dags unpause` command.
+  8. The CLI allows you to trigger the execution of a DAG using the `airflow dags trigger` command.
 ******************************
 
 
@@ -325,6 +334,9 @@ default_args = {
 }
 
 dag = DAG("store_dag", default_args=default_args, schedule_interval='@daily', catchup=False)
+# Standard way create a dag object is via with. The with statement creates a local scope for the DAG
+# with DAG('my_dag', start_date=datetime(2021, 1, 1)) as dag:
+      remaining statemtns
 
 input_file = os.path.join(os.environ['HOME'], 'sql_data', 'data.csv') 
 output_file = os.path.join(os.environ['HOME'], 'sql_data', 'updated_data.csv')
