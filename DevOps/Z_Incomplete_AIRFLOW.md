@@ -149,6 +149,32 @@ t1 = PythonOperator(
     dag=dag
 )
 ```
+* By setting **provide_context=True**, you are allowing the operator to access this context and use the information it provides. This can be useful for tasks that need to perform dynamic operations based on the current execution context. For example, in a PythonOperator, you can access the context using the kwargs parameter:
+```python
+def my_task(**kwargs):
+    ti = kwargs['ti']
+    dag_run = kwargs['dag_run']
+    execution_date = kwargs['execution_date']
+```
+* **provide_context=true and op_kwargs** both scenerios.In this corrected example: `op_arg` will be populated with the value from op_args `context_kwarg` will be populated with the value from op_kwargs
+`**kwargs` will contain the context variables from Airflow (like dag, task, execution_date, etc.)
+```python
+def my_function(op_arg, context_kwarg, **kwargs):
+    print(f"Op arg: {op_arg}")
+    print(f"Context kwarg: {context_kwarg}")
+    print(f"Kwargs: {kwargs}")
+
+task = PythonOperator(
+    task_id='my_task',
+    python_callable=my_function,
+    provide_context=True,
+    op_args=['op_arg_value'],
+    op_kwargs={'context_kwarg': 'kwarg_value'},
+    dag=dag
+)
+```
+* **Variables** global variable can be set in admin
+* **data profiling** can be helpful to access and monitor, monitor the sql databases, postgres databases, metadata and graphs. 
 * **AirFlow ClI commands** (Command Line Interface) interacts with the Airflow daemon (scheduler) through the Airflow REST API, not through socket files
   1. The `airflow scheduler` command starts the Airflow scheduler daemon.
   2. The `airflow webserver` command starts the Airflow webserver
@@ -173,6 +199,18 @@ t1 = PythonOperator(
 * **from airflow.operators.bash_operator import BashOperator** to run Bash commands
 * **from airflow.operators.python_operator import PythonOperator** to run python statements
 * **from datetime import datetime, timedelta**  for date and time operations
+* **from airflow.models import Variable**  for importing the created variables in apache airflow as admin
+```python
+{{ var.value.variable_name }}
+```
+* **from airflow.operators.dummy_operator import DummyOperator** The DummyOperator is used to create placeholder tasks that don't perform any actual work but serve as a starting point for building more complex DAGs.
+```python
+task_2 = DummyOperator(
+    task_id='task_2',
+    dag=dag,
+)
+```
+
 
 **DAG creation** 
 * The following dictionary defines default arguments for the DAG: **owner**: The person responsible for the DAG. **depends_on_past**: If True, task instances will run sequentially. **start_date**: The date from which the DAG should start running. **email**: Email address for notifications. **email_on_failure and email_on_retry**: Control email notifications. **retries**: Number of retries if a task fails.
@@ -386,8 +424,86 @@ t3 = BashOperator(
 
 
 t1 >> t2 >> t3
-
 ```
+* **xcom** to push and pull small data or information
+```python
+import os
+from airflow import DAG
+from airflow.operators.bash_operator import BashOperator
+from airflow.operators.python_operator import PythonOperator
+from datetime import datetime, timedelta
+from airflow.operators.mysql_operator import MySqlOperator
+import pandas as pd
+
+default_args = {
+    "owner": "airflow",
+    "depends_on_past": False,
+    "start_date": datetime(2024, 6, 26),
+    "email": ["airflow@airflow.com"],
+    "email_on_failure": False,
+    "email_on_retry": False,
+    "retries": 1,
+    "retry_delay": timedelta(minutes=5),
+}
+
+dag = DAG("store_dag", default_args=default_args, schedule_interval='@daily', catchup=False)
+
+input_file = os.path.join(os.environ['HOME'], 'sql_data', 'data.csv') 
+output_file = os.path.join(os.environ['HOME'], 'sql_data', 'updated_data.csv')
+
+def check_file_exists(**kwargs):
+    ti = kwargs['ti']
+    ti.xcom_push(key='input_file', value=input_file)
+    ti.xcom_push(key='output_file', value=output_file)
+    
+    # Rest of the Bash command
+    os.system('ls /usr/local/airflow; ls; env; pwd; shasum {}'.format(input_file))
+    os.system('touch {}'.format(output_file))
+
+t1 = PythonOperator(
+    task_id='check_file_exists',
+    python_callable=check_file_exists,
+    provide_context=True,
+    retries=2,
+    retry_delay=timedelta(seconds=15),
+    dag=dag
+)
+
+def calculate_tax_and_write(**kwargs):
+    input_file1 = kwargs['ti'].xcom_pull(task_ids='check_file_exists', key='input_file')
+    output_file1 = kwargs['ti'].xcom_pull(task_ids='check_file_exists', key='output_file')
+
+    # Read the CSV file using pandas
+    df = pd.read_csv(input_file1)
+    
+    # Calculate the tax based on salary
+    df['Tax'] = df['Salary'] * 0.18
+    
+    # Write the updated data to the output file
+    df.to_csv(output_file1, index=False)
+
+    # Push the file paths to XCOM
+    kwargs['ti'].xcom_push(key='input_file', value=input_file1)
+    kwargs['ti'].xcom_push(key='output_file', value=output_file1)
+
+t2 = PythonOperator(
+    task_id='calculate_tax',
+    python_callable=calculate_tax_and_write,
+    provide_context=True,
+    do_xcom_push=True,
+    dag=dag
+)
+
+t3 = BashOperator(
+    task_id='check_file_exists_again',
+    bash_command='cat {{ ti.xcom_pull(task_ids="check_file_exists", key="input_file") }}; cat {{ ti.xcom_pull(task_ids="check_file_exists", key="output_file") }}',
+    retries=2,
+    retry_delay=timedelta(seconds=15),
+    dag=dag
+)
+
+t1 >> t2 >> t3
+``` 
 
 **Sub DAGS**
 ```python
