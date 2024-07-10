@@ -13,22 +13,49 @@ services:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydatabase
+    networks:
+      - traefik-network
     ports:
-      - "5432:5432"
+      - "5435:5432"  # Expose PostgreSQL on port 5435 locally (mapped to 5432 in the container)
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data        
 
   web:
     build: 
       context: .
-      dockerfile: Dockerfiles/FlaskApp.Dockerfile
+      dockerfile: Dockerfiles/FlaskApp.Dockerfile  # Adjust path as necessary
     ports:
-      - "5000:5000"
+      - "5000:5000"  # Expose Flask app on port 5000
     depends_on:
       - db
     environment:
       FLASK_APP: run.py
       FLASK_ENV: development
-      DATABASE_URL: postgresql://username:password@db:5432/mydatabase
-``` 
+      SQLALCHEMY_DATABASE_URI: postgresql://username:password@db:5432/mydatabase  # Use 'db' as the hostname for the database service
+    networks:
+      - traefik-network
+    volumes:
+      - ./restapi:/app        
+
+networks:
+  traefik-network:
+    driver: bridge    
+
+volumes:
+  postgres_data:
+```
+* **The provided curl command is used to send a POST request to the /api/signup endpoint of a Flask application running on http://localhost:5000, and then create a new user in the postgresql database if the data is valid.**
+```bash
+curl -X POST   http://localhost:5000/api/signup   -H 'Content-Type: application/json'   -d '{
+    "first_name": "John1",
+    "last_name": "Doe",
+    "email": "john2doe@example.com",
+    "password": "securepassword",
+    "dob": "1990-01-01",
+    "expertise": "Backend Developer",
+    "experience": 5
+  }'
+```
 The Docker Compose file you provided does not include any explicit commands or scripts to create tables within mydatabase. Typically, tables are created using SQL commands (CREATE TABLE) or using **ORM (Object-Relational Mapping) frameworks like SQLAlchemy in Python**. If your Flask application uses an ORM like SQLAlchemy, you would define models which can then be used to create tables in the database automatically based on the model definitions.
 ** **Accessing service**
 ```bash
