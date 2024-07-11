@@ -59,6 +59,8 @@ Workers are the processes or nodes that actually execute the tasks assigned by t
 - Database Connections: Many CLI operations involve direct database connections rather than socket files.
 - Process Management: For services like the webserver and scheduler, Airflow uses standard process management techniques rather than socket files.
 8. **.airflowignore** file ignore files and folders.
+9. **Hooks** in Apache Airflow are high-level interfaces that allow easy interaction with external systems without having to write low-level code.
+  
 ******************************
 
 ### How to install Apache AirFlow
