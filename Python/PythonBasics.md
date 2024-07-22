@@ -1,5 +1,42 @@
 # Python
 
+### Virtual 
+To set up a virtual environment for pip installations on Debian Linux, follow these steps:
+```sh
+sudo apt install python3 python3-venv
+python3 -m venv /path/to/your/virtual/environment
+source /path/to/your/virtual/environment/bin/activate
+deactivate
+```
+Copy the file in bashrc
+```bash
+# Function to create a virtual environment
+function mkvenv() {
+    if [ -z "$1" ]; then
+        echo "Usage: mkvenv <env_name>"
+    else
+        python3 -m venv "$1"
+        echo "Virtual environment '$1' created."
+    fi
+}
+
+# Function to activate a virtual environment
+function actvenv() {
+    if [ -z "$1" ]; then
+        echo "Usage: actvenv <env_name>"
+    else
+        source "$1/bin/activate"
+        echo "Virtual environment '$1' activated."
+    fi
+}
+
+# Function to deactivate the current virtual environment
+function deactvenv() {
+    deactivate
+    echo "Virtual environment deactivated."
+}
+```
+
 ### Variables - Name for a value in python
 Python evaluates the right side of the assignment first. When variable y=2 and x=y then both variables refer to the same value. 
 * **Integer (int)** x = 5 Whole numbers without decimal points
