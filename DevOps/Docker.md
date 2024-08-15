@@ -253,7 +253,43 @@ volumes:
   volume1:
   volume2:
 ```
-* Note that A **Docker secret mount** is a way to securely pass sensitive data like passwords, API keys, or SSH keys to a Docker container during the build process, without exposing them in the final Docker image. Note : Secrets mounted using --mount=type=secret in a Dockerfile are only available during the build process and are not persisted in the final image. This is especially important when building images that may contain private repositories, API keys, or other sensitive data.
+* Note that A **Docker secret mount** is a way to securely pass sensitive data like passwords, API keys, or SSH keys to a Docker container during the build process, without exposing them in the final Docker image. Note : Secrets mounted using --mount=type=secret in a Dockerfile are only available during the build process and are not persisted in the final image. This is especially important when building images that may contain private repositories, API keys, or other sensitive data. **Docker secrets are a feature of Docker Swarm. To use Docker secrets, you need to enable Docker Swarm mode, even if you're running everything on a single node (i.e., a single machine).** `docker swarm init`, `echo "your_password" | docker secret create postgres_password -`, `docker stack deploy -c docker-compose.yml my_stack`. **Docker secrets require Docker Swarm mode.**.
+```yaml
+version: '3.8'
+
+services:
+  restapi:
+    build: 
+      context: .
+      dockerfile: Dockerfiles/FlaskApp.Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - dbcontainer
+    environment:
+      FLASK_APP: run.py
+      FLASK_ENV: development
+      SQLALCHEMY_DATABASE_URI: postgresql://username:password_placeholder@dbcontainer:5432/database
+    secrets:
+      - postgres_password
+
+  dbcontainer:
+    image: postgres
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_DB: database
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    secrets:
+      - postgres_password
+
+secrets:
+  postgres_password:
+    external: true
+```
   
 1. Case 1 : Mounting Secrets During the Build Process in a Dockerfile
 **With secret mount**   `docker build --secret id=privatekey,src=key/withoutpassphrase/id_rsa -t my-app -f Dockerfile_netrc .` and `docker run -it my-app /bin/bash`
