@@ -1,0 +1,35 @@
+version: '3'  # Specifies the version of Docker Compose file format
+
+services:
+  # Database service
+  dbcontainer:
+    image: postgres  # Uses the official PostgreSQL image
+    env_file:
+      - .env  # Loads environment variables from .env file
+    ports:
+      - "${POSTGRES_PORT}:5432"  # Maps the container's PostgreSQL port to host
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data  # Persists database data
+    networks:
+      - app-network  # Connects to the app-network
+
+  # REST API service
+  restapi:
+    build: 
+      context: .  # Sets the build context to the current directory
+      dockerfile: Dockerfiles/FlaskApp.Dockerfile  # Specifies the Dockerfile to use
+    depends_on:
+      - dbcontainer  # Ensures database container starts before the API
+    env_file:
+      - .flaskenv  # Loads environment variables for Flask app
+    ports:
+      - "5000:5000"  # Exposes REST API on port 5000
+    volumes:
+      - ./restapi:/app  # Mounts the local restapi directory to /app in the container
+    networks:
+      - app-network  # Connects to the app-network
+
+networks:
+  app-network:
+    driver: bridge  # Creates a bridge network for inter-container communication
+
