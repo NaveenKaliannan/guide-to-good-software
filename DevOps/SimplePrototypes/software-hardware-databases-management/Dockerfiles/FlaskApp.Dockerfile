@@ -10,7 +10,7 @@ COPY ./restapi/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy all files from the current directory to the container
-CCOPY ./restapi/* ./
+COPY ./restapi/* ./
 
 # Make the script executable
 RUN chmod +x /app/start.sh
