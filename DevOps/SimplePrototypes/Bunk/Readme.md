@@ -187,6 +187,505 @@ if __name__ == '__main__':
 
 ### App Script for google sheet
 ```
+function logEdits(e) {
+  const excludedSheets = ['VerfifictionData', 'Template', 'DontDuplicate', '0Master', 'DataPresentation', 'logsheets'];
+  const logSheetName = 'logsheets';
+  
+  const sheet = e.source.getActiveSheet();
+  const sheetName = sheet.getName();
+
+  // Exit if the edited sheet is in the excluded list
+  if (excludedSheets.includes(sheetName)) return;
+
+  // Get the log sheet or create it if it doesn't exist
+  let logSheet = e.source.getSheetByName(logSheetName);
+  if (!logSheet) {
+    logSheet = e.source.insertSheet(logSheetName);
+    logSheet.appendRow(["Serial No", "Timestamp", "Action", "Sheet Name", "Row Number", "Old Row Data", "New Row Data"]);
+    formatLogSheet(logSheet); // Format headers on creation
+  }
+
+  const timestamp = new Date();
+  
+  // Handle multiple row deletions
+  if (e.oldValue === undefined && e.value === undefined) {
+    const deletedRows = e.range.getNumRows(); // Get number of rows deleted
+    for (let i = 0; i < deletedRows; i++) {
+      const oldRowData = getRowData(sheet, e.range.getRow() + i); // Get old data for each deleted row
+      logDeletedRow(logSheet, oldRowData, sheetName, e.range.getRow() + i); // Log deleted row in red with sheet name
+    }
+    return; // Exit after logging deleted rows
+  }
+
+  const editedRow = e.range.getRow();
+  
+  // Get old row data before any changes
+  const oldRowData = getRowData(sheet, editedRow);
+  
+  let action;
+  
+  // Determine action based on old and new values
+  if (e.oldValue === undefined && e.value !== undefined) {
+    action = 'Added'; // New entry added
+    // Since it's a new entry, we don't have old data
+    logSheet.appendRow([null, timestamp, action, sheetName, editedRow, "", getRowDataAfterEdit(sheet, editedRow, e)]);
+    return; // Exit after logging added entry
+  } else if (e.oldValue !== undefined && e.value === undefined) {
+    action = 'Deleted'; // Entry deleted
+    logDeletedRow(logSheet, oldRowData, sheetName, editedRow); // Log deleted row in red with sheet name
+    return; // Exit after logging deleted row
+  } else {
+    action = 'Modified'; // Entry modified
+  }
+
+  // Get new row data after applying the edit
+  const newRowData = getRowDataAfterEdit(sheet, editedRow, e);
+
+  // Generate serial number based on timestamp
+  const serialNumber = generateSerialNumber(logSheet);
+
+  // Log the change with old and new row data including the edited row number
+  logSheet.appendRow([serialNumber, timestamp, action, sheetName, editedRow, oldRowData, newRowData]);
+
+  // Format columns for Old Row Data and New Row Data after appending the row
+  formatLogSheet(logSheet);
+}
+
+function getRowData(sheet, row) {
+  const range = sheet.getRange(row, 1, 1, 12); // Get columns A to L (1 to 12)
+  const values = range.getValues()[0]; // Get values from the range
+  return values.join(", "); // Join values into a single string for logging
+}
+
+function getRowDataAfterEdit(sheet, row, e) {
+  const range = sheet.getRange(row, 1, 1, 12); // Get columns A to L (1 to 12)
+  
+  // Create an array of current values in the row
+  let currentValues = range.getValues()[0];
+
+  // Update the specific cell that was edited
+  currentValues[e.range.getColumn() - 1] = e.value; // Set the edited cell value
+
+  return currentValues.join(", "); // Join values into a single string for logging
+}
+
+function logDeletedRow(logSheet, rowData, sheetName, rowNumber) {
+  const timestamp = new Date();
+  
+  // Append deleted row data with red formatting including row number
+  const deletedRowLog = logSheet.appendRow([null, timestamp, "Deleted", sheetName, rowNumber, rowData, ""]);
+  
+  // Apply red text color to the last appended row (deleted entry)
+  const lastRowIndex = logSheet.getLastRow();
+  
+  for (let colIndex = 1; colIndex <= logSheet.getLastColumn(); colIndex++) {
+    logSheet.getRange(lastRowIndex, colIndex).setFontColor("red");
+  }
+}
+
+function generateSerialNumber(logSheet) {
+   const lastLogRow = logSheet.getLastRow();
+  
+   // If there are no logs yet or it's a fresh start with no entries
+   if (lastLogRow === 0) return 1;
+
+   const lastTimestamp = logSheet.getRange(lastLogRow, 2).getValue(); // Get the last timestamp
+  
+   // Check if the last entry is within an hour
+   if ((new Date() - new Date(lastTimestamp)) <= (60 * 60 * 1000)) {
+     return logSheet.getRange(lastLogRow, 1).getValue(); // Return the same serial number if within an hour
+   } else {
+     return lastLogRow + 1; // Increment serial number for a new hour or after reset
+   }
+}
+
+function formatLogSheet(logSheet) {
+   // Set widths for Old Row Data and New Row Data columns (E and F)
+   logSheet.setColumnWidth(5,600); // Column E (Old Row Data)
+   logSheet.setColumnWidth(6,600); // Column F (New Row Data)
+
+   // Format header row (assumed to be row 1)
+   const headerRange = logSheet.getRange("A1:F1"); 
+   headerRange.setFontSize(14);         // Set font size to larger value
+   headerRange.setFontColor("blue");     // Set font color to blue 
+   headerRange.setFontWeight("bold");     // Make headers bold
+
+   // Optionally: Set background color for headers if desired
+   headerRange.setBackground("#D9EAD3");   // Light green background color for headers
+}
+
+function onEdit(e) {
+  const sheetName = e.source.getActiveSheet().getName();
+  const excludedSheets = ['VerfifictionData', 'Template', 'DontDuplicate', '0Master', 'DataPresentation', 'logsheets'];
+  const correctPassword = '5892'; // Replace with your desired password
+
+  // Exit early for excluded sheets or non-modification events
+  if (excludedSheets.includes(sheetName) || e.oldValue === undefined) return;
+
+  const ui = SpreadsheetApp.getUi();
+  const range = e.range;
+  const fileName = e.source.getName(); // Get the name of the spreadsheet
+  const cellAddress = range.getA1Notation(); // Get the cell address (e.g., "B2")
+  const oldValue = e.oldValue || 'Empty'; // Handle case where oldValue is empty
+  const newValue = e.value || 'Empty'; // Handle case where newValue is empty
+
+  // Check if the edit is a deletion (oldValue exists and newValue is empty)
+  const isDeletion = oldValue !== '' && newValue === '';
+
+  // Show first warning dialog with filename, cell address, old value, and new value
+  const firstResponse = ui.alert(
+    'Warning',
+    `${fileName} - You are about to ${isDeletion ? 'delete' : 'modify'} data in a monitored sheet.\n` +
+    `Cell: ${cellAddress}\n` +
+    `Old Value: ${oldValue}\n` +
+    `New Value: ${newValue}\n` +
+    `Please confirm.`,
+    ui.ButtonSet.OK_CANCEL
+  );
+
+  if (firstResponse !== ui.Button.OK) {
+    // Revert change if the user cancels
+    range.setValue(oldValue);
+    return;
+  }
+
+  // Prompt for password
+  const passwordPrompt = ui.prompt(
+    'Password Required',
+    'Please enter the password to proceed:',
+    ui.ButtonSet.OK_CANCEL
+  );
+
+  if (passwordPrompt.getSelectedButton() !== ui.Button.OK) {
+    // Revert change if the user cancels the password prompt
+    range.setValue(oldValue);
+    return;
+  }
+
+  const enteredPassword = passwordPrompt.getResponseText();
+
+  if (enteredPassword === correctPassword) {
+    // Show second warning and confirm again
+    const secondResponse = ui.alert(
+      'Warning',
+      `${fileName} - This is your second warning. You are about to ${isDeletion ? 'delete' : 'modify'} data.\n` +
+      `Cell: ${cellAddress}\n` +
+      `Old Value: ${oldValue}\n` +
+      `New Value: ${newValue}\n` +
+      `Do you want to proceed?`,
+      ui.ButtonSet.OK_CANCEL
+    );
+
+    if (secondResponse !== ui.Button.OK) {
+      // Revert the change if the user cancels the second warning
+      range.setValue(oldValue);
+    } else if (isDeletion) {
+      // If confirmed, clear the cell value
+      range.setValue('');
+    }
+  } else {
+    // Incorrect password, revert the change
+    ui.alert(
+      'Incorrect Password',
+      'The password you entered is incorrect. The change will be reverted.',
+      ui.ButtonSet.OK
+    );
+    range.setValue(oldValue);
+  }
+}
+
+
+function sortSheets() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var sheetNames = [];
+  
+  // Define the priority sheets
+  var prioritySheets = ['0Master', 'VerfifictionData', 'DontDuplicate', 'DataPresentation', 'Template' , 'logsheets'];
+
+  // Create a set for quick lookup of priority sheets
+  var prioritySet = new Set(prioritySheets);
+
+  // Collect all sheet names excluding priority ones
+  for (var i = 0; i < sheets.length; i++) {
+    var sheetName = sheets[i].getName();
+    if (!prioritySet.has(sheetName)) {
+      sheetNames.push(sheetName);
+    }
+  }
+
+  // Sort remaining sheet names alphabetically
+  sheetNames.sort();
+
+  // Move priority sheets first
+  for (var j = 0; j < prioritySheets.length; j++) {
+    if (ss.getSheetByName(prioritySheets[j])) { // Check if the sheet exists
+      ss.setActiveSheet(ss.getSheetByName(prioritySheets[j]));
+      ss.moveActiveSheet(j + 1); // Move to position j + 1 (1-based index)
+    }
+  }
+
+  // Reorder remaining sheets based on sorted names
+  for (var k = 0; k < sheetNames.length; k++) {
+    ss.setActiveSheet(ss.getSheetByName(sheetNames[k]));
+    ss.moveActiveSheet(k + prioritySheets.length + 1); // Adjust for priority sheets
+  }
+}
+
+
+
+function readAndPresentData() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheets = ss.getSheets();
+  
+  // Create or clear the 'DataPresentation' sheet
+  const presentationSheetName = 'DataPresentation'; // You can customize this name as needed
+  let presentationSheet = ss.getSheetByName(presentationSheetName);
+  if (!presentationSheet) {
+    presentationSheet = ss.insertSheet(presentationSheetName);
+  } else {
+    presentationSheet.clear(); // Clear existing content
+  }
+
+  // Set headers for the results
+  const headers = ['Date', 'Time', 'Customer Name', 'Liter', 'Filled Amount', 'Paid Amount'];
+  
+  presentationSheet.getRange('A1:F1').setValues([headers]); // Set header values
+  
+  // Apply formatting to headers
+  const headerRange = presentationSheet.getRange('A1:F1');
+  headerRange.setFontWeight('bold');       // Set font to bold
+  headerRange.setFontSize(16);              // Set font size to 16 for headers
+  headerRange.setBackground('#4CAF50');     // Set background color to green
+  headerRange.setFontColor('#FFFFFF');       // Set font color to white
+  headerRange.setHorizontalAlignment('center'); // Center align text
+
+  let rowIndex = 2; // Start writing results from row 2
+
+  const dataRows = []; // Array to hold all data rows
+
+  // Prompt the user for a date input
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.prompt('Enter the date to search for (format: DD.MM.YYYY):');
+  
+  // Check if the user clicked "OK" and entered a value
+  if (response.getSelectedButton() !== ui.Button.OK || !response.getResponseText()) {
+    ui.alert('No date entered. Function will exit.');
+    return; // Exit if no date is provided
+  }
+  
+  const targetDate = response.getResponseText();
+  
+  // Validate the date format
+  const dateRegex = /^(0[1-9]|[12][0-9]|3[01])[./](0[1-9]|1[0-2])[./](\d{4})$/;
+  if (!dateRegex.test(targetDate)) {
+    ui.alert('Invalid date format. Please use DD.MM.YYYY.');
+    return; // Exit if the format is invalid
+  }
+
+  // Convert targetDate to a Date object for comparison
+  const targetDateObj = new Date(targetDate.split('.').reverse().join('-')); // Convert DD.MM.YYYY to YYYY-MM-DD
+
+  // Loop through all sheets
+  sheets.forEach(sheet => {
+    const sheetName = sheet.getName();
+    
+    // Skip specified sheets
+    if (sheetName !== 'VerfifictionData' && sheetName !== 'Template' && sheetName !== 'DontDuplicate' && sheetName !== '0Master'  && sheetName !== 'DataPresentation' && sheetName !== 'logsheets') {
+      const dataRange = sheet.getRange('B14:B'); // Column B from row 14 downwards
+      const dataValues = dataRange.getValues();
+      
+      // Loop through the data values
+      for (let i = 0; i < dataValues.length; i++) {
+        const dateValue = dataValues[i][0];
+        
+        // Check if the dateValue matches the valid date format (DD.MM.YYYY or DD/MM/YYYY)
+        if (dateValue && /^(0[1-9]|[12][0-9]|3[01])[./](0[1-9]|1[0-2])[./](\d{4})$/.test(dateValue)) {
+          const [day, month, year] = dateValue.split(/\.|\//); // Split by either '.' or '/'
+          const currentDate = new Date(`${year}-${month}-${day}`); // Create a Date object
+
+          // Only consider rows that match the target date
+          if (currentDate.toDateString() === targetDateObj.toDateString()) {
+            const timeValue = sheet.getRange(i + 14, 3).getValue(); // Column C (Time)
+            const literValue = sheet.getRange(i + 14, 6).getValue(); // Column F (Liter)
+            const amountJ = sheet.getRange(i + 14, 10).getValue(); // Column J (Filled Amount)
+            const amountK = sheet.getRange(i + 14, 11).getValue(); // Column K (Paid Amount)
+
+            // Format time as HH.mm and calculate total minutes for sorting
+            let formattedTime = '';
+            let totalMinutes = null;
+            if (timeValue instanceof Date) {
+              const hours = timeValue.getHours();
+              const minutes = timeValue.getMinutes();
+              formattedTime = `${hours}.${String(minutes).padStart(2, '0')}`; // Format as HH.mm
+              totalMinutes = hours * 60 + minutes; // Calculate total minutes for sorting
+            }
+
+            // Add row data to array, including the source sheet name as "Customer Name"
+            dataRows.push([dateValue, formattedTime, sheetName, literValue, amountJ, amountK, totalMinutes]); 
+          }
+        }
+      }
+    }
+  });
+
+   // Sort dataRows by total minutes in ascending order (or descending based on your requirement)
+   dataRows.sort((a, b) => b[6] - a[6]); 
+
+   // Write collected rows to the DataPresentation sheet without the total minutes column
+   if (dataRows.length > 0) {
+     const outputRows = dataRows.map(row => row.slice(0, -1)); // Remove totalMinutes from output
+    
+     presentationSheet.getRange(rowIndex, 1, outputRows.length, headers.length).setValues(outputRows);
+     
+     rowIndex += outputRows.length;
+     
+     // Center align all data in the table and set column widths
+     presentationSheet.getRange(2, 1, rowIndex - 2, headers.length).setHorizontalAlignment('center'); 
+
+     // Set font size for data rows
+     presentationSheet.getRange(2, 1, rowIndex - 2, headers.length).setFontSize(14); 
+
+     // Set column widths for better visibility of data
+     presentationSheet.setColumnWidth(1,200); 
+     presentationSheet.setColumnWidth(2,100);   // Width for Time column
+     presentationSheet.setColumnWidth(3,200); 
+     presentationSheet.setColumnWidth(4,100); 
+     presentationSheet.setColumnWidth(5,200); 
+   }
+}
+
+
+
+
+function calculateSums() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheets = ss.getSheets();
+  
+  // Initialize an object to store results
+  const results = {};
+  
+  // Regular expression to match valid date formats (DD.MM.YYYY or DD/MM/YYYY)
+  const dateRegex = /^(0[1-9]|[12][0-9]|3[01])[./](0[1-9]|1[0-2])[./](\d{4})$/;
+  
+  // Date cutoff for filtering
+  const cutoffDate = new Date('2024-11-28'); // November 28, 2024
+
+  // Loop through all sheets
+  sheets.forEach(sheet => {
+    const sheetName = sheet.getName();
+    
+    // Skip specified sheets
+    if (sheetName !== 'VerfifictionData' && sheetName !== 'Template' && sheetName !== 'DontDuplicate' && sheetName !== '0Master'  && sheetName !== 'DataPresentation' && sheetName !== 'logsheets') {
+      const dataRange = sheet.getRange('B14:B'); // Column B from row 14 downwards
+      const dataValues = dataRange.getValues();
+      
+      // Loop through the data values
+      for (let i = 0; i < dataValues.length; i++) {
+        const dateValue = dataValues[i][0];
+        
+        // Check if the dateValue matches the valid date format
+        if (dateRegex.test(dateValue)) { // Only process if there's a valid date format
+          const [day, month, year] = dateValue.split(/\.|\//); // Split by either '.' or '/'
+          const currentDate = new Date(`${year}-${month}-${day}`); // Create a Date object for comparison
+
+          // Only consider dates greater than the cutoff date
+          if (currentDate > cutoffDate) {
+            const amountJ = sheet.getRange(i + 14, 10).getValue(); // Column J (10th column)
+            const amountK = sheet.getRange(i + 14, 11).getValue(); // Column K (11th column)
+            
+            // Initialize result object for this date if it doesn't exist
+            if (!results[dateValue]) {
+              results[dateValue] = { sumJ: 0, sumK: 0 };
+            }
+            
+            // Accumulate sums for J and K columns
+            results[dateValue].sumJ += amountJ;
+            results[dateValue].sumK += amountK;
+          }
+        }
+      }
+    }
+  });
+  
+  // Access the 'VerfifictionData' sheet to write results
+  const verificationSheet = ss.getSheetByName('VerfifictionData');
+  
+  if (!verificationSheet) {
+    Logger.log("VerfifictionData sheet not found.");
+    return; // Exit if the VerfifictionData sheet does not exist
+  }
+
+  // Read existing data from the "Amount Counted Hand" column, map it to dates
+  const existingDataMap = {};
+  const existingDates = verificationSheet.getRange(2, 1, verificationSheet.getLastRow() - 1).getValues();
+  const existingAmounts = verificationSheet.getRange(2, 5, verificationSheet.getLastRow() - 1).getValues();
+
+  for (let i = 0; i < existingDates.length; i++) {
+    const existingDate = existingDates[i][0];
+    if (existingDate) {
+      existingDataMap[existingDate] = existingAmounts[i][0]; // Map the manually entered Amount Counted Hand
+    }
+  }
+
+  // Clear previous results in the VerfifictionData sheet but keep headers intact
+  verificationSheet.getRange('A2:F').clearContent(); // Clear all content below headers
+  
+  // Set headers for the results with formatting
+  const headers = ['Date', 'Filled Amount', 'Paid Amount', 'Amount Received', 'Amount Counted Hand', 'Verified Data', 'logsheets'];
+  verificationSheet.getRange('A1:F1').setValues([headers]); // Set header values
+  
+  // Apply formatting to headers
+  const headerRange = verificationSheet.getRange('A1:F1');
+  headerRange.setFontWeight('bold');       // Set font to bold
+  headerRange.setFontSize(16);            // Set font size to 16 for headers
+  headerRange.setBackground('#4CAF50');   // Set background color to green
+  headerRange.setFontColor('#FFFFFF');    // Set font color to white
+  headerRange.setHorizontalAlignment('center'); // Center align text
+
+  let rowIndex = 2; // Start writing results from row 2
+
+  // Sort results by date in descending order and write to VerfifictionData sheet
+  Object.entries(results)
+    .sort((a, b) => new Date(b[0].split(/\.|\//).reverse().join('-')) - new Date(a[0].split(/\.|\//).reverse().join('-'))) // Sort dates descending
+    .forEach(([date, sums]) => {
+      const difference = sums.sumJ - sums.sumK;
+
+      verificationSheet.getRange(rowIndex, 1).setValue(date); // Write Date
+      verificationSheet.getRange(rowIndex, 2).setValue(sums.sumJ); // Write Filled Amount (Column B)
+      verificationSheet.getRange(rowIndex, 3).setValue(sums.sumK); // Write Paid Amount (Column C)
+      verificationSheet.getRange(rowIndex, 4).setValue(difference); // Write Amount Received (Column D)
+      
+      // Retain manually entered "Amount Counted Hand"
+      const countedHand = existingDataMap[date] !== undefined ? existingDataMap[date] : ""; // Use existing or blank
+      verificationSheet.getRange(rowIndex, 5).setValue(countedHand); // Write Amount Counted Hand
+
+      // Verify data if within tolerance
+      if (countedHand !== "" && Math.abs(countedHand - difference) <= 1) {
+        verificationSheet.getRange(rowIndex, 6).setValue('Verified').setBackground('#00FF00'); // Green for verified
+      } else {
+        verificationSheet.getRange(rowIndex, 6).setValue('Not Verified').setBackground('#FF0000'); // Red for not verified
+      }
+      
+      rowIndex++;
+    });
+
+  // Center align all data in the table and set column widths
+  verificationSheet.getRange(2, 1, rowIndex - 2, headers.length).setHorizontalAlignment('center'); // Center align all data
+  verificationSheet.getRange(2, 1, rowIndex - 2, headers.length).setFontSize(14); // Set font size for data rows
+
+  // Set column widths for better visibility of data
+  verificationSheet.setColumnWidth(1, 200); // Width for Date column
+  verificationSheet.setColumnWidth(2, 200); // Width for Filled Amount column
+  verificationSheet.setColumnWidth(3, 200); // Width for Paid Amount column
+  verificationSheet.setColumnWidth(4, 200); // Width for Amount Received column
+  verificationSheet.setColumnWidth(5, 300); // Width for Amount Counted Hand column
+  verificationSheet.setColumnWidth(6, 150); // Width for Verified Data column
+}
+
+
+
+
 function sendSheetAsEmail() {
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var sheetId = sheet.getId();
@@ -273,7 +772,7 @@ function CreateNewSheet() {
 
 function AllCustomerData() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var masterSheet = spreadsheet.getSheetByName('Master');
+  var masterSheet = spreadsheet.getSheetByName('0Master');
   
   // Check if the master sheet exists
   if (!masterSheet) {
@@ -287,7 +786,7 @@ function AllCustomerData() {
   // Loop through all sheets and collect names except "Master"
   allSheets.forEach(function(sheet) {
     var sheetName = sheet.getName();
-    if (sheetName !== 'Master' && sheetName !== 'Template') {
+    if (sheetName !== 'VerfifictionData' && sheetName !== 'Template' && sheetName !== 'DontDuplicate' && sheetName !== '0Master'  && sheetName !== 'DataPresentation' && sheetName !== 'logsheets') {
       sourceSheets.push(sheetName); // Add to sourceSheets if it's not excluded
     }
   });
