@@ -68,6 +68,7 @@ if __name__ == "__main__":
 
 
 ## Process WhatsAPP data 
+The command to run this program is `python3 pertrolcustomers.py  WhatsAppChatExportedZIPFILE.zip`
 ```
 import pandas as pd
 from tabulate import tabulate
