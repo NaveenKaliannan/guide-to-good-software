@@ -890,6 +890,21 @@ result = obj1 + obj2
 # Is equivalent to this behind the scenes:
 result = MyClass.__add__(obj1, obj2)
 ```
+* **super().init()**  in single inheritance allows a child class to call the init() method of its parent class. This is useful for initializing attributes defined in the parent class while adding new attributes or behavior in the child class.
+```python
+class Parent:
+    def __init__(self, name):
+        self.name = name
+
+class Child(Parent):
+    def __init__(self, name, age):
+        super().__init__(name)  # Call parent's __init__
+        self.age = age  # Add child-specific attribute
+
+child = Child("Alice", 10)
+print(child.name)  # Output: Alice
+print(child.age)   # Output: 10
+``` 
 * **Instance Methods:** Definition: Instance methods are defined with the self parameter, which refers to the instance of the class. Use Cases: Accessing and modifying instance attributes. Performing operations that are specific to the instance of the class. Calling other instance methods or class methods.
 ```python
 class Person:
@@ -933,7 +948,8 @@ class Circle:
         return math.pi * radius ** 2
 ```
 In this example, the calculate_area() method is a static method that can be called without an instance of the Circle class. It performs a mathematical calculation that doesn't depend on any instance or class attributes.
-* **class inheritance** Inheritance is a fundamental concept in object-oriented programming (OOP) that allows a new class to be based on an existing class
+* **class inheritance** Inheritance is a fundamental concept in object-oriented programming (OOP) that allows a new class to be based on an existing class. Use inheritance when: You want to model an "is-a" relationship between classes. You need to extend or modify the behavior of a base class. You want to share common functionality across multiple related classes
+
 ```python
 class Animal:
     def __init__(self, name):
@@ -965,8 +981,33 @@ cat = Cat("Whiskers")
 animal.speak()  # Output: Generic Animal makes a sound.
 dog.speak()  # Output: Buddy barks.
 cat.speak()  # Output: Whiskers meows.
+
+
+class Vehicle:
+    def __init__(self, brand):
+        self.brand = brand
+
+    def move(self):
+        return "Moving..."
+
+class Car(Vehicle):
+    def move(self):
+        return "Driving on the road"
+
+class Boat(Vehicle):
+    def move(self):
+        return "Sailing on water"
+
+# Usage
+car = Car("Toyota")
+boat = Boat("Yamaha")
+print(car.move())  # Output: Driving on the road
+print(boat.move())  # Output: Sailing on water
+#In this example, Car and Boat inherit from Vehicle because they are types of vehicles.
 ```
-* **Class composition** in Python refers to the practice of building complex objects by combining simpler objects, rather than through inheritance.
+* **Class composition** in Python refers to the practice of building complex objects by combining simpler objects, rather than through inheritance. Use composition when:
+You want to model a "has-a" relationship between classes. You need more flexibility in your design. You want to combine behaviors of multiple classes without creating complex inheritance hierarchies
+
 ```python
 class Engine:
     def __init__(self, horsepower):
@@ -992,7 +1033,147 @@ car = Car("Red", engine)
 
 # Drive the car
 car.drive()
+
+
+class Engine:
+    def start(self):
+        return "Engine started"
+
+class Wheels:
+    def rotate(self):
+        return "Wheels rotating"
+
+class Car:
+    def __init__(self):
+        self.engine = Engine()
+        self.wheels = Wheels()
+
+    def drive(self):
+        return f"{self.engine.start()}, {self.wheels.rotate()}"
+
+# Usage
+my_car = Car()
+print(my_car.drive())  # Output: Engine started, Wheels rotating
+# In this example, Car is composed of Engine and Wheels objects, demonstrating a "has-a" relationship.
 ```
+* **Composition and Inheritence**
+```python
+class Engine:
+    def start(self):
+        return "Engine started."
+
+class ElectricMotor:
+    def start(self):
+        return "Electric motor activated."
+
+class Car:
+    def __init__(self, power_source):
+        self.power_source = power_source
+
+    def start(self):
+        return self.power_source.start()
+
+# Usage
+combustion_engine = Engine()
+electric_motor = ElectricMotor()
+
+car = Car(combustion_engine)
+print(car.start())  # Output: Engine started.
+
+car.power_source = electric_motor
+print(car.start())  # Output: Electric motor activated.
+
+
+class Vehicle:
+    def start(self):
+        pass
+
+class CombustionCar(Vehicle):
+    def start(self):
+        return "Engine started."
+
+class ElectricCar(Vehicle):
+    def start(self):
+        return "Electric motor activated."
+
+# Usage
+combustion_car = CombustionCar()
+print(combustion_car.start())  # Output: Engine started.
+
+electric_car = ElectricCar()
+print(electric_car.start())  # Output: Electric motor activated.
+
+# Composition: Allows changing the power source at runtime. Inheritance: Requires creating new objects for different types.
+# Composition: Power sources can be reused in different contexts. Inheritance: Behavior is tightly coupled to the car type.
+# Composition: Easy to add new power sources without modifying existing code. Inheritance: Adding new types requires new subclasses.
+# Composition: Simpler to understand and maintain. Inheritance: Can lead to complex hierarchies as more types are added.
+# Composition: Can change behavior dynamically. Inheritance: Behavior is fixed at object creation.
+
+
+Inheritence is more suitable than composition
+
+class Shape:
+    def __init__(self, color):
+        self.color = color
+    
+    def area(self):
+        pass
+
+class Circle(Shape):
+    def __init__(self, color, radius):
+        super().__init__(color)
+        self.radius = radius
+    
+    def area(self):
+        return 3.14 * self.radius ** 2
+
+class Rectangle(Shape):
+    def __init__(self, color, width, height):
+        super().__init__(color)
+        self.width = width
+        self.height = height
+    
+    def area(self):
+        return self.width * self.height
+
+# Usage
+shapes = [Circle("red", 5), Rectangle("blue", 4, 6)]
+for shape in shapes:
+    print(f"Area of {shape.__class__.__name__}: {shape.area()}")
+
+
+class AreaCalculator:
+    def circle_area(self, radius):
+        return 3.14 * radius ** 2
+    
+    def rectangle_area(self, width, height):
+        return width * height
+
+class Circle:
+    def __init__(self, radius, calculator):
+        self.radius = radius
+        self.calculator = calculator
+    
+    def area(self):
+        return self.calculator.circle_area(self.radius)
+
+class Rectangle:
+    def __init__(self, width, height, calculator):
+        self.width = width
+        self.height = height
+        self.calculator = calculator
+    
+    def area(self):
+        return self.calculator.rectangle_area(self.width, self.height)
+
+# Usage
+calculator = AreaCalculator()
+shapes = [Circle(5, calculator), Rectangle(4, 6, calculator)]
+for shape in shapes:
+    print(f"Area of {shape.__class__.__name__}: {shape.area()}")
+
+
+```             
 * **Absolute and relative import**
 ```python
 from project.module1 import function1
