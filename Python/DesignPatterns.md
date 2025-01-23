@@ -159,8 +159,8 @@ if __name__ == "__main__":
     main()
 ```
 
-Bridge
-python
+* **Bridge** is a structural pattern that lets you split a large class or a set of closely related classes into two separate hierarchies—abstraction and implementation—which can be developed independently of each other. The core concept of the Bridge pattern, **separating the abstraction  from its implementation**, allowing them to vary independently.
+```python
 from abc import ABC, abstractmethod
 
 class DrawingAPI(ABC):
@@ -172,37 +172,22 @@ class DrawingAPI1(DrawingAPI):
     def draw_circle(self, x, y, radius):
         return f"API1.circle at {x}:{y} radius {radius}"
 
-class Shape(ABC):
-    def __init__(self, drawing_api):
-        self.drawing_api = drawing_api
+class Shape:
+    def __init__(self, api):
+        self.api = api
 
-    @abstractmethod
-    def draw(self):
-        pass
+class Circle(Shape):
+    def draw(self, x, y, radius):
+        return self.api.draw_circle(x, y, radius)
 
-class CircleShape(Shape):
-    def __init__(self, x, y, radius, drawing_api):
-        super().__init__(drawing_api)
-        self.x = x
-        self.y = y
-        self.radius = radius
+api = DrawingAPI1()
+circle = Circle(api)
+print(circle.draw(1, 2, 3))
 
-    def draw(self):
-        return self.drawing_api.draw_circle(self.x, self.y, self.radius)
-
-def main():
-    shape = CircleShape(1, 2, 3, DrawingAPI1())
-    print(shape.draw())
-
-if __name__ == "__main__":
-    main()
-Bridge is a structural pattern that lets you split a large class or a set of closely related classes into two separate hierarchies—abstraction and implementation—which can be developed independently of each other.
-Composite
-python
-from abc import ABC, abstractmethod
-
-class Component(ABC):
-    @abstractmethod
+```
+* **Composite** is a structural pattern that lets you compose objects into tree structures and then work with these structures as if they were individual objects.
+```python
+class Component:
     def operation(self):
         pass
 
@@ -218,25 +203,19 @@ class Composite(Component):
         self.children.append(component)
 
     def operation(self):
-        results = []
-        for child in self.children:
-            results.append(child.operation())
-        return f"Branch({'+'.join(results)})"
+        return f"Branch({'+'.join(c.operation() for c in self.children)})"
 
-def main():
-    tree = Composite()
-    branch1 = Composite()
-    branch1.add(Leaf())
-    branch1.add(Leaf())
-    tree.add(branch1)
-    tree.add(Leaf())
-    print(tree.operation())
+tree = Composite()
+branch = Composite()
+branch.add(Leaf())
+branch.add(Leaf())
+tree.add(branch)
+tree.add(Leaf())
+print(tree.operation())
 
-if __name__ == "__main__":
-    main()
-Composite is a structural pattern that lets you compose objects into tree structures and then work with these structures as if they were individual objects.
-Decorator
-python
+```
+* **Decorator** is a structural pattern that lets you attach new behaviors to objects by placing these objects inside special wrapper objects that contain the behaviors.
+```python
 class Coffee:
     def cost(self):
         return 5
@@ -248,16 +227,13 @@ class MilkDecorator:
     def cost(self):
         return self.coffee.cost() + 2
 
-def main():
-    coffee = Coffee()
-    milk_coffee = MilkDecorator(coffee)
-    print(f"Cost of coffee with milk: {milk_coffee.cost()}")
+coffee = Coffee()
+milk_coffee = MilkDecorator(coffee)
+print(f"Cost of coffee with milk: {milk_coffee.cost()}")
 
-if __name__ == "__main__":
-    main()
-Decorator is a structural pattern that lets you attach new behaviors to objects by placing these objects inside special wrapper objects that contain the behaviors.
-Facade
-python
+```
+* **Facade** is a structural pattern that provides a simplified interface to a library, a framework, or any other complex set of classes. The facade encapsulates the complexity of the subsystem, providing a single, easy-to-use start() method
+```python
 class CPU:
     def freeze(self):
         return "CPU freeze"
@@ -291,9 +267,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-Facade is a structural pattern that provides a simplified interface to a library, a framework, or any other complex set of classes.
-Flyweight
-python
+```
+* **Flyweight** is a structural pattern that lets you fit more objects into the available amount of RAM by sharing common parts of state between multiple objects instead of keeping all of the data in each object.
+```python
 class Character:
     def __init__(self, char):
         self.char = char
@@ -312,12 +288,13 @@ def main():
     c1 = factory.get_character('a')
     c2 = factory.get_character('a')
     print(f"Same character object: {c1 is c2}")
+# The output will show that c1 and c2 are indeed the same object, demonstrating the memory-saving benefit of the Flyweight pattern.
 
 if __name__ == "__main__":
     main()
-Flyweight is a structural pattern that lets you fit more objects into the available amount of RAM by sharing common parts of state between multiple objects instead of keeping all of the data in each object.
-Proxy
-python
+```
+* **Proxy** is a structural pattern that lets you provide a substitute or placeholder for another object. A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
+```python
 class RealSubject:
     def request(self):
         return "RealSubject: Handling request"
@@ -328,6 +305,7 @@ class Proxy:
 
     def request(self):
         return f"Proxy: {self._real_subject.request()}"
+# In this example, the Proxy adds a simple message before calling the RealSubject's method, demonstrating how it can intercept and modify the behavior of the RealSubject.
 
 def main():
     real_subject = RealSubject()
@@ -336,10 +314,10 @@ def main():
 
 if __name__ == "__main__":
     main()
-Proxy is a structural pattern that lets you provide a substitute or placeholder for another object. A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
-Behavioral Patterns
-Chain of Responsibility
-python
+```
+## Behavioral Patterns
+* **Chain of Responsibility** is a behavioral pattern that lets you pass requests along a chain of handlers. Upon receiving a request, each handler decides either to process the request or to pass it to the next handler in the chain. The Chain of Responsibility pattern allows passing requests along a chain of handlers. Each handler decides either to process the request or to pass it to the next handler in the chain.
+```python
 class Handler:
     def __init__(self, successor=None):
         self._successor = successor
@@ -360,9 +338,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-Chain of Responsibility is a behavioral pattern that lets you pass requests along a chain of handlers. Upon receiving a request, each handler decides either to process the request or to pass it to the next handler in the chain.
-Command
-python
+```
+* **Command** is a behavioral pattern that turns a request into a stand-alone object that contains all information about the request.
+```python
 class Command:
     def execute(self):
         pass
@@ -388,9 +366,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-Command is a behavioral pattern that turns a request into a stand-alone object that contains all information about the request.
-Interpreter
-python
+```
+* **Interpreter** is a behavioral pattern that defines a grammatical representation for a language and provides an interpreter to deal with this grammar.
+```python
 class Expression:
     def interpret(self, context):
         pass
@@ -409,9 +387,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-Interpreter is a behavioral pattern that defines a grammatical representation for a language and provides an interpreter to deal with this grammar.
-Iterator
-python
+```
+* **Iterator** is a behavioral pattern that lets you traverse elements of a collection without exposing its underlying representation.
+```python
 class Iterator:
     def __init__(self, collection):
         self._collection = collection
@@ -433,9 +411,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-Iterator is a behavioral pattern that lets you traverse elements of a collection without exposing its underlying representation.
-Mediator
-python
+```
+* **Mediator** is a behavioral pattern that lets you reduce chaotic dependencies between objects. The pattern restricts direct communications between the objects and forces them to collaborate only via a mediator object.
+```python
 class Mediator:
     def notify(self, sender, event):
         pass
@@ -472,9 +450,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-Mediator is a behavioral pattern that lets you reduce chaotic dependencies between objects. The pattern restricts direct communications between the objects and forces them to collaborate only via a mediator object.
-Memento
-python
+```
+* **Memento** is a behavioral pattern that lets you save and restore the previous state of an object without revealing the details of its implementation.
+```python
 class Memento:
     def __init__(self, state):
         self._state = state
@@ -504,9 +482,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-Memento is a behavioral pattern that lets you save and restore the previous state of an object without revealing the details of its implementation.
-Observer
-python
+```
+* **Observer** is a behavioral pattern that lets you define a subscription mechanism to notify multiple objects about any events that happen to the object they're observing.
+```python
 class Subject:
     def __init__(self):
         self._observers = []
@@ -534,11 +512,35 @@ def main():
 
 if __name__ == "__main__":
     main()
-Observer is a behavioral pattern that lets you define a subscription mechanism to notify multiple objects about any events that happen to the object they're observing.
-State
-python
+```
+* **State** The State pattern allows an object to alter its behavior when its internal state changes. It's useful for implementing state machines, where an object's behavior changes based on its state without using large conditionals.
+
+```python
 class State:
     def handle(self):
         pass
 
 class ConcreteStateA(State):
+    def handle(self):
+        return "State A handling"
+
+class ConcreteStateB(State):
+    def handle(self):
+        return "State B handling"
+
+class Context:
+    def __init__(self, state):
+        self._state = state
+
+    def set_state(self, state):
+        self._state = state
+
+    def request(self):
+        return self._state.handle()
+
+context = Context(ConcreteStateA())
+print(context.request())
+context.set_state(ConcreteStateB())
+print(context.request())
+
+```
