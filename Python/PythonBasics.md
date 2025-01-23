@@ -1068,6 +1068,45 @@ def get_password():
 password = get_password()
 # Output:
 # The password is: mySecurePassword123
+
+
+def requires_role(role):
+    def decorator(func):
+        def wrapper(user, *args, **kwargs):
+            if user.role != role:
+                raise PermissionError("Access Denied")
+            return func(user, *args, **kwargs)
+        return wrapper
+    return decorator
+
+@requires_role("admin")
+def view_sensitive_data(user):
+    return "Sensitive Data"
+
+# Main calling part
+class User:
+    def __init__(self, role):
+        self.role = role
+
+if __name__ == "__main__":
+    admin_user = User(role="admin")
+    regular_user = User(role="user")
+
+    # This should work
+    try:
+        result = view_sensitive_data(admin_user)
+        print(f"Admin access successful: {result}")
+    except PermissionError as e:
+        print(f"Error: {e}")
+
+    # This should raise a PermissionError
+    try:
+        result = view_sensitive_data(regular_user)
+        print(f"Regular user access successful: {result}")
+    except PermissionError as e:
+        print(f"Error: {e}")
+#This main section creates two users (admin and regular) and attempts to call the view_sensitive_data function with each.
+# The admin user should succeed, while the regular user should be denied access.
 ```
 When get_password is called, the wrapper function is executed instead of the original get_password function. Inside the wrapper, the original get_password is called with () (no arguments), and its result is stored in result. The print(f"The password is: {result}") statement is executed, printing the password. Finally, the result is returned from the wrapper function and assigned to the password variable.
  * **Design patterns** provide proven solutions to common design problems. They promote code reuse, flexibility, and maintainability by separating concerns and defining clean interfaces between components
