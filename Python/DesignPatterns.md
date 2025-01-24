@@ -449,6 +449,13 @@ if __name__ == "__main__":
 ```
 * **Command** is like creating a "remote control" for your code. The Command pattern is a behavioral design pattern that encapsulates a request or action as an object. In the Command pattern, the command objects typically don't directly get input from the user. Instead, they encapsulate a specific action or request, along with any necessary parameters, that were determined when the command was created.
  The Command pattern is particularly useful in scenarios requiring undo/redo functionality, queueing or scheduling of operations, remote execution of commands, macro recording and playback, and implementing transactional systems. It's also valuable for decoupling the requester of an operation from the object performing it, allowing for more flexible and extensible software design, especially in GUI frameworks and game development where complex sequences of actions need to be managed.
+
+The sender (also called invoker) is indeed an object that initiates the request. It holds a reference to a command object but doesn't know the specifics of how the command is executed24.
+The standalone object in this context is the Command object itself. It encapsulates a request as an object, containing all information about the request13.
+The encapsulated action is typically the execute() method within the Command object. This method contains the logic to perform the requested action14.
+The object that performs the action is usually called the receiver. The receiver has the knowledge of how to carry out the request23.
+The sender (invoker) requires a reference to a Command object, not directly to the standalone object that performs the action. This is key to the decoupling that the Command pattern provides124.
+
 ```python
 # Undo/Redo (Text editor):
 
