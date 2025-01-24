@@ -1262,6 +1262,51 @@ car = Car("Tesla")
 # Employee has an association with Department.
 # Car has a composition relationship with Engine.
 # The key difference is that the Engine is created within the Car and is part of its lifecycle, while the Department exists independently of the Employee.
+```
+* **Association and Composition**
+```python
+class Engine:
+    def __init__(self, power):
+        self.power = power
+
+class Car:
+    def __init__(self, model):
+        self.model = model
+        self.engine = Engine("100hp")  # Composition
+
+    def __del__(self):
+        print(f"Car {self.model} is being destroyed, engine goes with it.")
+
+# Usage
+car = Car("Tesla")
+print(f"Car model: {car.model}, Engine power: {car.engine.power}")
+
+# When car is deleted, its engine is automatically deleted too
+del car
+# In this example, the Engine is created within the Car and is part of its lifecycle. When the Car object is destroyed, its Engine is automatically destroyed with it.
+
+class Department:
+    def __init__(self, name):
+        self.name = name
+
+class Employee:
+    def __init__(self, name, department):
+        self.name = name
+        self.department = department  # Association
+
+# Usage
+it_dept = Department("IT")
+alice = Employee("Alice", it_dept)
+bob = Employee("Bob", it_dept)
+
+print(f"{alice.name} works in {alice.department.name}")
+print(f"{bob.name} works in {bob.department.name}")
+
+# The department can exist independently of employees
+del alice
+del bob
+print(f"Department {it_dept.name} still exists")
+# In this association example, the Department exists independently of the Employee. Multiple employees can be associated with the same department, and the department continues to exist even if all employees are deleted.
 ``` 
 * **Decorators** can be used to add a wide range of functionality to functions, such as logging, caching, authentication
 ```python
