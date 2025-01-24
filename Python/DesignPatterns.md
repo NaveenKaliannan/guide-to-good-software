@@ -135,28 +135,38 @@ if __name__ == "__main__":
 ## Structural Patterns
 * **Adapter** is a structural pattern that allows objects with incompatible interfaces to collaborate. This pattern is particularly useful when integrating new components into existing systems or when working with legacy code that cannot be modified directly. The adapter class Acts as a bridge between/amoung the objects. 
 ```python
-class EuropeanSocket:
-    def voltage(self):
-        return 230
+# Existing system that works with Celsius
+class CelsiusThermometer:
+    def get_temperature(self):
+        return 25.0  # Celsius temperature
 
-class USAPlug:
-    def voltage(self):
-        return 110
+# Incompatible system that uses Fahrenheit
+class FahrenheitThermometer:
+    def get_fahrenheit(self):
+        return 77.0  # Fahrenheit temperature
 
-class Adapter:
-    def __init__(self, socket):
-        self.socket = socket
+# Adapter to make Fahrenheit thermometer work with Celsius interface
+class FahrenheitAdapter(CelsiusThermometer):
+    def __init__(self, fahrenheit_thermometer):
+        self.fahrenheit_thermometer = fahrenheit_thermometer
+    
+    def get_temperature(self):
+        fahrenheit = self.fahrenheit_thermometer.get_fahrenheit()
+        return (fahrenheit - 32) * 5/9  # Convert to Celsius
 
-    def voltage(self):
-        return self.socket.voltage()
+# Client code
+def display_temperature(thermometer):
+    celsius = thermometer.get_temperature()
+    print(f"The temperature is {celsius:.1f}°C")
 
-def main():
-    socket = EuropeanSocket()
-    adapter = Adapter(socket)
-    print(f"Adapted voltage: {adapter.voltage()}")
+# Usage
+celsius_thermometer = CelsiusThermometer()
+fahrenheit_thermometer = FahrenheitThermometer()
+adapter = FahrenheitAdapter(fahrenheit_thermometer)
 
-if __name__ == "__main__":
-    main()
+display_temperature(celsius_thermometer)  # Output: The temperature is 25.0°C
+display_temperature(adapter)              # Output: The temperature is 25.0°C
+# This example shows how the Adapter pattern allows us to use a Fahrenheit thermometer in a system designed for Celsius, without changing the existing code.
 ```
 * **Bridge** is a structural pattern that lets you split a large class or a set of closely related classes into two separate hierarchies—abstraction and implementation—which can be developed independently of each other. The core concept of the Bridge pattern, **separating the abstraction  from its implementation**, allowing them to vary independently.
 ```python
