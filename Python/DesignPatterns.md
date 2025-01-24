@@ -143,7 +143,7 @@ class USAPlug:
     def voltage(self):
         return 110
 
-class Adapter(USAPlug):
+class Adapter:
     def __init__(self, socket):
         self.socket = socket
 
@@ -158,7 +158,6 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-
 * **Bridge** is a structural pattern that lets you split a large class or a set of closely related classes into two separate hierarchies—abstraction and implementation—which can be developed independently of each other. The core concept of the Bridge pattern, **separating the abstraction  from its implementation**, allowing them to vary independently.
 ```python
 from abc import ABC, abstractmethod
