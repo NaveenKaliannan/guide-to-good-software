@@ -1,5 +1,34 @@
 # Design Patterns in Python
 
+## Class types
+* **Superclass**: Parent class in inheritance hierarchy.
+* **Subclass**: Child class inheriting from a superclass.
+* **Abstract Class**: Cannot be instantiated, provides common interface.
+* **Concrete Class**: Can be instantiated, implements abstract methods.
+* **Interface**: Defines contract for implementing classes.
+* **Builder Class**: Constructs complex objects step by step.
+* **Factory Class**: Creates objects without specifying exact class.
+* **Singleton Class**: Ensures only one instance exists.
+* **Adapter Class**: Allows incompatible interfaces to work together.
+* **Decorator Class**: Adds functionality to objects dynamically.
+* **Observer Class**: Gets notified of changes in observed objects.
+* **Strategy Class**: Defines family of interchangeable algorithms.
+* **Proxy Class**: Controls access to another object.
+* **Composite Class**: Treats individual and composite objects uniformly.
+* **Iterator Class**: Provides way to access elements sequentially.
+* **Command Class**: Encapsulates request as an object.
+* **Facade Class**: Provides simplified interface to complex subsystem.
+* **Prototype Class**: Creates new objects by cloning existing ones.
+* **Memento Class**: Captures and restores object's internal state.
+* **State Class**: Allows object to alter behavior when state changes.
+* **Visitor Class**: Separates algorithm from object structure.
+* **Mediator Class**: Reduces dependencies between objects.
+* **Chain of Responsibility Class**: Passes request along chain of handlers.
+* **Flyweight Class**: Minimizes memory use by sharing common data.
+* **Interpreter Class**: Implements a specialized language.
+* **Template Method Class**: Defines skeleton of algorithm in operations.
+* **Bridge Class**: Separates abstraction from implementation.
+
 ## Creational pattern
 * **Factory Method** is a creational pattern that provides an interface for creating objects in a superclass, but allows subclasses to alter the type of objects that will be created.
 ```python
@@ -56,7 +85,7 @@ print(dog.make_sound())  # Output: Woof!
 cat = Cat()
 print(cat.make_sound())  # Output: Meow!
 ```
-* **Builder** is a creational pattern that lets you construct complex objects step by step.
+* **Builder** is a creational pattern that lets you construct complex objects step by step. Builder class creates objects step by step. The Builder pattern allows for the construction of complex objects through a series of steps, typically implemented as methods in the builder class
 ```python
 class Car:
     def __init__(self):
@@ -241,7 +270,8 @@ milk_coffee = MilkDecorator(coffee)
 print(f"Cost of coffee with milk: {milk_coffee.cost()}")
 
 ```
-* **Facade** is a structural pattern that provides a simplified interface to a library, a framework, or any other complex set of classes. The facade encapsulates the complexity of the subsystem, providing a single, easy-to-use start() method
+* **Facade** is a structural pattern that provides a simplified interface to a library, a framework, or any other complex set of classes. The facade encapsulates the complexity of the subsystem, providing a single, easy-to-use start() method. The  Facade class provides a simplified interface to use these components. Facade pattern simplifies the usage of a complex system by providing a higher-level interface
+
 ```python
 class CPU:
     def freeze(self):
@@ -276,6 +306,46 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Complex subsystem components
+class DVDPlayer:
+    def on(self):
+        print("DVD player is on")
+    def play(self, movie):
+        print(f"Playing {movie}")
+
+class Amplifier:
+    def on(self):
+        print("Amplifier is on")
+    def set_volume(self, level):
+        print(f"Amplifier volume set to {level}")
+
+class Projector:
+    def on(self):
+        print("Projector is on")
+    def set_input(self, input):
+        print(f"Projector input set to {input}")
+
+# Facade
+class HomeTheaterFacade:
+    def __init__(self):
+        self.dvd = DVDPlayer()
+        self.amp = Amplifier()
+        self.projector = Projector()
+
+    def watch_movie(self, movie):
+        print("Get ready to watch a movie...")
+        self.dvd.on()
+        self.amp.on()
+        self.amp.set_volume(5)
+        self.projector.on()
+        self.projector.set_input("DVD")
+        self.dvd.play(movie)
+
+# Client code
+home_theater = HomeTheaterFacade()
+home_theater.watch_movie("Inception")
+# The Facade pattern is particularly useful when dealing with complex systems or libraries that have many interdependent classes or when the source code is unavailable1. By introducing this simplified interface, the Facade pattern helps manage complexity, reduces coupling, and makes client applications more manageable and less error-prone, especially in large and complex projects.
 ```
 * **Flyweight** is a structural pattern that lets you fit more objects into the available amount of RAM by sharing common parts of state between multiple objects instead of keeping all of the data in each object.
 ```python
@@ -492,35 +562,50 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-* **Observer** is a behavioral pattern that lets you define a subscription mechanism to notify multiple objects about any events that happen to the object they're observing.
+* **Observer** is a behavioral pattern that lets you define a subscription mechanism to notify multiple objects about any events that happen to the object they're observing. The Observer pattern facilitates communication between objects by establishing a one-to-many relationship between a subject (observable) and multiple observers
 ```python
-class Subject:
+class WeatherStation:
     def __init__(self):
         self._observers = []
+        self._temperature = 0
 
-    def attach(self, observer):
+    def register_observer(self, observer):
         self._observers.append(observer)
 
-    def notify(self):
-        for observer in self._observers:
-            observer.update()
+    def remove_observer(self, observer):
+        self._observers.remove(observer)
 
-class Observer:
-    def update(self):
+    def notify_observers(self):
+        for observer in self._observers:
+            observer.update(self._temperature)
+
+    def set_temperature(self, temp):
+        self._temperature = temp
+        self.notify_observers()
+
+class DisplayDevice:
+    def update(self, temperature):
         pass
 
-class ConcreteObserver(Observer):
-    def update(self):
-        return "Observer updated"
+class PhoneDisplay(DisplayDevice):
+    def update(self, temperature):
+        print(f"Phone display: The temperature is {temperature}°C")
 
-def main():
-    subject = Subject()
-    observer = ConcreteObserver()
-    subject.attach(observer)
-    print(subject.notify())
+class TabletDisplay(DisplayDevice):
+    def update(self, temperature):
+        print(f"Tablet display: Current temp is {temperature}°C")
 
-if __name__ == "__main__":
-    main()
+# Usage
+weather_station = WeatherStation()
+phone = PhoneDisplay()
+tablet = TabletDisplay()
+
+weather_station.register_observer(phone)
+weather_station.register_observer(tablet)
+
+weather_station.set_temperature(25)
+weather_station.set_temperature(30)
+# This demonstrates how the Observer pattern allows multiple objects (displays) to be notified of changes in another object (weather station) without tight coupling between them.
 ```
 * **State** The State pattern allows an object to alter its behavior when its internal state changes. It's useful for implementing state machines, where an object's behavior changes based on its state without using large conditionals.
 
