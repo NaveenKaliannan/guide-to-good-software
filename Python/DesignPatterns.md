@@ -633,6 +633,49 @@ remote.set_command(light_off)
 remote.press_button()  # Output: Light is off
 
 ```
+```python
+# Command interface
+class Command:
+    def execute(self):
+        pass
+
+# Concrete Command (Encapsulated Action)
+class LightOnCommand(Command):
+    def __init__(self, light):
+        self.light = light
+
+    def execute(self):
+        self.light.turn_on()
+
+# Receiver
+class Light:
+    def turn_on(self):
+        print("Light is on")
+
+# Invoker
+class RemoteControl:
+    def __init__(self):
+        self.command = None
+
+    def set_command(self, command):
+        self.command = command
+
+    def press_button(self):
+        self.command.execute()
+
+# Client code
+light = Light()
+light_on = LightOnCommand(light)  # Standalone object
+
+remote = RemoteControl()
+remote.set_command(light_on)
+remote.press_button()  # Output: Light is on
+
+#The LightOnCommand is a standalone object that encapsulates the action of turning on the light.
+#The execute() method in LightOnCommand is the encapsulated action.
+#The RemoteControl can be set with different commands, demonstrating how standalone command objects allow for flexible parameterization of clients with various requests13.
+
+```
 * **Interpreter** is a behavioral pattern that defines a grammatical representation for a language and provides an interpreter to deal with this grammar.
 ```python
 class Expression:
