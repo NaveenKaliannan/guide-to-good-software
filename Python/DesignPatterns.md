@@ -252,7 +252,7 @@ tree.add(Leaf())
 print(tree.operation())
 
 ```
-* **Decorator** is a structural pattern that lets you attach new behaviors to objects by placing these objects inside special wrapper objects that contain the behaviors.
+* **Decorator** is a structural pattern that lets you attach new behaviors to objects by placing these objects inside special wrapper objects that contain the behaviors. Wrapping objects: It wraps the original object with decorator objects that add new behaviors or modify existing ones. Runtime modification: Decorators can be added or removed at runtime, allowing for flexible object enhancement without altering the original class structure.
 ```python
 class Coffee:
     def cost(self):
@@ -268,6 +268,35 @@ class MilkDecorator:
 coffee = Coffee()
 milk_coffee = MilkDecorator(coffee)
 print(f"Cost of coffee with milk: {milk_coffee.cost()}")
+
+
+class TextProcessor:
+    def process(self, text):
+        return text
+
+class UppercaseDecorator:
+    def __init__(self, processor):
+        self.processor = processor
+
+    def process(self, text):
+        return self.processor.process(text).upper()
+
+class BoldDecorator:
+    def __init__(self, processor):
+        self.processor = processor
+
+    def process(self, text):
+        return f"<b>{self.processor.process(text)}</b>"
+
+# Usage
+simple_processor = TextProcessor()
+uppercase_processor = UppercaseDecorator(simple_processor)
+bold_uppercase_processor = BoldDecorator(uppercase_processor)
+
+text = "Hello, World!"
+print(simple_processor.process(text))  # Output: Hello, World!
+print(uppercase_processor.process(text))  # Output: HELLO, WORLD!
+print(bold_uppercase_processor.process(text))  # Output: <b>HELLO, WORLD!</b>
 
 ```
 * **Facade** is a structural pattern that provides a simplified interface to a library, a framework, or any other complex set of classes. The facade encapsulates the complexity of the subsystem, providing a single, easy-to-use start() method. The  Facade class provides a simplified interface to use these components. Facade pattern simplifies the usage of a complex system by providing a higher-level interface
@@ -418,7 +447,109 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-* **Command** is a behavioral pattern that turns a request into a stand-alone object that contains all information about the request.
+* **Command** is like creating a "remote control" for your code. The Command pattern is a behavioral design pattern that encapsulates a request or action as an object. In the Command pattern, the command objects typically don't directly get input from the user. Instead, they encapsulate a specific action or request, along with any necessary parameters, that were determined when the command was created.
+ The Command pattern is particularly useful in scenarios requiring undo/redo functionality, queueing or scheduling of operations, remote execution of commands, macro recording and playback, and implementing transactional systems. It's also valuable for decoupling the requester of an operation from the object performing it, allowing for more flexible and extensible software design, especially in GUI frameworks and game development where complex sequences of actions need to be managed.
+```python
+# Undo/Redo (Text editor):
+
+class TextEditor:
+    def __init__(self):
+        self.text = ""
+        self.history = []
+
+    def type(self, text):
+        self.history.append(self.text)
+        self.text += text
+
+    def undo(self):
+        if self.history:
+            self.text = self.history.pop()
+
+editor = TextEditor()
+editor.type("Hello")
+editor.type(" World")
+editor.undo()  # Reverts to "Hello"
+
+# Macro reading
+
+class Macro:
+    def __init__(self):
+        self.commands = []
+
+    def record(self, command):
+        self.commands.append(command)
+
+    def play(self):
+        for command in self.commands:
+            command()
+
+macro = Macro()
+macro.record(lambda: print("Step 1"))
+macro.record(lambda: print("Step 2"))
+macro.play()  # Prints: Step 1 \n Step 2
+
+
+# Remote Execution
+class RemoteControl:
+    def execute(self, command):
+        print(f"Executing remote command: {command}")
+
+class TVRemote:
+    def __init__(self):
+        self.remote = RemoteControl()
+
+    def turn_on(self):
+        self.remote.execute("TV_ON")
+
+tv_remote = TVRemote()
+tv_remote.turn_on()  # Prints: Executing remote command: TV_ON
+
+
+# Queuing
+
+from queue import Queue
+
+class PrintSpooler:
+    def __init__(self):
+        self.queue = Queue()
+
+    def add_job(self, document):
+        self.queue.put(document)
+
+    def print_next(self):
+        if not self.queue.empty():
+            print(f"Printing: {self.queue.get()}")
+
+spooler = PrintSpooler()
+spooler.add_job("Document1.pdf")
+spooler.add_job("Document2.pdf")
+spooler.print_next()  # Prints: Printing: Document1.pdf
+
+
+# Scheduling (Simple scheduler):
+
+import time
+
+class Scheduler:
+    def __init__(self):
+        self.tasks = []
+
+    def add_task(self, task, delay):
+        self.tasks.append((task, time.time() + delay))
+
+    def run(self):
+        while self.tasks:
+            task, scheduled_time = self.tasks[0]
+            if time.time() >= scheduled_time:
+                task()
+                self.tasks.pop(0)
+
+scheduler = Scheduler()
+scheduler.add_task(lambda: print("Task 1"), 2)
+scheduler.add_task(lambda: print("Task 2"), 1)
+scheduler.run()
+
+``` 
 ```python
 class Command:
     def execute(self):
@@ -445,6 +576,62 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+from abc import ABC, abstractmethod
+
+# Command interface
+class Command(ABC):
+    @abstractmethod
+    def execute(self):
+        pass
+
+# Concrete Commands
+class LightOnCommand(Command):
+    def __init__(self, light):
+        self.light = light
+
+    def execute(self):
+        self.light.turn_on()
+
+class LightOffCommand(Command):
+    def __init__(self, light):
+        self.light = light
+
+    def execute(self):
+        self.light.turn_off()
+
+# Receiver
+class Light:
+    def turn_on(self):
+        print("Light is on")
+
+    def turn_off(self):
+        print("Light is off")
+
+# Invoker
+class RemoteControl:
+    def __init__(self):
+        self.command = None
+
+    def set_command(self, command):
+        self.command = command
+
+    def press_button(self):
+        self.command.execute()
+
+# Client code
+light = Light()
+light_on = LightOnCommand(light)
+light_off = LightOffCommand(light)
+
+remote = RemoteControl()
+
+remote.set_command(light_on)
+remote.press_button()  # Output: Light is on
+
+remote.set_command(light_off)
+remote.press_button()  # Output: Light is off
+
 ```
 * **Interpreter** is a behavioral pattern that defines a grammatical representation for a language and provides an interpreter to deal with this grammar.
 ```python
@@ -606,6 +793,84 @@ weather_station.register_observer(tablet)
 weather_station.set_temperature(25)
 weather_station.set_temperature(30)
 # This demonstrates how the Observer pattern allows multiple objects (displays) to be notified of changes in another object (weather station) without tight coupling between them.
+```
+* **Strategy pattern** is a behavioral design pattern that allows selecting an algorithm at runtime1. It enables defining a family of algorithms, encapsulating each one, and making them interchangeable34. This pattern provides flexibility to choose the right strategy for a task dynamically, similar to selecting the most suitable tool from a toolbox3
+```
+from abc import ABC, abstractmethod
+
+# Strategy interface
+class Strategy(ABC):
+    @abstractmethod
+    def execute(self) -> str:
+        pass
+
+# Concrete strategies
+class ConcreteStrategyA(Strategy):
+    def execute(self) -> str:
+        return "Executing Strategy A"
+
+class ConcreteStrategyB(Strategy):
+    def execute(self) -> str:
+        return "Executing Strategy B"
+
+# Context class
+class Context:
+    def __init__(self, strategy: Strategy = None):
+        self._strategy = strategy
+
+    def set_strategy(self, strategy: Strategy):
+        self._strategy = strategy
+
+    def execute_strategy(self) -> str:
+        if self._strategy:
+            return self._strategy.execute()
+        return "No strategy set"
+
+# Usage
+context = Context()
+context.set_strategy(ConcreteStrategyA())
+print(context.execute_strategy())  # Output: Executing Strategy A
+
+context.set_strategy(ConcreteStrategyB())
+print(context.execute_strategy())  # Output: Executing Strategy B
+
+
+from abc import ABC, abstractmethod
+from typing import List, Union
+
+# Strategy interface
+class SummationStrategy(ABC):
+    @abstractmethod
+    def sum(self, data: List[Union[int, float]]) -> Union[int, float]:
+        pass
+
+# Concrete strategies
+class IntegerSummation(SummationStrategy):
+    def sum(self, data: List[Union[int, float]]) -> int:
+        return sum(int(x) for x in data)
+
+class FloatSummation(SummationStrategy):
+    def sum(self, data: List[Union[int, float]]) -> float:
+        return sum(float(x) for x in data)
+
+# Context class
+class DatasetSummer:
+    def calculate_sum(self, data: List[Union[int, float]]) -> Union[int, float]:
+        strategy = IntegerSummation() if all(isinstance(x, int) for x in data) else FloatSummation()
+        return strategy.sum(data)
+
+# Usage
+if __name__ == "__main__":
+    dataset_summer = DatasetSummer()
+
+    integer_data = [1, 2, 3, 4, 5]
+    float_data = [1.1, 2.2, 3.3, 4.4, 5.5]
+    mixed_data = [1, 2.5, 3, 4.7, 5]
+
+    print(f"Integer sum: {dataset_summer.calculate_sum(integer_data)}")
+    print(f"Float sum: {dataset_summer.calculate_sum(float_data)}")
+    print(f"Mixed sum: {dataset_summer.calculate_sum(mixed_data)}")
+
 ```
 * **State** The State pattern allows an object to alter its behavior when its internal state changes. It's useful for implementing state machines, where an object's behavior changes based on its state without using large conditionals.
 
