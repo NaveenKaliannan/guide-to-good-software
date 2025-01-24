@@ -1232,6 +1232,37 @@ print(greeting("Alice"))  # Output: Hello, Alice!
 result = apply_twice(greet, "Bob")
 print(result)  # Output: Hello, Bob!Hello, Bob!
 ```
+* **Association** relation between classes where objects of one class are connected to objects of another class. Composition, on the other hand, is a specific and stronger form of association13. It represents a "part-of" relationship where:
+```python
+# Association
+class Department:
+    def __init__(self, name):
+        self.name = name
+
+class Employee:
+    def __init__(self, name, department):
+        self.name = name
+        self.department = department  # Association
+
+# Composition
+class Engine:
+    def __init__(self, power):
+        self.power = power
+
+class Car:
+    def __init__(self, model):
+        self.model = model
+        self.engine = Engine("100hp")  # Composition
+
+# Usage
+dept = Department("IT")
+emp = Employee("Alice", dept)
+
+car = Car("Tesla")
+# Employee has an association with Department.
+# Car has a composition relationship with Engine.
+# The key difference is that the Engine is created within the Car and is part of its lifecycle, while the Department exists independently of the Employee.
+``` 
 * **Decorators** can be used to add a wide range of functionality to functions, such as logging, caching, authentication
 ```python
 def print_password(func):
