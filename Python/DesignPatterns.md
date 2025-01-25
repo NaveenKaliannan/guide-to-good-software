@@ -30,7 +30,7 @@
 * **Bridge Class**: Separates abstraction from implementation.
 
 ## Creational pattern
-* **Factory Method** is a creational pattern that provides an interface for creating objects in a superclass, but allows subclasses to alter the type of objects that will be created.
+* **Factory Method** is a creational pattern that provides an interface for creating objects in a superclass, but allows subclasses to alter the type of objects that will be created. The main differene between **Factory Method and Composition** : In composition, an object contains other objects as parts of its structure. In the Factory Method pattern, the factory object creates and returns new objects, but doesn't necessarily contain them as part of its structure.
 ```python
 # This implementation focuses solely on the factory method pattern, where AnimalFactory is responsible for creating different types of animals based on the input parameter.
 class Animal:
