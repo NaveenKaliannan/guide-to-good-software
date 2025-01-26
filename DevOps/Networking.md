@@ -23,7 +23,169 @@
 2. Switches are used within a single network, while routers are used to connect multiple networks.
 3. Switches forward data in the form of frames, while routers forward data in the form of packets.
 4. Switches have less collision and less routing complexity compared to routers.
-5. Routers are generally more expensive than switches. 
+5. Routers are generally more expensive than switches.
+* **Better Picture**
+1. **Application Layer (Layer 7)** : Your browser initiates the request for google.com. The Domain Name System (DNS) protocol is used to translate "google.com" into an IP address. An HTTP or HTTPS request is prepared to fetch the webpage.
+```text
+GET / HTTP/1.1
+Host: www.google.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+```
+2. **Presentation Layer (Layer 6)** The data is formatted and potentially encrypted for transmission. If using HTTPS, this layer handles the encryption of the request.
+```text
+TLS 1.2 Record Layer: Application Data Protocol: http-over-tls
+    Content Type: Application Data (23)
+    Version: TLS 1.2 (0x0303)
+    Length: 517
+    Encrypted Application Data: 8f3a7c2e9b0f1d5e6a4c2b8d0e3f7a9c1b5d8e2f4a6c0b3d7f1e9a2c4b8d0e3f7a9
+    Encrypted Application Data: e2f4a6c0b3d7f1e9a2c4b8d0e3f7a9c1b5d8e2f4a6c0b3d7f1e9ddfdfdfbfbfgbgb
+```
+3. **Session Layer (Layer 5)** : A session is established between your browser and Google's servers. Session parameters and encryption algorithms are negotiated.
+4. **Transport Layer (Layer 4)** : The HTTP request is broken down into smaller segments. TCP (Transmission Control Protocol) is typically used to ensure reliable delivery.
+```text
+TLS Record Header:
+Content Type: Application Data (23)
+Version: TLS 1.2 (0x0303)
+Length: 517
+Segment 1:8f3a7c2e9b0f1d5e6a4c2b8d0e3f7a9c1b5d8e2f4a6c0b3d7f1e9a2c4b8d0e3f7a9
+Segment 2: e2f4a6c0b3d7f1e9a2c4b8d0e3f7a9c1b5d8e2f4a6c0b3d7f1e9ddfdfdfbfbfgbgb
+```
+5. **Network Layer (Layer 3)** The segments are broken down into packets. IP addresses of your computer and Google's servers are added to each packet. The best route for sending packets across the Internet is determined.
+```text
+IP Header:
+  Source IP: [Client IP address]
+  Destination IP: [Server IP address]
+TCP Header:
+  Source Port: [Client port]
+  Destination Port: 443 (typical for HTTPS)
+Payload:
+  TLS Record Header + Encrypted Application Data
+
+TLS Record:
+Content Type: Application Data (23)
+Version: TLS 1.2 (0x0303)
+Length: 517 bytes
+Encrypted Application Data:
+8f3a7c2e9b0f1d5e6a4c2b8d0e3f7a9c1b5d8e2f4a6c0b3d7f1e9a2c4b8d0e3f7a9...
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |    DSCP   |ECN|          Total Length         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |Flags|     Fragment Offset     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |        Header Checksum        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Source IP Address                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination IP Address                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Options                    |    Padding    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                             Data                              |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+``` 
+6. **Data Link Layer (Layer 2)** Packets are further broken down into frames. Frame headers containing MAC addresses are added. 
+```text
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      Preamble (7 bytes)                       |
++                                               +-+-+-+-+-+-+-+-+
+|                                               |    SFD        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++                   Destination MAC Address (6 bytes)           +
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++                     Source MAC Address (6 bytes)              +
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|        EtherType/Length       |                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               +
+|                                                               |
++                         Payload (46-1500 bytes)               +
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        FCS (4 bytes)                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+```
+7. **Physical Layer (Layer 1)** The frames are converted into electrical signals (for wired connections) or radio waves (for wireless connections). These signals are transmitted over the physical medium.
+```text
+Ethernet Frame:
+|--------------------|---------------------|---------------------|
+| Preamble (7 bytes) | SFD (1 byte)        | Dest MAC (6 bytes)  |
+| 10101010 10101010  | 10101011            | 00:1A:2B:3C:4D:5E   |
+| (repeated 7 times) |                     | 00011010 00101011   |
+|                    |                     | 00111100 01001101   |
+|                    |                     | 01011110            |
+|--------------------|---------------------|---------------------|
+| Source MAC (6 bytes)     | EtherType (2 bytes)   |
+| 00:E0:4C:68:0F:1D        | 0x0800 (IPv4)         |
+| 00000000 11100000        | 00001000 00000000     |
+| 01001100 01101000        |                       |
+| 00001111 00011101        |                       |
+|--------------------------|------------------------|
+
+IPv4 Packet (Payload of Ethernet Frame):
+|------------------------|------------------------|
+| Version (4 bits)       | IHL (4 bits)           |
+| 0100 (IPv4)            | 0101 (20 bytes)        |
+|------------------------|------------------------|
+| DSCP (6 bits) | ECN (2 bits) | Total Length (16 bits) |
+| 000000        | 00           | 0000000000101000      |
+|                              | (40 bytes)            |
+|-------------------------------------------|-----------|
+| Identification (16 bits)     | Flags (3 bits) |
+| 0000000000000001             | 010 (Don't Fragment) |
+|---------------------------|-------------------------|
+| Fragment Offset (13 bits) | TTL (8 bits) |
+| 0000000000000              | 01000000 (64) |
+|---------------------------|-----------------|
+| Protocol (8 bits)         | Header Checksum (16 bits) |
+| 00000110 (TCP)            | 1010101010101010          |
+|---------------------------|----------------------------|
+| Source IP (32 bits)                                   |
+| 11000000 10101000 00000001 00000001 (192.168.1.1)     |
+|--------------------------------------------------------|
+| Destination IP (32 bits)                               |
+| 11000000 10101000 00000001 00000010 (192.168.1.2)     |
+|--------------------------------------------------------|
+
+TCP Segment (Payload of IPv4 Packet):
+|---------------------------|---------------------------|
+| Source Port (16 bits)     | Destination Port (16 bits)|
+| 0000000000010100 (20)     | 0000000001011010 (90)     |
+|---------------------------|---------------------------|
+| Sequence Number (32 bits)                             |
+| 00000000000000000000000000000001                      |
+|--------------------------------------------------------|
+| Acknowledgment Number (32 bits)                        |
+| 00000000000000000000000000000000                      |
+|--------------------------------------------------------|
+| Data Offset | Reserved | Flags | Window Size (16 bits) |
+| (4 bits)    | (6 bits) | (6 bits) | 0000000011111111   |
+| 0101        | 000000   | 000010   | (255)              |
+|             |          | (SYN)    |                    |
+|--------------------------------------------------------|
+| Checksum (16 bits)        | Urgent Pointer (16 bits)   |
+| 1111111100000000          | 0000000000000000           |
+|---------------------------|----------------------------|
+| Options (if any) + Padding                             |
+| (not shown in this example)                            |
+|--------------------------------------------------------|
+| Data (if any)                                          |
+| (not shown in this example)                            |
+|--------------------------------------------------------|
+
+``` 
 * **Host-to-host communication** refers to the ability for computers (hosts) to directly communicate with each other over a network, rather than requiring all traffic to pass through a central system.
 1. ARPANET was the first network to enable direct communication between computers, rather than requiring all traffic to pass through a central system.
 2. This was achieved through the use of a distributed routing algorithm, where each node (computer) on the network was equipped with a special-purpose computer called an Interface Message Processor (IMP) responsible for routing data packets.
