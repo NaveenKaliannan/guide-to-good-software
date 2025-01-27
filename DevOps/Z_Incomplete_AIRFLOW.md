@@ -796,3 +796,37 @@ task = PythonOperator(
 )
 ```
 Carefully managing Airflow's resources, such as worker pools and resource limits, is essential for ensuring efficient and reliable workflow execution. In this example, we're using the resources parameter of the PythonOperator to specify the CPU and memory requirements for a resource-intensive task. By setting appropriate resource limits for each task, we can ensure that our workflows are executed on worker nodes with sufficient resources, preventing issues like out-of-memory errors or CPU exhaustion. Airflow's resource management features allow us to optimize resource utilization and improve the overall performance and stability of our deployments.
+* **Kubernetes Connection: ** Airflow uses a Kubernetes Connection to store cluster access information. This connection can be configured with: In-cluster configuration, Kube config file path, Kube config in JSON format, Namespace, Cluster context. **Authentication methods:** Service Account Token: When running inside a Kubernetes cluster, Kube config file: Contains cluster information and authentication details, Token-based authentication: Using bearer tokens. **Secrets handling**: Sensitive information like passwords and tokens should be stored as Airflow Connections or Kubernetes Secrets, not as environment variables.
+```python
+from airflow import DAG
+from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+from datetime import datetime, timedelta
+
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'start_date': datetime(2025, 1, 27),
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+dag = DAG('kubernetes_sample', default_args=default_args, schedule_interval=timedelta(days=1))
+
+kubernetes_min_pod = KubernetesPodOperator(
+    namespace='default',
+    image="python:3.8-slim-buster",
+    cmds=["python","-c"],
+    arguments=["print('hello world')"],
+    labels={"foo": "bar"},
+    name="airflow-test-pod",
+    task_id="task-one",
+    in_cluster=True,  # if set to true, will look in the cluster, if false, looks for file
+    cluster_context='docker-desktop', # is ignored when in_cluster is True
+    get_logs=True,
+    dag=dag
+)
+```
+Note that it is okay for Kubernetes to know the username and password of the private Docker Hub while Airflow remains unaware of these credentials. Kubernetes manages image pulling: Kubernetes is responsible for pulling images when creating pods, so it needs access to private registries. Simplified Airflow configuration: Airflow can focus on workflow definitions without needing to manage registry credentials directly. This setup allows Kubernetes to handle image pulling securely while Airflow remains focused on workflow orchestration, providing a clean separation of responsibilities.
+
