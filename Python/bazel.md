@@ -9,8 +9,7 @@ It is designed to handle large-scale projects with multi-language dependencies a
 1. Build the image tarball: `bazel build //:app_tarball`
 2. Load it into Docker: `docker load < bazel-bin/app_tarball/tarball.tar`
 3. Run the container: `docker run --rm app:latest5`
-Note that the Docker daemon typically builds images using a Dockerfile and the docker build command. Stores images in its own format within its private filesystem. Can create tarballs of images using docker save, but this is not the default behavior
-
+Note that the Docker daemon typically builds images using a Dockerfile and the docker build command. Stores images in its own format within its private filesystem. Can create tarballs of images using docker save, but this is not the default behavior. Note also that the **The Open Container Initiative (OCI) ensures that containers are portable and standardized, which allows them to run seamlessly across different environments, unlike "normal" containers that may face compatibility issues due to proprietary formats or vendor-specific implementations. Containers created using Docker rules can still face compatibility issues**
 
 ## Important Keywords one should be aware
 * **cc_binary**: rule in Bazel is used to define a C++ binary target, which compiles and links source files into an executable program. It is one of Bazel's built-in rules for C++ projects.
