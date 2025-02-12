@@ -166,6 +166,70 @@ resize_image(
     height = 100,
 )
 ```
+* **Rules_docker** is a set of Bazel build rules designed to simplify the process of working with Docker containers. It provides a way to build, manipulate, and manage Docker images directly within the Bazel build system, without relying on external Docker commands or tools. These rules allow developers to integrate containerized workflows into their Bazel builds efficiently and reproducibly. Unlike traditional Docker builds, rules_docker does not rely on a running Docker daemon. Instead, it constructs image tarballs directly, ensuring hermetic and reproducible builds.
+1.  container_image, container_push, container_pull, rules_k8s
+```python
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+
+container_image(
+    name = "my_app",
+    base = "@io_bazel_rules_docker//file/base:debian",
+    files = ["app.py"],
+    cmd = ["python3", "app.py"],
+)
+```
+```python
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+
+container_push(
+    name = "push_my_app",
+    format = "Docker",
+    image = ":my_app",
+    registry = "gcr.io",
+    repository = "my-project/my-app",
+    tag = "latest",
+)
+```
+```python
+load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
+
+container_pull(
+    name = "java_base",
+    registry = "gcr.io",
+    repository = "distroless/java",
+    digest = "sha256:deadbeef...",
+)
+```
+* **rules_oci** rules_oci focuses on OCI standards compatibility and improved security features compared to rules_docker. It supports multi-architecture images, code signing, and integrates with tools like Crane for better image manipulation
+```bash
+bazel build //:app_tarball # This command tells Bazel to build the target
+docker load < bazel-bin/app_tarball.tar # This command loads the container image from the tarball into Docker.
+docker run example/app:latest # This command runs a container based on the Docker image example/app:latest.
+```
+```python
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "app_layer",
+    srcs = ["app.py"],
+)
+
+oci_image(
+    name = "app_image",
+    base = "@distroless_base",
+    tars = [":app_layer"],
+    cmd = ["python3", "app.py"],
+)
+
+oci_tarball(
+    name = "app_tarball",
+    image = ":app_image",
+    repo_tags = ["example/app:latest"],
+)
+
+``` 
+
 
 ## Important Commands
 * **bazel build**: Builds the specified targets, compiling source code and generating output artifacts (e.g., binaries, libraries)135.
