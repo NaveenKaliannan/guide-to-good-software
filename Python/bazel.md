@@ -143,7 +143,29 @@ int add(int a, int b);
 
 #endif  // HELPER_H_
 ```
+* **Macros** in Bazel are functions called from BUILD files that can instantiate rules. They are primarily used for encapsulation and code reuse of existing rules and other macros. Macros simplify BUILD files by abstracting away complex rule configurations.
+Here's a simple example of a macro:
+```python
+def resize_image(name, src, width, height):
+    native.genrule(
+        name = name,
+        srcs = [src],
+        outs = [name + ".resized.png"],
+        cmd = "convert $(location %s) -resize %dx%d $(location %s)" % (src, width, height, name + ".resized.png"),
+        tools = ["@imagemagick//:convert"],
+    )
+```
+This macro can be used in a BUILD file like this:
+```python
+load(":image_rules.bzl", "resize_image")
 
+resize_image(
+    name = "small_logo",
+    src = "logo.png",
+    width = 100,
+    height = 100,
+)
+```
 
 ## Important Commands
 * **bazel build**: Builds the specified targets, compiling source code and generating output artifacts (e.g., binaries, libraries)135.
@@ -410,4 +432,226 @@ import cpp_module
 if __name__ == "__main__":
     result = cpp_module.add(3, 5)
     print(f"The result of adding 3 and 5 is: {result}")
-``` 
+```
+### Here’s a simple example of using alias, config_setting, bool_flag, and exports_files in Bazel to configure a math-related project.
+`bazel build //:math_app` and `bazel run //:math_app`
+* Workspace structure
+```text
+math_project/
+├── WORKSPACE
+├── BUILD
+├── flags.bzl
+├── add.cc
+├── multiply.cc
+├── main.cc
+└── config.json
+```
+1. **WORKSPACE**
+The WORKSPACE file is empty for this example, as no external dependencies are required.
+2. **BUILD**
+```python
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load(":flags.bzl", "bool_flag_with_settings")
+
+# Define a boolean flag to choose between addition and multiplication
+bool_flag(
+    name = "use_multiplication",
+    build_setting_default = False,  # Default is addition
+)
+
+# Create config settings for true/false values of the flag
+bool_flag_with_settings(name = "use_multiplication")
+
+# Alias target to select the correct math implementation
+alias(
+    name = "math_lib",
+    actual = select({
+        ":use_multiplication_true": ":multiply_lib",  # Use multiplication if flag is true
+        "//conditions:default": ":add_lib",          # Default to addition
+    }),
+)
+
+# Define the addition library
+cc_library(
+    name = "add_lib",
+    srcs = ["add.cc"],
+)
+
+# Define the multiplication library
+cc_library(
+    name = "multiply_lib",
+    srcs = ["multiply.cc"],
+)
+
+# Export a configuration file (e.g., for runtime settings)
+exports_files(["config.json"])
+```
+2. **BUILD** Another version
+```python
+cc_binary(
+    name = "math_app",
+    srcs = ["main.cc", "add.cc", "multiply.cc"],
+    data = ["config.json"],  # Include config.json in the runfiles
+)
+```
+3. **flags.bzl**
+This file defines a helper macro to create config_setting targets for boolean flags.
+```python
+def bool_flag_with_settings(name):
+    native.config_setting(
+        name = name + "_true",
+        flag_values = {
+            ":" + name: "True",  # When the flag is true
+        },
+    )
+    native.config_setting(
+        name = name + "_false",
+        flag_values = {
+            ":" + name: "False",  # When the flag is false
+        },
+    )
+```
+4. **add.cc** This C++ file implements addition.
+```cpp
+#include <iostream>
+
+void calculate() {
+    int a = 3, b = 5;
+    std::cout << "Addition result: " << (a + b) << std::endl;
+}
+```
+5. **multiply.cc** This C++ file implements multiplication.
+```cpp
+#include <iostream>
+
+void calculate() {
+    int a = 3, b = 5;
+    std::cout << "Multiplication result: " << (a * b) << std::endl;
+}
+```
+6. **config.json** This is an example configuration file that could be used at runtime.
+```json
+{
+    "operation": "multiplication",  // Can be "addition" or "multiplication"
+    "author": "example_user"
+}
+```
+7. main.cc
+```cpp
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <nlohmann/json.hpp>  // Include a JSON library like nlohmann/json
+
+// Declare calculate() functions from add.cc and multiply.cc
+void calculate_add();
+void calculate_multiply();
+
+int main() {
+    // Read config.json
+    std::ifstream config_file("config.json");
+    if (!config_file) {
+        std::cerr << "Error: Could not open config.json" << std::endl;
+        return 1;
+    }
+
+    // Parse JSON content
+    nlohmann::json config;
+    config_file >> config;
+
+    // Get the operation type from config.json
+    std::string operation = config["operation"];
+    std::cout << "Operation selected: " << operation << std::endl;
+
+    // Perform the appropriate calculation based on the operation
+    if (operation == "addition") {
+        calculate_add();
+    } else if (operation == "multiplication") {
+        calculate_multiply();
+    } else {
+        std::cerr << "Error: Unknown operation '" << operation << "'" << std::endl;
+        return 1;
+    }
+
+    return 0;
+}
+```
+Explanation
+* Boolean Flag (bool_flag): The use_multiplication flag determines whether to use addition or multiplication. Default value is False, so addition is used unless overridden.
+* Config Settings (config_setting): The flags.bzl file defines two settings: one for when the flag is True and another for when it’s False.
+* Alias (alias): The math_lib alias dynamically selects either add_lib or multiply_lib, depending on the value of the flag.
+* Exported File (exports_files): The config.json file is made available for other targets to depend on or package with binaries.
+Building and Running
+* Build with Addition (Default):
+```bash
+bazel build //:math_lib
+```
+Output:
+```text
+Addition result: 8
+```
+* Build with Multiplication:
+```bash
+bazel build //:math_lib --//:use_multiplication=True
+```
+Output:
+```text
+Multiplication result: 15
+```
+* Exported File:
+The config.json file can now be included in packaging or used by other targets.
+* Summary
+This example demonstrates how you can use Bazel's features:
+**bool_flag**: To define a build-time configuration option.
+**config_setting**: To create conditions based on the value of the flag.
+**alias**: To dynamically select between two libraries based on configuration.
+**exports_files**: To make non-source files (like JSON configs) available in your build system.
+This approach allows you to write flexible and configurable builds while keeping your workspace clean and organized!
+###  A simple example of how to build and run a Docker image using Bazel:
+1. Set up your Bazel workspace:
+In your WORKSPACE file, add:
+```python
+# This line loads the http_archive rule from a Bazel-internal repository (@bazel_tools).
+# The http_archive rule is a Bazel built-in function used to download and extract external dependencies packaged as archives (like .tar.gz or .zip files) from remote locations.
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# This line uses the http_archive rule to declare and download the rules_docker repository as an external dependency.
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "b1e80761a8a8243d03ebca8845e9cc1ba6c82ce7c5179ce2b295cd36f7e394bf",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.25.0/rules_docker-v0.25.0.tar.gz"],
+)
+
+# This line loads the container_repositories function from the repositories.bzl file within the newly downloaded rules_docker repository.
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+# This line calls the container_repositories function. This function is responsible for setting up other repositories that rules_docker depends on (a form of dependency management within rules_docker). It effectively defines a set of other external dependencies required by rules_docker to function correctly. These might include specific versions of libraries or other tools.
+
+container_repositories()
+
+# This line loads the deps function from deps.bzl file within rules_docker.
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+# This line calls the container_deps function. This function likely sets up toolchains and/or performs other configuration steps necessary for rules_docker to work. It might define things like the versions of Docker that are supported or set up the build environment for creating Docker images.
+container_deps()
+```
+2. Create a BUILD file:
+```python
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+
+container_image(
+    name = "my_image",
+    base = "@docker_debian//:debian_bullseye",
+    cmd = ["echo", "Hello from Docker!"],
+)
+```
+3. Build the Docker image:
+```bash
+bazel build //:my_image
+```
+4. Run the Docker image:
+```bash
+bazel run //:my_image
+```
