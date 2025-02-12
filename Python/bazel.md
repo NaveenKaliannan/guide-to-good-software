@@ -5,6 +5,13 @@ It is designed to handle large-scale projects with multi-language dependencies a
 
 ## Installaing Bazel
 
+* **Bazel-built image with Docker**: Bazel builds images without a running Docker daemon, while Docker requires its daemon for image building. Uses rules like container_image or oci_image to create container image tarballs directly. Creates a single tarball containing the entire container image, which can be loaded into Docker later.
+1. Build the image tarball: `bazel build //:app_tarball`
+2. Load it into Docker: `docker load < bazel-bin/app_tarball/tarball.tar`
+3. Run the container: `docker run --rm app:latest5`
+Note that the Docker daemon typically builds images using a Dockerfile and the docker build command. Stores images in its own format within its private filesystem. Can create tarballs of images using docker save, but this is not the default behavior
+
+
 ## Important Keywords one should be aware
 * **cc_binary**: rule in Bazel is used to define a C++ binary target, which compiles and links source files into an executable program. It is one of Bazel's built-in rules for C++ projects.
 * **java_binary**: For Java executables
