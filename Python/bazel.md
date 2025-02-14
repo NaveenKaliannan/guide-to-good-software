@@ -52,7 +52,7 @@ py_binary(
     ],
 )
 ```
-* **Visibility** in Bazel is a mechanism to control access to targets across different packages. It determines which other targets can depend on or use a particular target. Visibility can be set for individual targets or at the package level. There are two types of visibility in Bazel: Target visibility: Controls access to rule targets.  Load visibility: Controls whether a .bzl file can be loaded from other BUILD or .bzl files outside the current package.
+* **Visibility** in Bazel is a mechanism to control access to targets across different packages. By default, if no visibility is specified, targets will be visible to every package. all targets can access all dependencies. This can leads to Dependency Conflicts and Increased Build Times. Visibility basically determines which other targets can depend on or use a particular target. Visibility can be set for individual targets or at the package level. There are two types of visibility in Bazel: Target visibility: Controls access to rule targets.  Load visibility: Controls whether a .bzl file can be loaded from other BUILD or .bzl files outside the current package.
 1. Public visibility:
 ```python
 cc_library(
