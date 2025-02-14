@@ -299,7 +299,209 @@ def main():
 
 if __name__ == "__main__":
     main()
-``` 
+```
+**A simple python applicaiton**
+
+To use these rules, you would typically run:
+1. `bazel build :app_image` Build the OCI image
+2. `bazel build :app_tarball` Build the OCI tarball. This creates a tarball of the OCI image, which can be used for distribution or loading into Docker.
+3. `docker load < bazel-bin/app_tarball/tarball.tar`  This loads the built image into your local Docker daemon.
+4. `docker run example.com/myapp:v1.0` Run the container using Docker
+5. `bazel run :app_image` This builds the image, loads it into Docker, and runs a container in one command.
+6. `bazel run :run_app` Run the Python script directly (not in a container). This builds and runs the Python application directly, not in a container.
+
+All the files
+1. defs.bzl
+```python
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//python:image.bzl", "py3_image")
+load("@io_bazel_rules_docker//python:py_layer.bzl", "py_layer")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_library")
+
+# This function defines a macro for creating a Python Docker image.
+def create_python_image(name, srcs, main, deps, requirements, base, repository, tag):
+    # Creates a Python library target, including all source files and dependencies.
+    py_library(
+        name = name + "_lib",
+        srcs = srcs,
+        deps = deps,
+    )
+
+    # Creates a tarball of the Python source files and library, placing them in the "/app" directory of the image.
+    pkg_tar(
+        name = name + "_py_tar",
+        srcs = srcs + [name + "_lib"],
+        package_dir = "/app",
+    )
+
+    # Creates a layer containing the Python dependencies specified in the requirements file. This is more efficient for managing Python dependencies in Docker images.
+    py_layer(
+        name = name + "_layer",
+        deps = [":" + name + "_lib"],
+        requirements = requirements,
+    )
+
+    # Creates a Python 3 Docker image, using the specified base image and including the Python source files and dependencies layers.
+    py3_image(
+        name = name + "_py_image",
+        base = base,
+        layers = [
+            ":" + name + "_py_tar",
+            ":" + name + "_layer",
+        ],
+        main = main,
+    )
+
+    # Finalizes the Docker image, setting the repository and command to run the main Python script.
+    container_image(
+        name = name + "_image",
+        base = ":" + name + "_py_image",
+        repository = repository,
+        cmd = ["python3", "/app/" + main],
+    )
+```
+2. BUILD
+```python
+load("//:defs.bzl", "create_python_image")
+
+create_python_image(
+    name = "app",
+    srcs = ["app.py", "math_operations.py"],
+    main = "app.py",
+    deps = [
+        "@pip//numpy",
+    ],
+    requirements = "requirements.txt",
+    base = "@python_base//image",
+    repository = "example.com/myapp",
+    tag = "v1.0",
+)
+
+py_binary(
+    name = "run_app",
+    srcs = ["app.py", "math_operations.py"],
+    deps = [
+        "@pip//numpy",
+    ],
+)
+```
+3. app.py
+```python
+from math_operations import add
+
+def main():
+    result = add(5, 3)
+    print(f"The sum of 5 and 3 is: {result}")
+
+if __name__ == "__main__":
+    main()
+```
+4. math_operations.py
+```python
+import numpy as np
+
+def add(a, b):
+    return np.add(a, b)
+```
+5. requirements.txt
+```text
+numpy==1.21.0
+```
+
+
+**A simple C++ applicaiton**
+
+To use these rules, you would typically run:
+1. `bazel build :app_image` Build the OCI image
+2. `bazel build :app_tarball` Build the OCI tarball. This creates a tarball of the OCI image, which can be used for distribution or loading into Docker.
+3. `docker load < bazel-bin/app_tarball/tarball.tar`  This loads the built image into your local Docker daemon.
+4. `docker run example.com/myapp:v1.0` Run the container using Docker
+5. `bazel run :app_image` This builds the image, loads it into Docker, and runs a container in one command.
+6. `bazel run :run_app` Run the Python script directly (not in a container). This builds and runs the Python application directly, not in a container.
+
+All the files
+1. defs.bzl
+```python
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//cc:image.bzl", "cc_image")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+def create_cpp_image(name, srcs, main, deps, base, repository, tag):
+    cc_binary(
+        name = name + "_bin",
+        srcs = srcs,
+        deps = deps,
+    )
+
+    pkg_tar(
+        name = name + "_bin_tar",
+        srcs = [":" + name + "_bin"],
+        package_dir = "/app",
+    )
+
+    cc_image(
+        name = name + "_cc_image",
+        base = base,
+        binary = ":" + name + "_bin",
+    )
+
+    container_image(
+        name = name + "_image",
+        base = ":" + name + "_cc_image",
+        repository = repository,
+        tag = tag,
+    )
+```
+2. BUILD
+```python
+load("//:defs.bzl", "create_cpp_image")
+
+create_cpp_image(
+    name = "app",
+    srcs = ["main.cpp", "math_operations.cpp", "math_operations.h"],
+    main = "main.cpp",
+    deps = [],
+    base = "@cc_base//image",
+    repository = "example.com/myapp",
+    tag = "v1.0",
+)
+
+cc_binary(
+    name = "run_app",
+    srcs = ["main.cpp", "math_operations.cpp", "math_operations.h"],
+    deps = [],
+)
+```
+3. main.cpp
+```cpp
+#include "math_operations.h"
+#include <iostream>
+
+int main() {
+    int result = add(5, 3);
+    std::cout << "The sum of 5 and 3 is: " << result << std::endl;
+    return 0;
+}
+```
+4. math_operations.cpp
+```cpp
+#include "math_operations.h"
+
+int add(int a, int b) {
+    return a + b;
+}
+```
+5. math_operations.h
+```cpp
+#ifndef MATH_OPERATIONS_H
+#define MATH_OPERATIONS_H
+
+int add(int a, int b);
+
+#endif
+```
 
 * **rules_oci** is a Bazel plugin for building OCI-compliant container images. Interoperability and running in different environments are key advantages of rules_oci
 
