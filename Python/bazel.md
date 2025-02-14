@@ -206,35 +206,312 @@ container_pull(
     digest = "sha256:deadbeef...",
 )
 ```
-* **rules_oci** rules_oci focuses on OCI standards compatibility and improved security features compared to rules_docker. It supports multi-architecture images, code signing, and integrates with tools like Crane for better image manipulation
-```bash
-bazel build //:app_tarball # This command tells Bazel to build the target
-docker load < bazel-bin/app_tarball.tar # This command loads the container image from the tarball into Docker.
-docker run example/app:latest # This command runs a container based on the Docker image example/app:latest.
-```
-```python
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
+* **Another example** Explanation of each command:
+1. py_layer: This creates a layer containing specific Python dependencies. It helps in organizing and managing dependencies efficiently.
+2. py3_image: This builds a Docker image with a Python 3 runtime. It includes the specified source files and layers, making it ready for containerization1.
+3. container_image: This command builds the final Docker image. It uses the py3_image as a base and adds additional configurations like exposed ports and the command to run1.
+4. container_push: This pushes the built image to a specified container registry. In this example, it's pushing to Google Container Registry (gcr.io)2.
 
-pkg_tar(
-    name = "app_layer",
+To use these rules, you would typically run:
+1. `bazel build :app_container` to build the Docker image.
+2. `bazel run :app_container -- --norun` loads the image into the local Docker daemon1. This makes the image available for local use without running it. The image will be visible when you run docker images on your local machine
+3. `bazel run :app_container` Run the container using Bazel
+4. `docker run app:latest` Run the container using Docker.
+5. `bazel build :app_container.tar` To build a Docker-loadable tarball
+6. `docker load -i bazel-bin/path/to/app_container.tar` Then load it with docker.
+
+1. **defs.bzl**
+```python
+# defs.bzl
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//python:image.bzl", "py3_image")
+load("@io_bazel_rules_docker//python:py_layer.bzl", "py_layer")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+
+# This defines a macro that takes parameters for creating a Python Docker image:
+# name: Base name for the generated targets
+# srcs: Source files to include
+# main: Main Python file to run
+# base: Base Docker image
+# repository: Docker repository
+# tag: Image tag
+
+def create_python_image(name, srcs, main, base, repository, tag):
+    # Creates a tarball of the source files, placing them in the /app directory of the image.
+    pkg_tar(
+        name = name + "_tar",
+        srcs = srcs,
+        package_dir = "/app",
+    )
+
+    #Builds a Python layer with the application files and dependencies specified in requirements.txt.
+    py_layer(
+        name = name + "_layer",
+        deps = [":" + name + "_tar"],
+        requirements = "requirements.txt",
+    )
+
+    # Creates a Python 3 Docker image, using the specified base image and including the Python layer created earlier.
+    py3_image(
+        name = name + "_image",
+        base = base,
+        layers = [":" + name + "_layer"],
+        main = main,
+    )
+
+    # Finalizes the Docker image, setting the repository and tag for distribution.
+    container_image(
+        name = name + "_container",
+        base = ":" + name + "_image",
+        repository = repository,
+        tag = tag,
+    )
+```
+2. **BUILD file**
+```python
+# BUILD
+load("//:defs.bzl", "create_python_image")
+
+create_python_image(
+    name = "app",
+    srcs = ["app.py", "requirements.txt"],
+    main = "app.py",
+    base = "@python_base//image",
+    repository = "example.com/myapp",
+    tag = "v1.0",
+)
+
+py_binary(
+    name = "run_app",
     srcs = ["app.py"],
 )
+```
+3. **app.py**
+```python
+# app.py
+def add(a, b):
+    return a + b
 
-oci_image(
-    name = "app_image",
-    base = "@distroless_base",
-    tars = [":app_layer"],
-    cmd = ["python3", "app.py"],
-)
+def main():
+    result = add(5, 3)
+    print(f"The sum of 5 and 3 is: {result}")
 
-oci_tarball(
-    name = "app_tarball",
-    image = ":app_image",
-    repo_tags = ["example/app:latest"],
-)
-
+if __name__ == "__main__":
+    main()
 ``` 
+
+* **rules_oci** is a Bazel plugin for building OCI-compliant container images. Interoperability and running in different environments are key advantages of rules_oci
+
+**A simple python applicaiton**
+
+To use these rules, you would typically run:
+1. `bazel build :app_image` Build the OCI image
+2. `bazel build :app_tarball` Build the OCI tarball. This creates a tarball of the OCI image, which can be used for distribution or loading into Docker.
+3. `docker load < bazel-bin/app_tarball/tarball.tar`  This loads the built image into your local Docker daemon.
+4. `docker run example.com/myapp:v1.0` Run the container using Docker
+5. `bazel run :app_image` This builds the image, loads it into Docker, and runs a container in one command.
+6. `bazel run :run_app` Run the Python script directly (not in a container). This builds and runs the Python application directly, not in a container.
+
+All the files
+1. defs.bzl
+```python
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_library")
+
+def create_python_image(name, srcs, main, deps, requirements, base, repository, tag):
+    # This creates a Python library target. It includes all the source files (srcs) and dependencies (deps) of your Python project. This is useful for organizing your code and dependencies.
+    py_library(
+        name = name + "_lib",
+        srcs = srcs,
+        deps = deps,
+    )
+
+    # This creates a tarball containing all your Python source files and the library target created earlier. It packages these files into a directory named "/app" within the tarball.
+    pkg_tar(
+        name = name + "_py_tar",
+        srcs = srcs + [name + "_lib"],
+        package_dir = "/app",
+    )
+
+    # This creates a separate tarball for your requirements.txt file, also placing it in the "/app" directory.
+    pkg_tar(
+        name = name + "_req_tar",
+        srcs = [requirements],
+        package_dir = "/app",
+    )
+    # This combines the Python files tarball and the requirements tarball into a single tarball.
+    pkg_tar(
+        name = name + "_combined_tar",
+        tars = [
+            ":" + name + "_py_tar",
+            ":" + name + "_req_tar",
+        ],
+    )
+
+    # This creates the OCI (Open Container Initiative) image. It uses the specified base image, adds the combined tarball, and sets an entrypoint that first installs the requirements and then runs the main Python script.
+    oci_image(
+        name = name + "_image",
+        base = base,
+        tars = [":" + name + "_combined_tar"],
+        entrypoint = [
+            "/bin/sh",
+            "-c",
+            "pip install -r /app/requirements.txt && python3 /app/" + main,
+        ],
+        cmd = [],
+    )
+
+    # This creates a tarball of the OCI image, which can be easily distributed or loaded into Docker. It includes the specified repository and tag information.
+    oci_tarball(
+        name = name + "_tarball",
+        image = ":" + name + "_image",
+        repo_tags = [repository + ":" + tag],
+    )
+```
+2. BUILD
+```python
+load("//:defs.bzl", "create_python_image")
+
+# macro to define the build targets for our application. It specifies the source files, main Python file, base image, repository, and tag for the image.
+create_python_image(
+    name = "app",
+    srcs = ["app.py", "math_operations.py"],
+    main = "app.py",
+    deps = [
+        "@pip//numpy",
+    ],
+    requirements = "requirements.txt",
+    base = "@python_base",
+    repository = "example.com/myapp",
+    tag = "v1.0",
+)
+
+# The py_binary rule allows running the Python script directly with Bazel.
+py_binary(
+    name = "run_app",
+    srcs = ["app.py", "math_operations.py"],
+    deps = [
+        "@pip//numpy",
+    ],
+)
+```
+3. app.py
+```python
+from math_operations import add
+
+def main():
+    result = add(5, 3)
+    print(f"The sum of 5 and 3 is: {result}")
+
+if __name__ == "__main__":
+    main()
+```
+4. math_operations.py
+```python
+import numpy as np
+
+def add(a, b):
+    return np.add(a, b)
+```
+5. requirements.txt
+```text
+numpy==1.21.0
+```
+
+**A simple C++ applicaiton**
+
+To use these rules, you would typically run:
+1. `bazel build :app_image` Build the OCI image
+2. `bazel build :app_tarball` Build the OCI tarball. This creates a tarball of the OCI image, which can be used for distribution or loading into Docker.
+3. `docker load < bazel-bin/app_tarball/tarball.tar`  This loads the built image into your local Docker daemon.
+4. `docker run example.com/myapp:v1.0` Run the container using Docker
+5. `bazel run :app_image` This builds the image, loads it into Docker, and runs a container in one command.
+6. `bazel run :run_app` Run the Python script directly (not in a container). This builds and runs the Python application directly, not in a container.
+
+All the files
+1. defs.bzl
+```python
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+def create_cpp_image(name, srcs, main, deps, base, repository, tag):
+    cc_binary(
+        name = name + "_bin",
+        srcs = srcs,
+        deps = deps,
+    )
+
+    pkg_tar(
+        name = name + "_bin_tar",
+        srcs = [":" + name + "_bin"],
+        package_dir = "/app",
+    )
+
+    oci_image(
+        name = name + "_image",
+        base = base,
+        tars = [":" + name + "_bin_tar"],
+        entrypoint = ["/app/" + name + "_bin"],
+        cmd = [],
+    )
+
+    oci_tarball(
+        name = name + "_tarball",
+        image = ":" + name + "_image",
+        repo_tags = [repository + ":" + tag],
+    )
+```
+2. BUILD
+```python
+load("//:defs.bzl", "create_cpp_image")
+
+create_cpp_image(
+    name = "app",
+    srcs = ["main.cpp", "math_operations.cpp", "math_operations.h"],
+    main = "main.cpp",
+    deps = [],
+    base = "@cc_base//image",
+    repository = "example.com/myapp",
+    tag = "v1.0",
+)
+
+cc_binary(
+    name = "run_app",
+    srcs = ["main.cpp", "math_operations.cpp", "math_operations.h"],
+    deps = [],
+)
+```
+3. main.cpp
+```cpp
+#include "math_operations.h"
+#include <iostream>
+
+int main() {
+    int result = add(5, 3);
+    std::cout << "The sum of 5 and 3 is: " << result << std::endl;
+    return 0;
+}
+```
+4. math_operations.cpp
+```cpp
+#include "math_operations.h"
+
+int add(int a, int b) {
+    return a + b;
+}
+```
+5. math_operations.h
+```cpp
+#ifndef MATH_OPERATIONS_H
+#define MATH_OPERATIONS_H
+
+int add(int a, int b);
+
+#endif
+```
 
 
 ## Important Commands
