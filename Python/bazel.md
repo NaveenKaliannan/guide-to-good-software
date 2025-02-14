@@ -303,12 +303,9 @@ if __name__ == "__main__":
 **A simple python applicaiton**
 
 To use these rules, you would typically run:
-1. `bazel build :app_image` Build the OCI image
-2. `bazel build :app_tarball` Build the OCI tarball. This creates a tarball of the OCI image, which can be used for distribution or loading into Docker.
-3. `docker load < bazel-bin/app_tarball/tarball.tar`  This loads the built image into your local Docker daemon.
-4. `docker run example.com/myapp:v1.0` Run the container using Docker
-5. `bazel run :app_image` This builds the image, loads it into Docker, and runs a container in one command.
-6. `bazel run :run_app` Run the Python script directly (not in a container). This builds and runs the Python application directly, not in a container.
+1. `bazel build :app_image` Builds the Docker image
+2. `bazel run :app_image -- --norun` Loads the image into Docker without running
+3. `docker run example.com/myapp:v1.0` Runs the container
 
 All the files
 1. defs.bzl
@@ -413,12 +410,9 @@ numpy==1.21.0
 **A simple C++ applicaiton**
 
 To use these rules, you would typically run:
-1. `bazel build :app_image` Build the OCI image
-2. `bazel build :app_tarball` Build the OCI tarball. This creates a tarball of the OCI image, which can be used for distribution or loading into Docker.
-3. `docker load < bazel-bin/app_tarball/tarball.tar`  This loads the built image into your local Docker daemon.
-4. `docker run example.com/myapp:v1.0` Run the container using Docker
-5. `bazel run :app_image` This builds the image, loads it into Docker, and runs a container in one command.
-6. `bazel run :run_app` Run the Python script directly (not in a container). This builds and runs the Python application directly, not in a container.
+1. `bazel build :app_image` Builds the Docker image
+2. `bazel run :app_image -- --norun` Loads the image into Docker without running
+3. `docker run example.com/myapp:v1.0` Runs the container
 
 All the files
 1. defs.bzl
@@ -429,24 +423,28 @@ load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 def create_cpp_image(name, srcs, main, deps, base, repository, tag):
+    # Compiles the C++ code into a binary.
     cc_binary(
         name = name + "_bin",
         srcs = srcs,
         deps = deps,
     )
 
+    # Packages the binary into a tarball
     pkg_tar(
         name = name + "_bin_tar",
         srcs = [":" + name + "_bin"],
         package_dir = "/app",
     )
 
+    # Creates a Docker image specifically for C++ applications.
     cc_image(
         name = name + "_cc_image",
         base = base,
         binary = ":" + name + "_bin",
     )
 
+    # Finalizes the Docker image with repository and tag information.
     container_image(
         name = name + "_image",
         base = ":" + name + "_cc_image",
@@ -640,18 +638,22 @@ load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 def create_cpp_image(name, srcs, main, deps, base, repository, tag):
+
+    # Compiles the C++ code into a binary.
     cc_binary(
         name = name + "_bin",
         srcs = srcs,
         deps = deps,
     )
 
+    # Packages the binary into a tarball.
     pkg_tar(
         name = name + "_bin_tar",
         srcs = [":" + name + "_bin"],
         package_dir = "/app",
     )
 
+    # Creates an OCI-compliant container image with the binary.
     oci_image(
         name = name + "_image",
         base = base,
@@ -660,6 +662,7 @@ def create_cpp_image(name, srcs, main, deps, base, repository, tag):
         cmd = [],
     )
 
+    # Creates a distributable tarball of the OCI image.
     oci_tarball(
         name = name + "_tarball",
         image = ":" + name + "_image",
