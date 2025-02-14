@@ -22,6 +22,7 @@ Note that the Docker daemon typically builds images using a Dockerfile and the d
 * **nodejs_binary** : For JavaScript/Node.js executables
 * **objc_binary** : For Objective-C executables
 * **sh_binary**: For shell script executables
+* **cc_image** creates the initial Docker image with the C++ application, while **container_image** is used to finalize the image with additional metadata and potentially other customizations.
 * **name** : The name of the binary target. This is mandatory and uniquely identifies the target.
 * **srcs** : A list of source files (e.g., .cc files) that are compiled to create the binary.
 * **deps** : Specifies other targets (e.g., cc_library) that this binary depends on.
