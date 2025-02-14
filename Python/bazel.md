@@ -52,6 +52,108 @@ py_binary(
     ],
 )
 ```
+* **Visibility** in Bazel is a mechanism to control access to targets across different packages. It determines which other targets can depend on or use a particular target. Visibility can be set for individual targets or at the package level. There are two types of visibility in Bazel: Target visibility: Controls access to rule targets.  Load visibility: Controls whether a .bzl file can be loaded from other BUILD or .bzl files outside the current package.
+1. Public visibility:
+```python
+cc_library(
+    name = "my_public_lib",
+    srcs = ["public_lib.cc"],
+    hdrs = ["public_lib.h"],
+    visibility = ["//visibility:public"],
+)
+```
+This library can be used by any other target in any package.
+
+2. Private visibility (default):
+```python
+cc_library(
+    name = "my_private_lib",
+    srcs = ["private_lib.cc"],
+    hdrs = ["private_lib.h"],
+)
+```
+This library can only be used by other targets in the same package.
+
+3. Specific package visibility:
+```python
+cc_library(
+    name = "package_specific_lib",
+    srcs = ["package_specific_lib.cc"],
+    hdrs = ["package_specific_lib.h"],
+    visibility = ["//some/other/package:__pkg__"],
+)
+```
+This library can only be used by targets in the "//some/other/package" package.
+
+4. Subpackage visibility:
+```python
+cc_library(
+    name = "subpackage_lib",
+    srcs = ["subpackage_lib.cc"],
+    hdrs = ["subpackage_lib.h"],
+    visibility = ["//some/package:__subpackages__"],
+)
+```
+This library can be used by targets in "//some/package" and all its subpackages.
+
+5. Multiple visibility specifications:
+```python
+cc_library(
+    name = "multi_visible_lib",
+    srcs = ["multi_visible_lib.cc"],
+    hdrs = ["multi_visible_lib.h"],
+    visibility = [
+        "//some/package:__pkg__",
+        "//another/package:__subpackages__",
+        "//third/package:specific_target",
+    ],
+)
+```
+This library is visible to the specified package, subpackages, and a specific target.
+
+6. Package group visibility:
+```python
+# In //some/package/BUILD
+package_group(
+    name = "my_package_group",
+    packages = [
+        "//some/package/...",
+        "//another/package",
+    ],
+)
+
+cc_library(
+    name = "group_visible_lib",
+    srcs = ["group_visible_lib.cc"],
+    hdrs = ["group_visible_lib.h"],
+    visibility = ["//some/package:my_package_group"],
+)
+```
+This library is visible to all packages specified in the "my_package_group" package group.
+
+7. Default visibility for a package:
+```python
+# At the top of a BUILD file
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "default_public_lib",
+    srcs = ["default_public_lib.cc"],
+    hdrs = ["default_public_lib.h"],
+)
+```
+All targets in this package will be public unless explicitly specified otherwise.
+
+8 Load visibility for .bzl files:
+```python
+# In my_rules.bzl
+visibility(["//some/package:__subpackages__"])
+
+def my_custom_rule(...):
+    # Rule implementation
+```
+This .bzl file can only be loaded by BUILD files in "//some/package" and its subpackages.
+
 * **WORKSPACE.bazel** This file defines the root of the workspace and external dependencies and **BUILD.bazel** This file defines build targets for the root package of the workspace
 * `bazel build //:main` and `bazel run //:main`
 ```text
@@ -717,6 +819,105 @@ int add(int a, int b) {
 int add(int a, int b);
 
 #endif
+```
+
+
+* **A simple c++ application** using rules_oci and rules_docker
+
+`rules_docker`
+```bash
+bazel build //:hello_docker_image
+docker load < bazel-bin/hello_docker_image.tar
+docker run example.com/hello:v1.0
+```
+`rules_oci`
+```bash
+bazel build //:hello_oci_tarball
+docker load < bazel-bin/hello_oci_tarball.tar
+docker run example.com/hello:v1.0
+```
+ 
+1. hello.cpp code
+```cpp
+// hello.cc
+#include <iostream>
+
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
+```
+2. BUILD
+```python
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load(":docker_rules.bzl", "docker_image")
+load(":oci_rules.bzl", "oci_image_package")
+
+cc_binary(
+    name = "hello_bin",
+    srcs = ["hello.cc"],
+)
+
+# rules_docker configuration
+docker_image(
+    name = "hello_docker_image",
+    binary = ":hello_bin",
+    repository = "example.com/hello",
+    tag = "v1.0",
+)
+
+# rules_oci configuration
+oci_image_package(
+    name = "hello_oci_image",
+    binary = ":hello_bin",
+    repository = "example.com/hello",
+    tag = "v1.0",
+)
+```
+3. docker_rules.bzl
+```python
+load("@io_bazel_rules_docker//cc:image.bzl", "cc_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+
+def docker_image(name, binary, repository, tag):
+    cc_image(
+        name = name + "_cc_image",
+        base = "@ubuntu_base//image",
+        binary = binary,
+    )
+
+    container_image(
+        name = name,
+        base = ":" + name + "_cc_image",
+        repository = repository,
+        tag = tag,
+    )
+```
+4. oci_rules.bzl
+```python
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+def oci_image_package(name, binary, repository, tag):
+    pkg_tar(
+        name = name + "_bin_tar",
+        srcs = [binary],
+        package_dir = "/app",
+    )
+
+    oci_image(
+        name = name + "_image",
+        base = "@ubuntu_base_oci",
+        tars = [":" + name + "_bin_tar"],
+        entrypoint = ["/app/" + binary.split(":")[-1]],
+        cmd = [],
+    )
+
+    oci_tarball(
+        name = name,
+        image = ":" + name + "_image",
+        repo_tags = [repository + ":" + tag],
+    )
 ```
 
 
