@@ -88,6 +88,43 @@ add_executable(my_executable main.cpp)
 target_link_libraries(my_executable PRIVATE Boost::filesystem)
 ```
 
+## Important BAZEL Files You Should Know About
+* **BUILD files**: These are the core configuration files for Bazel projects. They define packages and specify what software outputs can be built from the source files in each package.
+* **MODULE.bazel**: This file serves as a module's manifest, declaring its name, version, and list of direct dependencies. It's located at the root of a Bazel module.
+* **WORKSPACE or WORKSPACE.bazel**: In legacy contexts, these files mark the root of a Bazel workspace. They're being phased out in favor of MODULE.baze.
+* **REPO.bazel**: This is another type of boundary marker file that can be used to define the root of a repository.
+* **.bzl files**: These are Bazel extension files that can be loaded to import new rules, functions, or constants.
+* **VENDOR.bazel**: This file is recognized by Bazel as part of its configuration, though its specific use is not detailed in the provided search results.
+* **.bazelrc**: While not mentioned in the search results, this is a well-known Bazel configuration file used to specify command-line options.
+```text
+project_root/
+│
+├── WORKSPACE.bazel (or WORKSPACE)
+├── MODULE.bazel
+├── .bazelrc
+│
+├── BUILD.bazel (or BUILD)
+│
+├── src/
+│   ├── BUILD.bazel
+│   ├── main.cc
+│   └── ...
+│
+├── lib/
+│   ├── BUILD.bazel
+│   ├── library.cc
+│   ├── library.h
+│   └── ...
+│
+└── external/
+    └── ...
+```
+The root directory contains WORKSPACE.bazel (or MODULE.bazel) and often a top-level BUILD.bazel file.
+
+Source code is typically organized into subdirectories (e.g., src/, lib/), each with its own BUILD.bazel file5.
+
+External dependencies are usually managed in a separate directory (e.g., external/)3.
+
 ## Installaing Bazel
 
 * **Bazel-built image with Docker**: Bazel builds images without a running Docker daemon, while Docker requires its daemon for image building. Uses rules like container_image or oci_image to create container image tarballs directly. Creates a single tarball containing the entire container image, which can be loaded into Docker later.
