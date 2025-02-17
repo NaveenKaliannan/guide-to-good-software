@@ -1,7 +1,92 @@
 # Bazel
 
-Bazel is an open-source build and test tool developed by Google for automating software builds and tests. 
-It is designed to handle large-scale projects with multi-language dependencies and supports building software for different architectures and platforms.
+Bazel is an open-source build and test tool developed by Google for automating software builds and tests.  Similar to CMAKE and Makefile, Bazel is a  popular build systems used in software development.
+
+
+## Difference between Bazel, CMAKE and Makefile
+
+### Bazel (Starlark)
+1. Bazel uses the declarative Starlark language for configuration. 
+2. Bazel uses content-based hashing to uniquely identify files and actions based on their content. This ensures that builds are deterministic: the same inputs always produce the same outputs. For example : Bazel computes a hash for each input file (main.cpp and main.h) based on their content. If you modify hello.cc, its hash changes, and Bazel knows the file has been updated. Bazel computes a hash for the build action (e.g., compiling main.cpp) based on: Input file hashes (main.cpp and main.h), Compiler flags, Environment variables. If any of these inputs change, the action hash changes, and Bazel re-executes the action. The output of the compilation (e.g., main_lib.o) is stored in a cache using the action hash as a key. If the same action is requested again (with unchanged inputs), Bazel retrieves the output from the cache instead of recompiling. Note that the Bazel compiles main.cc because their outputs are not in the cache for the first time. The compiled outputs (main.o, main_lib.o) and final binary (my_executable) are stored in the local or remote cache. When you run the build command again, Bazel performs these steps: Recomputes the hash for main.cc. Detects that only main.cc has changed. Recompiles only main.cc.  Links the new object file (main.o) with the cached output of hello_lib.o to produce an updated binary. **Unchanged Files** Since neither main.cc nor its header file (main.h) has changed, Bazel reuses their cached outputs without recompiling them.
+3. Bazel uses a MODULE.bazel file to declare dependencies explicitly, ensuring correctness and isolation. 
+4. Multi-language support (e.g., C++, Java, Python, Go, Rust, Kotlin)
+5.  Bazel rebuilds only the parts of the codebase that have changed, using a content-based cache. It supports massive parallelism and remote execution, making it ideal for large teams working on monorepos with thousands of packages
+6.  Bazel computes a hash for each action's inputs (e.g., source files, environment variables) and stores the outputs in a Content Addressable Store (CAS). If the hash matches an existing entry, Bazel reuses the cached output instead of re-executing the action. For instance, if only src/utils.cpp is modified, Bazel rebuilds only the affected parts of the dependency graph, skipping unchanged components like src/main.cpp. This ensures minimal rebuild times even in large monorepos. `bazel build --jobs=10 //src:my_target` The --jobs=N flag specifies the number of concurrent jobs Bazel can execute. For example, if there are multiple source files or targets to compile, Bazel distributes them across available CPU cores.
+7.  **What Happens During Remote Execution?** Action Upload: Bazel computes content hashes for all inputs (main.c, utils.c, etc.). It uploads these inputs and the action metadata (e.g., compilation commands) to the remote execution service. Remote Worker Execution: The remote workers compile main.c and utils.c into object files (main.o, utils.o) in parallel. The object files are linked into an executable (example). Output Caching: The resulting executable (example) is stored in the remote cache. The executable is downloaded back to your local machine for use. Reusing Cached Outputs: If you run the build again without any changes, Bazel retrieves the cached outputs from the remote cache instead of re-executing the actions. The **Remote Execution API (REAPI)**, which enables Bazel to offload tasks to remote workers.
+8.  `build --remote_executor=https://user:password@remote.buildbuddy.io:443` build actions to a remote executor `build --remote_cache=https://user:password@cache.buildbuddy.io:443` Stores/retrieves build outputs from a remote cache `build --remote_header=x-buildbuddy-api-key=YOUR_API_KEY` Adds an API key for authenticating requests to both executor and cache `build --remote_executor=grpcs://remote.buildbuddy.io` build actions to a remote executor using gRPC `build --remote_cache=grpcs://cache.buildbuddy.io` Stores/retrieves build outputs from a remote cache using gRPC
+9.  To utilize **remote caching and remote execution** with Bazel on a remote machine like domainname, you need to install and configure appropriate services on that machine. Specifically: `Bazel Remote Caching`: This allows Bazel to store and retrieve build outputs (e.g., compiled object files, executables) from a remote cache. `Bazel Remote Worker`: This enables Bazel to offload build actions (e.g., compiling, linking) to the remote machine for distributed execution.
+```python
+# BUILD file
+# cc_binary is a rule to build a C++ binary.
+cc_binary(
+    name = "my_executable",
+    srcs = ["main.cpp"],  # srcs specifies source files.
+    deps = ["@boost//:filesystem"], # deps declares dependencies, such as the Boost filesystem library. Dependencies are explicitly managed using labels like @boost//:filesystem.
+)
+```
+### Makefile
+1. Makefiles use an imperative, rule-based syntax. 
+2. If no files are modified, running make does nothing. Makefile relies on file modification timestamps to determine what needs rebuilding, it means that make checks the last modified time of files (timestamps) to decide whether a target (e.g., an executable or object file) needs to be rebuilt. Suppose you edit main.cpp at 08:36 AM. Its timestamp updates, making it newer than main.o. Make does not inspect file contents—only timestamps. If a file's content changes without its timestamp being updated, Make will not rebuild the target. To address these limitations, you can modify the Makefile to use content-based hashing (e.g., MD5 or SHA256) instead of relying solely on timestamps.
+3. Dependencies in a Makefile are specified manually using the target: dependencies syntax
+4. Primarily C/C++ but extensible
+5.  Makefiles struggle with large projects because they rely on manual configurations and timestamp-based builds.
+6.  Makefiles rely on local execution, where all commands are run on the developer's machine. Remote execution is not natively supported, but it can be achieved by manually configuring tools like ssh or distcc.
+7.  No caching or parallelism like Bazel.
+```makefile
+
+# Targets (my_executable, main.o) define the build steps.
+# Commands (e.g., g++) are executed when rules are triggered.
+my_executable: main.o  
+	g++ -o my_executable main.o -lboost_filesystem
+
+# Dependencies are manually specified (e.g., main.o depends on main.cpp).
+# Commands (e.g., g++) are executed when rules are triggered.
+main.o: main.cpp
+	g++ -c main.cpp
+
+clean:
+	rm -f *.o my_executable
+```
+```makefile
+CC = gcc
+CFLAGS = -Wall
+
+TARGET = program
+SRCS = main.c utils.c
+OBJS = $(SRCS:.c=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+    ssh user@remote-server "gcc -o $@ $(OBJS)"
+
+%.o: %.c
+    scp $< user@remote-server:/tmp/
+    ssh user@remote-server "gcc -c /tmp/$< -o /tmp/$@"
+    scp user@remote-server:/tmp/$@ .
+
+clean:
+    rm -f $(OBJS) $(TARGET)
+    ssh user@remote-server "rm -f /tmp/*.o"
+```
+### CMake (CMakeLists.txt)
+1. CMake uses a script-based approach. CMake itself does not perform builds but acts as a build system generator. It generates build scripts for tools like Make or Ninja, which then handle the actual compilation and linking of your code.
+2. Multi-language support but most common in C/C++ projects
+3. CMake can manage moderately complex projects but struggles with very large codebases due to manual dependency tracking and configuration
+4. CMake: No Built-in Support for Remote Execution
+```text
+cmake_minimum_required(VERSION 3.10)
+project(MyExecutable)
+
+# find_package locates external libraries like Boost.
+find_package(Boost REQUIRED COMPONENTS filesystem)
+
+# add_executable defines the target executable.
+add_executable(my_executable main.cpp)
+
+# target_link_libraries links the Boost filesystem library to the executable
+target_link_libraries(my_executable PRIVATE Boost::filesystem)
+```
 
 ## Installaing Bazel
 
