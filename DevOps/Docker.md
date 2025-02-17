@@ -200,6 +200,7 @@ PIDS: The number of processes or threads the container has created.
 ```
 * **docker rename <CURRENT_NAME> <NEW_NAME>** rename a container
 * **docker --privileged** flag grants a container root capabilities and unrestricted access to all devices on the host system. Mounting /dev: The container can access and mount all devices on the host, including disk devices. Capabilities: The container gains all capabilities available on the host, including CAP_SYS_ADMIN for modifying kernel parameters and overriding security policies. Cgroups: The cgroup restrictions enforced by the device cgroup controller are lifted, giving the container access to all devices on the host. Privileged mode is primarily intended for debugging and running nested Docker instances (Docker-in-Docker) but should be avoided in production environments due to the significant security risks involved
+* **docker run -it --entrypoint /bin/bash image_name** Creates and starts a new Docker container based on the specified image. Overrides the default ENTRYPOINT of the image with /bin/bash. Runs the container in interactive mode (-i) with a pseudo-TTY allocated (-t). you can explore the container's filesystem, run commands, and interact with the container environment directly through a Bash shell. 
 ******************************
 
 ### Docker storage and File systems
