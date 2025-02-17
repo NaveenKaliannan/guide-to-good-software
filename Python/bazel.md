@@ -90,12 +90,69 @@ target_link_libraries(my_executable PRIVATE Boost::filesystem)
 
 ## Important BAZEL Files You Should Know About
 * **BUILD files**: These are the core configuration files for Bazel projects. They define packages and specify what software outputs can be built from the source files in each package.
-* **MODULE.bazel**: This file serves as a module's manifest, declaring its name, version, and list of direct dependencies. It's located at the root of a Bazel module.
-* **WORKSPACE or WORKSPACE.bazel**: In legacy contexts, these files mark the root of a Bazel workspace. They're being phased out in favor of MODULE.baze.
+```python
+cc_library(
+    name = "my_lib",
+    srcs = ["src/my_lib.cc"],
+    hdrs = ["src/my_lib.h"],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "my_app",
+    srcs = ["src/main.cc"],
+    deps = [":my_lib"],
+)
+```
+* **MODULE.bazel**: This file serves as a module's manifest, declaring its name, version, and list of direct dependencies. It's located at the root of a Bazel module. MODULE.bazel uses simpler bazel_dep declarations. MODULE.bazel supports versioning directly. MODULE.bazel uses a registry (by default, the Bazel Central Registry) to look up dependencies. MODULE.bazel is the recommended approach for newer Bazel versions. Bazel uses the Bazel Central Registry (BCR) to locate dependencies. You can specify additional registries using the --registry flag. This allows you to use third-party or internal registries for dependencies not available in the BCR.
+```python
+module(
+    name = "my_project",
+    version = "1.0.0",
+)
+
+bazel_dep(name = "rules_cc", version = "0.0.1")
+bazel_dep(name = "protobuf", version = "3.19.0")
+```
+* **WORKSPACE or WORKSPACE.bazel**: In legacy contexts, these files mark the root of a Bazel workspace. They're being phased out in favor of MODULE.bazel. WORKSPACE.bazel requires explicit URLs and load statements. WORKSPACE.bazel doesn't have built-in version management. WORKSPACE.bazel often uses specific URLs. WORKSPACE.bazel will be removed in future versions. The WORKSPACE system does not use the Bazel Central Registry (BCR) for dependency management. Instead, WORKSPACE files typically specify dependencies using direct URLs or other repository rules.
+```python
+workspace(name = "my_project")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "rules_cc",
+    urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.1/rules_cc-0.0.1.tar.gz"],
+    sha256 = "4dccbfd22c0def164c8f47458bd50e0c7148f3d92002cdb459c2a96a68498241",
+)
+
+load("@rules_cc//cc:repositories.bzl", "rules_cc_dependencies")
+rules_cc_dependencies()
+
+http_archive(
+    name = "protobuf",
+    urls = ["https://github.com/protocolbuffers/protobuf/archive/v3.19.0.zip"],
+    strip_prefix = "protobuf-3.19.0",
+)
+``` 
 * **REPO.bazel**: This is another type of boundary marker file that can be used to define the root of a repository.
 * **.bzl files**: These are Bazel extension files that can be loaded to import new rules, functions, or constants.
+```python
+def my_rule(name, srcs, deps = []):
+    native.cc_library(
+        name = name,
+        srcs = srcs,
+        deps = deps,
+    )
+``` 
 * **VENDOR.bazel**: This file is recognized by Bazel as part of its configuration, though its specific use is not detailed in the provided search results.
 * **.bazelrc**: While not mentioned in the search results, this is a well-known Bazel configuration file used to specify command-line options.
+```text
+build --cxxopt='-std=c++14'
+build --copt='-Wall'
+test --test_output=errors
+```
+* **Sample directory structure**
 ```text
 project_root/
 │
