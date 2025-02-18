@@ -24,7 +24,7 @@ Tools for autonomous building, testing, deploying, CI/CD: [Jenkins](https://www.
 
 Gnuplot templates to create high quality graphics and graphs: [xy plots](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter5/translational-KE/translational-KE.pdf), [Mutliple xy plots](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter4/induced-seperated/PFFMD/mgcl2-total-induced_PFFMD.pdf), [histogram](https://github.com/NaveenKaliannan/guide-to-good-software/blob/main/templates-GRAPHS-HISTOGRAMS/Chapter6/Hbond-population/Fig3.gp)
 
-Tools to format the source code: [Black, flake8 for Python](https://pypi.org/project/black/), [Pylint for Python](https://pypi.org/project/pylint/), [shfmt for shell script](https://webinstall.dev/shfmt/), [autopep8](https://pypi.org/project/autopep8/), [Scalafmt for Scala](https://scalameta.org/scalafmt/docs/installation.html#arch-linux) 
+Tools to format the source code: [Black, flake8 for Python](https://pypi.org/project/black/), [Pylint for Python](https://pypi.org/project/pylint/), [shfmt for shell script](https://webinstall.dev/shfmt/), [autopep8](https://pypi.org/project/autopep8/), [Scalafmt for Scala](https://scalameta.org/scalafmt/docs/installation.html#arch-linux), [buildifier is a tool for formatting Bazel BUILD and . bzl files](https://github.com/bazelbuild/buildtools)
 
 Tools to find the unused source code :  [Vulture](https://pypi.org/project/vulture/), [Pyflakes](https://pypi.org/project/pyflakes/), [Pylint](https://pypi.org/project/pylint/)
 
