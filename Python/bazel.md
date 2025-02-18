@@ -1139,6 +1139,7 @@ oci_image(
 )
 ```
 By placing less frequently changed files in lower layers, you optimize the image for faster updates and reduced network usage when pushing and pulling updates. This approach takes advantage of Docker's layer caching mechanism, allowing for more efficient builds and deployments.
+
 3. it's recommended to handle the requirements.txt file and source files separately. Better layer caching: If your source code changes frequently but dependencies rarely change, Docker can reuse the cached requirements layer.
 ```python
 pkg_tar(
