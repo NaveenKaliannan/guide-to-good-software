@@ -1099,6 +1099,71 @@ def oci_image_package(name, binary, repository, tag):
     )
 ```
 
+### Better way to create a rules_oci
+1. By placing files first, you establish the content, and then create the necessary symbolic links to that content.
+```python
+pkg_tar(
+    name = "files_tar",
+    srcs = ["file1", "file2", "file3"],
+    # Other attributes...
+)
+
+pkg_tar(
+    name = "symlinks_tar",
+    symlinks = {
+        "/path/to/symlink": "/path/to/target",
+    },
+    # Other attributes...
+)
+oci_image(
+    name = "my_image",
+    base = "@some_base_image",
+    tars = [
+        ":files_tar",
+        ":symlinks_tar",
+    ],
+    # Other attributes...
+)
+```
+2. When using the oci_image rule, the order of files in the tars attribute is important. You should place the files in the following order: Less frequently changed files, More frequently changed files. This order is crucial because: It preserves the layering structure in the resulting image. It reduces network bandwidth required for pulling and pushing images.
+```python
+oci_image(
+    name = "my_image",
+    tars = [
+        "rootfs.tar",      # Less frequently changed and will be the first (bottom) layer. Note that there is also a base layer.
+        "libc6.tar",       # Less frequently changed
+        "appfs.tar",       # More frequently changed
+        "config.tar",      # More frequently changed and will be the fourth (top) layer
+    ],
+    # Other attributes...
+)
+```
+By placing less frequently changed files in lower layers, you optimize the image for faster updates and reduced network usage when pushing and pulling updates. This approach takes advantage of Docker's layer caching mechanism, allowing for more efficient builds and deployments.
+3. it's recommended to handle the requirements.txt file and source files separately. Better layer caching: If your source code changes frequently but dependencies rarely change, Docker can reuse the cached requirements layer.
+```python
+pkg_tar(
+    name = "requirements_layer",
+    srcs = ["requirements.txt"],
+    package_dir = "/app",
+)
+
+pkg_tar(
+    name = "src_layer",
+    srcs = glob(["src/**/*.py"]),
+    package_dir = "/app",
+)
+
+oci_image(
+    name = "my_python_image",
+    base = "@python_base_image",
+    tars = [
+        ":requirements_layer",
+        ":src_layer",
+    ],
+    cmd = ["python", "/app/src/main.py"],
+)
+```
+**Note that the order of pkg_tar rules in the BUILD file does not matter5. What matters is the order in which these pkg_tar targets are listed in the tars attribute of the oci_image rule. The pkg_tar rule creates a tar file from a list of inputs, but the order of these rules in the BUILD file does not affect the final image structure. The actual layering and order of files in the resulting image is determined by how these pkg_tar targets are referenced in the oci_image rule**
 
 ## Important Commands
 * **bazel build**: Builds the specified targets, compiling source code and generating output artifacts (e.g., binaries, libraries)135.
