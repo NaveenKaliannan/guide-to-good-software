@@ -489,7 +489,71 @@ container_pull(
 )
 ```
 * **Another example** Explanation of each command:
-1. py_layer: This creates a layer containing specific Python dependencies. It helps in organizing and managing dependencies efficiently.
+1. py_layer: This creates a layer containing specific Python dependencies. It helps in organizing and managing dependencies efficiently. It creates alayered structure for OCI image. The base layer remains unchanged. The deps will be always in the runfiles directory which was created using the py_binary. It always caches the deps layer when there is change in main code. With/without py_layer, the files and directory structure within the final image will be the same. The only difference how the image is build. The three layers will be interpreter, third party and local deps, and application code. 
+```text
+my_project/
+├── WORKSPACE
+├── BUILD
+├── main.py
+├── requirements.txt
+└── local_lib/
+    ├── BUILD
+    └── helper.py
+
+```
+```python
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
+load("@rules_oci//python:defs.bzl", "py_layer")
+
+py_binary(
+    name = "my_app",
+    srcs = ["main.py"],
+    main = "main.py",
+    deps = [
+        "//local_lib:helper",
+        "@my_deps//numpy",
+    ],
+)
+
+# Interpreter layer
+oci_image(
+    name = "interpreter_layer",
+    base = "@python_base",
+)
+
+# Third-party dependencies layer (NumPy)
+py_layer(
+    name = "third_party_layer",
+    binary = ":my_app",
+    include = ["@my_deps//numpy"],
+)
+
+# Local dependencies layer
+py_layer(
+    name = "local_deps_layer",
+    binary = ":my_app",
+    include = ["//local_lib:helper"],
+)
+
+# Application code layer
+py_layer(
+    name = "app_layer",
+    binary = ":my_app",
+    include = [":my_app"],
+)
+
+oci_image(
+    name = "my_app_image",
+    base = ":interpreter_layer",
+    tars = [
+        ":third_party_layer",
+        ":local_deps_layer",
+        ":app_layer",
+    ],
+    entrypoint = ["/app/my_app"],
+)
+```
 2. py3_image: This builds a Docker image with a Python 3 runtime. It includes the specified source files and layers, making it ready for containerization1.
 3. container_image: This command builds the final Docker image. It uses the py3_image as a base and adds additional configurations like exposed ports and the command to run1.
 4. container_push: This pushes the built image to a specified container registry. In this example, it's pushing to Google Container Registry (gcr.io)2.
