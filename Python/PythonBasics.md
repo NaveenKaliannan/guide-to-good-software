@@ -39,7 +39,7 @@ function deactvenv() {
 
 ### Variables - Name for a value in python
 Python evaluates the right side of the assignment first. When variable y=2 and x=y then both variables refer to the same value. 
-* **Weak and Strong references** Strong references are the default in Python. They keep objects alive in memory as long as at least one strong reference exists. Weak References create more memory-efficient programs that allow the garbage collector to reclaim memory when objects are no longer
+* **Weak and Strong references** Strong references are the default in Python. They keep objects alive in memory as long as at least one strong reference exists. Weak References create more memory-efficient programs that allow the garbage collector to reclaim memory when objects are no longer. The objects exsist till all strong references are deleted. The objects will be deeleted when all strong references are deleted and weak referecnces can still exsists. So better caching using one strong references, and then a weak references to the strong references. Once the strong referece deleted, the object vanishes.  
 ```python
 import weakref
 import gc
@@ -85,7 +85,21 @@ def demonstrate_references():
     print(f"Weak ref: {weak_ref()}")
 
 demonstrate_references()
+```
+```python
+import weakref
 
+class Person:
+    def __init__(self, name):
+        self.name = name
+
+person = Person("Alice")
+weak_ref = weakref.ref(person)
+
+print(weak_ref().name)  # Output: Alice
+
+del person
+print(weak_ref())  # Output: None
 ```
 * **Integer (int)** x = 5 Whole numbers without decimal points
 ```python
