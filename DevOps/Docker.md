@@ -72,7 +72,8 @@ Save the file and restart the Docker daemon for the changes to take effect. Crea
 Docker CLI (command line interface, user interface)
 Docker API (for communication between the Docker client and the Docker daemon)
 Docker Daemon (a background process that processes commands from the Docker client, and manages images, containers, volumes, and networks)
-The Docker CLI can be installed on a different machine or host and can be connected to a remote Docker Engine using the -H or --host flag, like docker -H=remote-docker-engine:port command. This allows you to manage a remote Docker Engine from a different machine.\
+The Docker CLI can be installed on a different machine or host and can be connected to a remote Docker Engine using the -H or --host flag, like docker -H=remote-docker-engine:port command. This allows you to manage a remote Docker Engine from a different machine. **Docker Engine internally uses containerd as its container runtime, which in turn calls an even lower-level runtime like runC to create and start containers. Container runtimes are specialized components focused on the core functions of starting, stopping, and managing container processes using operating system features like namespaces and cgroups. The Docker runtime consults this index on pull/run and selects the manifest matching the current machine’s OS and CPU architecture.  Then it pulls the referenced manifest and layers to run the correct image for that platform. The index.json (image index / manifest list) contains references (digests) to multiple image manifests for different OS/architecture platforms.**
+  \
 * The differece among them:\
   **Docker Client**
 The Docker client is the primary way users interact with Docker. It is a command-line interface (CLI) tool that sends commands and configuration data to the Docker daemon. The Docker client communicates with the Docker daemon through a REST API, either over a UNIX socket or a network interface.\
@@ -121,6 +122,154 @@ CMD ["stress", "--cpu", "2", "--vm-bytes", "256M", "--vm-hang", "0"]
 17. **.dockerignore**  file that excludes the files and folder.
 18. **Dangling Images**: The old image doesn't get deleted immediately. Instead, it becomes a dangling image because it no longer has a tag associated with it. Docker keeps these dangling images in case they are still in use by other containers
 19. **NAT (Network Address Translation)** in Docker is a mechanism that allows containers to share the host's IP address and access external networks, while being isolated from each other. Here's how it works: Docker creates a virtual ethernet bridge (docker0 by default) to which all containers are connected. When a container tries to communicate with an external IP, the request is forwarded to the docker0 interface. Docker then performs Source NAT (SNAT) on the outgoing packets, replacing the container's private IP with the host's public IP address. **When a device on the private network attempts to access the internet, the NAT device translates the private IP address to a public IP address before forwarding the request. This allows multiple devices on the private network to share a single public IP address**
+20. **OCI -  Open Container Initiative** image can run containers on both Windows and Linux platforms and across various CPU architectures. This capability is one of the major advantages of OCI images.OCI images support multi-platform builds by having an image index (manifest list) that references separate platform-specific image manifests—each tailored for a particular OS (Linux, Windows) and architecture (e.g., amd64, arm64). When you build an OCI image with tools like Docker Buildx, you can target multiple platforms simultaneously, resulting in one image reference (name and tag) that contains manifests for all specified OS/architectures. At runtime, container engines (like Docker, containerd) pull the OCI image index, automatically select the manifest matching the host’s OS and CPU architecture, and run the corresponding container image. This lets the same image reference run seamlessly on Linux on AMD64, Linux on ARM64, Windows on AMD64, etc. For example, a Python app can be built into one OCI image: one manifest with a Linux Alpine base image for Linux hosts, and another manifest with a Windows base image for Windows hosts. The Python code is the same, but the packaged container layers differ for OS/kernel compatibility. Architectures supported depend on the build targets. You specify platforms like linux/amd64, linux/arm64, windows/amd64 in build commands. The result is an OCI image capable of running on those platforms without manual image variant selection. **Linux-based container images (such as those based on Alpine or Debian) are designed to run on Linux hosts because containers share the host OS kernel, which in this case is Linux. Windows-based container images (built on Windows base images like mcr.microsoft.com/windows/servercore) are designed to run on Windows hosts because Windows containers require the Windows kernel. A Linux-based image cannot run natively on Windows hosts without a Linux VM/emulation (e.g., WSL2 or Docker Desktop’s Linux VM). You cannot run the Linux-based image natively as a Windows container image; the host OS kernel must match the container image OS. So including Windows as a build target only makes sense if you provide a proper Windows base image with your Python app for the Windows platform, alongside your Linux image.**
+
+An OCI (Open Container Initiative) image can support multiple operating systems, including both Linux and Windows, but the actual image manifests are platform-specific. OCI defines an open standard and specifications for container images and runtimes that allow multi-platform support by including multiple image manifests (one per OS and architecture) under a common image index (manifest list). When a container runtime (like Docker or containerd) on a specific host pulls an OCI image, it reads this index and automatically selects the manifest matching the host’s OS and architecture. This enables one image reference (tag) to work across Linux and Windows hosts transparently. The OCI standard does not bridge OS kernel differences; it provides a consistent format and selection mechanism so that multi-OS images can coexist under one reference, but native execution still requires OS matching. When you do a normal Docker build (e.g., `docker build -t myimage .`), the resulting container image is stored inside the Docker daemon's storage (usually under `/var/lib/docker` or similar location depending on your OS). This image is then immediately runnable by Docker with docker run myimage. This command builds the image in Docker’s default format (not explicitly OCI).
+```bash
+docker build -t myimage:latest .
+docker run --rm myimage:latest # runs the container and removes it afte execution
+```
+- When you build an OCI-compliant image layout using Docker Buildx or other OCI tools (e.g., `docker buildx build --output type=oci,dest=oci-dir .`), the image is created as a directory or tarball on disk in the OCI image layout format, which includes the `index.json` and other OCI-specific files. Docker cannot run an image directly from an OCI image layout directory or tarball, because it expects images inside its own daemon storage. To run an OCI image with Docker, you must first import or load the OCI image tarball or directory into the Docker daemon, for example using `docker load -i oci-image.tar` or another import mechanism. Once imported, the image behaves like any other Docker image and can be run with docker run. This creates an OCI standard image layout in the directory oci-layout-dir
+```bash
+docker buildx build --output type=oci,dest=oci-layout-dir -t myimage:latest .
+docker load -i oci-layout.tar
+docker run --rm myimage:latest
+docker buildx build --platform linux/amd64,linux/arm64,windows/amd64 --push -t yourrepo/yourimage:tag . #Docker Buildx allows building images for multiple platforms (like linux/amd64, linux/arm64) in a single command. The --platform option defines the OS and architecture combinations your image supports. The multi-platform build process automatically creates an OCI-compliant image index (manifest list) called index.json.
+```
+| Aspect              | OCI Image Build/Load/Run                                   | Normal Docker Image Build/Run               |
+|---------------------|-----------------------------------------------------------|---------------------------------------------|
+| **Build Command**    | `docker buildx build --output type=oci,dest=oci-dir .`    | `docker build -t myimage:tag .`             |
+| **Image Output**     | OCI image layout directory or tarball (includes `index.json`) | Stored internally in Docker daemon storage  |
+| **Load Command**     | `docker load -i oci-image.tar` (after build if tarball) or containerd/load tools | Built image already in Docker daemon; no load needed |
+| **Run Command**      | Must load OCI image into Docker daemon first, then `docker run` | Directly `docker run myimage:tag` without load |
+| **Key Files Created**| - `index.json` (image index manifest with platform info) <br> - `oci-layout` (layout metadata) <br> - `blobs/` (manifests, config, layers by digest) | - `manifest.json` (Docker v2 manifest) <br> - `config.json` (runtime config) <br> - layers and metadata managed internally; not exposed as files |
+
+| File          | When Created                                | Contents / Information                            | Role in Interoperability & Compatibility                                  | Created in OCI Builds? | Created in Normal Docker Builds? |
+|---------------|--------------------------------------------|-------------------------------------------------|-------------------------------------------------------------------------|-----------------------|---------------------------------|
+| **index.json**| Created during OCI image build/export      | JSON file serving as an image index; lists one or more *manifest* descriptors with metadata such as: <br> - `schemaVersion` <br> - `mediaType` (usually `application/vnd.oci.image.index.v1+json`) <br> - Array of manifests with fields: digest, size, mediaType, platform (OS/arch) | Central to OCI image layout; allows multi-architecture/multi-platform support and consistent referencing of manifests. Forms the top-level index enabling any OCI-compliant runtime/tool to find correct manifests and platform-specific images. Standardizes image indexing across vendors. | Yes                   | No                              |
+| **config**    | Created during image build for each image  | JSON file holding image runtime configuration and metadata about the container environment, including: <br> - Entrypoint, Cmd, Environment Variables <br> - Working directory <br> - Layer history and timestamps <br> - Architecture and OS details | Describes how the container should run; enables consistent container behavior across runtimes; content-addressable and referenced by manifest. Standardizes runtime configuration for portability. | Yes                   | Yes                             |
+| **manifest**  | Created during image build/export           | JSON manifest describing the image composition, including: <br> - Reference to **config** file digest <br> - Ordered list of layer digests (tar archives) representing the file system layers <br> - Media types <br> - Size and digest info | Specifies exact layers and configuration to assemble image; referenced by `index.json` in multi-platform images or used standalone in single-arch containers. Ensures image content integrity and correct assembly by any compliant runtime/tool. | Yes                   | Yes                             |
+
+Here are full example files for a multi-architecture OCI container image setup including: `Image index (index.json)` referencing two manifests—one for `amd64 Linux`, one for `arm64 Linux`.
+The two example image manifest files for amd64 and arm64, each describing layers and configuration for that platform.
+1. OCI Image Index (index.json)
+This acts as the "fat manifest" pointing to platform-specific manifests:
+```json
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.index.v1+json",
+  "manifests": [
+    {
+      "mediaType": "application/vnd.oci.image.manifest.v1+json",
+      "digest": "sha256:aaa111...amd64manifestdigest",
+      "size": 776,
+      "platform": {
+        "architecture": "amd64",
+        "os": "linux"
+      }
+    },
+    {
+      "mediaType": "application/vnd.oci.image.manifest.v1+json",
+      "digest": "sha256:bbb222...arm64manifestdigest",
+      "size": 776,
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      }
+    }
+  ]
+}
+```
+"digest" here refers to the sha256 hash of the respective platform-specific manifest files. "manifests" array lists all platform-targeted manifests with their OS and architecture metadata.
+Example manifest for the amd64 Linux image:
+```json
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "config": {
+    "mediaType": "application/vnd.oci.image.config.v1+json",
+    "digest": "sha256:cc1a2b3c4d5e6f7a8b9c0d111213141516171819202122232425262728293031",
+    "size": 7023
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:d4e5f6a7b8c9d0e1f21314151617181920212223242526272829303132333435",
+      "size": 32654
+    },
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:e6f7a8b9c0d1e2f3141516171819202122232425262728293031323334353637",
+      "size": 16724
+    }
+  ]
+}
+```
+"config" points to the config blob describing container execution details. "layers" lists filesystem layers compressed as tar+gzip, with unique digests.
+Example manifest for the arm64 Linux image:
+```json
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "config": {
+    "mediaType": "application/vnd.oci.image.config.v1+json",
+    "digest": "sha256:dd2a3b4c5d6e7f809a1b2c3d4e5f60718292a3b4c5d6e7f809a1b2c3d4e5f607",
+    "size": 7030
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:f6a7b8c9d0e1f31415161718192021222324252627282930313233343536373839",
+      "size": 32500
+    },
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:a8b9c0d1e2f3141516171819202122232425262728293031323334353637383940",
+      "size": 16384
+    }
+  ]
+}
+```
+The image index (index.json) points to two platform manifests (amd64 and arm64). Each image manifest describes config and layers for that platform's container. The container runtime uses the index to select the manifest matching the running host OS/architecture on pull or run.
+
+For a non-OCI compliant container image (such as a traditional Docker image before OCI standardization), there typically is only one manifest file describing the entire image, and no multi-platform index.json (image index) exists. A single Docker manifest JSON file (often called manifest.json) describes the image configuration, layers, and metadata for just one platform (OS + architecture). It includes references to the layers, config blob, and image size, all tailored for that single variant. There is no separate image index (like index.json) because the image does not support multiple architectures or OS variants within the same reference. Multi-arch support came later with OCI specs and Docker manifest lists.
+
+There is no platform field in the manifest to distinguish architecture because it assumes a single platform.
+```json
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+  "config": {
+    "mediaType": "application/vnd.docker.container.image.v1+json",
+    "size": 7023,
+    "digest": "sha256:b5b2b2c507a0944348e0303114d8d93aaaa081732b86451d9bce1f432a537bc7"
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+      "size": 32654,
+      "digest": "sha256:9834876dcfb05cb167a5c24953eba58c4ac89b1adf57f28f2f9d09af107ee8f0"
+    },
+    {
+      "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+      "size": 16724,
+      "digest": "sha256:3c3a4604a545cdc127456d94e421cd355bca5b528f4a9c1905b15da2eb4a4c6b"
+    }
+  ]
+}
+```
+You can find the architecture information of a container image by inspecting the image metadata using Docker commands. Common ways to check which architectures an image supports include:
+
+```bash
+docker image inspect <IMAGE_NAME> --format '{{.Os}}/{{.Architecture}}'
+docker manifest inspect <IMAGE_NAME>:<TAG>
+```
+If the OS of the image differs from the host machine's OS, Docker will generally fail to run the container because the image is not compatible. For example, pulling a Windows Docker image on a Linux host will not work since runtimes cannot match the OS or run a foreign OS image natively. Docker may give errors indicating no compatible image manifest was found for the host platform if the image settings and host OS do not match, especially on newer Docker versions that do inspect platform compatibility even on traditional manifests.When the Docker runtime pulls or runs such an image, it assumes the manifest matches the current machine’s platform and proceeds to download and run the image as-is.
+
+
+
+
+
 
 ******************************
 
