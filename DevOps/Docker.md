@@ -76,7 +76,34 @@ The Docker CLI can be installed on a different machine or host and can be connec
   \
 * The differece among them:\
   **Docker Client**
-The Docker client is the primary way users interact with Docker. It is a command-line interface (CLI) tool that sends commands and configuration data to the Docker daemon. The Docker client communicates with the Docker daemon through a REST API, either over a UNIX socket or a network interface.\
+The Docker client is the primary way users interact with Docker. It is a command-line interface (CLI) tool that sends commands and configuration data to the Docker daemon. The Docker client communicates with the Docker daemon through a REST API, either over a UNIX socket or a network interface. Note that the docker CLI takes a command `docker pull ubuntu` and convert it to curl command `curl --unix-socket /var/run/socket -X POST "http://local/apiendpoint"`\ 
+  **Docker REST API and docker.socker file** Rest api is the interface specification (http-based) via which docker client interacts with docker daemon to manage containers, image and networks etc. It defines http endpoints and methods for docker operations. `/var/run/docker.sock` is unix domain socket on the host filesystem  that acts as local communication channel for docker rest api. Instead of sending http requests over a tcp/ip connection, docker send these requests this socket file locally to the docker daemon.
+  **Why docker uses unix socket file?** Docker uses unix socket file for inter-process communumication, which means communication between different programs running on the same machine. This is different from the communication over a network between different machines. The socket is a special file that allows two processes to exchange data directly and efficiently without using network. Instead of sending data over network with overhead like routing, checksums, unix sockets provide a fast secure, low overhead or local commnuication. The docker CLI and docker daemon are seperate processes on a same machine, they communication via socket file quickly without network layers.
+  ```bash
+  #via network
+  # sends http request over the netwrok tcp/ip to the localhost interface default port 80
+  # docker daemon is not configured to listen on tcp port 80 on local host, the request will fail
+  # can be configured
+  /etc/docker/daemon.json
+  {
+   "hosts" : ["tcp://127.0.0.1:80", "unix:///var/run/docker.sock"]
+  }
+  # override the system service
+  /etc/systemd/system/docker.sevice.d/override.conf
+  [Service]
+  ExecSTART
+  ExecSTART=/usr/bin/dockerd --config-file /etc/docker/daemon.json
+
+  # restart the daemon and reload it  
+  
+  # standard request doesnt not used unix socket
+  curl -X POST "http://localhost/image./endpoint" 
+
+  #via docker socket file wihout network
+  # sends te http request over a unix domain socket. no netwrok is involved. 
+  curl --unix-socket /var/run/docker.sock -X POST "http://localhost/image./endpoint"
+  ```
+  The apache airflow doesnt use socket file because it sends data between components over a network. The components such as webserver, schedule, workers are on different machines. In this case, the communiation involves tcp/ip to manage workflows is better. In docker the communication is purely local.
   **Docker Daemon**
 The Docker daemon (dockerd) is a long-running process that manages Docker objects such as images, containers, networks, and volumes. It listens for Docker API requests from the Docker client and processes them accordingly. The Docker daemon is responsible for the heavy lifting of building, running, and distributing Docker containers.\
   **Docker Engine**
