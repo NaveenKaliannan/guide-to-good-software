@@ -39,7 +39,14 @@ FROM docker:latest
 
 # Set the default command to start an interactive shell
 CMD ["sh"]
-```  
+```
+One can also create own docker socket file. This export will tell the docker client to communicate wtih the daemon via new socket.socket file are just a special reference file without any content inside it. One cannot create an empty file and expect it to work. socket files are created and manageed by daemon process.
+```bash
+dockerd -H unix:///var/run/mydocker.sock
+sudo chown youruser:yourgroup  /var/run/mydocker.sock
+export DOCKER_HOST=unix:///var/run/mydocker.sock 
+docker info
+```
 * **docker-compose installation**
    1. sudo curl -L "https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
    2. sudo chmod +x /usr/local/bin/docker-compose
@@ -66,8 +73,8 @@ Save the file and restart the Docker daemon for the changes to take effect. Crea
 
 ### Docker Terminology 
 ******************************
-1. **Docker Client** is the primary way users interact with Docker. It accepts commands and configuration data from the user and communicates with the Docker daemon to execute those commands.
-2. **Docker Daemon** (dockerd) is a long-running program that manages Docker objects like images, containers, networks, and storage volumes. It listens for Docker API requests and processes them accordingly.
+1. **Docker Client** The Docker client (the docker command-line tool) is the primary way users interact with Docker. It accepts commands and configuration data from the user, then communicates with the Docker daemon by sending these commands via the Docker REST API. By default, communication occurs over a Unix socket file (usually /var/run/docker.sock) or via a network interface. The Docker CLI (docker command-line tool) is an executable program that communicates with the Docker daemon using the Docker Engine’s REST API, transmitted over HTTP. However, the CLI does not literally use the curl command; instead, it constructs HTTP requests programmatically within the executable and sends them to the daemon via a Unix socket (default for local communication) or a TCP port (for remote communication)
+2. **Docker Daemon** (dockerd) The Docker daemon (dockerd) is a long-running background process that manages Docker objects such as images, containers, networks, and storage volumes. It listens for Docker API requests through a Unix socket or optionally on a network port. The daemon carries out all requested actions, such as building, running, and managing containers. The Docker REST API and the Docker daemon are not separate applications; rather, the REST API is a part of the Docker daemon application. Specifically: The Docker daemon (dockerd) is a single application that runs as a background service responsible for managing Docker objects like containers, images, networks, and volumes. This daemon implements the Docker REST API internally. The **REST API is the interface exposed by the daemon** to accept commands and requests from clients such as the Docker CLI. When the Docker daemon listens for requests, it does so either on a Unix socket (default for local communication) or on a TCP/IP port (if configured for remote access). These endpoints expose the REST API. So, the REST API is essentially the interface mechanism inside the daemon application that clients communicate with. The Docker daemon (dockerd) is a single application process that runs as a background service on the Docker host machine. Inside this daemon application, the Docker REST API is implemented as the interface that listens for requests. By default, the Docker daemon listens for HTTP REST API requests on a Unix socket file (usually /var/run/docker.sock). This socket is a file-based communication endpoint on the local machine, not an IP address or port. When the Docker CLI executable runs commands, it builds HTTP requests according to the Docker REST API specification and sends them via this Unix socket to the daemon. The Docker daemon's REST API receives, parses, and processes these HTTP requests internally. After processing, the daemon performs the requested tasks—such as creating or starting containers, managing images, or networks. There is no extra layer: the REST API is part of the Docker daemon application and is how it receives client commands.
 3. **Docker Engine** is a software that creates and runs containers, as well as interacts with the host OS. When installing Docker on Linux, you are essentially installing:
 Docker CLI (command line interface, user interface)
 Docker API (for communication between the Docker client and the Docker daemon)
