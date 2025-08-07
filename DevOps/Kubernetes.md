@@ -157,28 +157,303 @@ etcdctl snapshot restore snapshot.db --data-dir /var/lib/etcd
 * **kubectl get pods** list of all pods in the current namespace.   or **kubectl get pods -o wide**   To get more detailed information about the pods
 ******************************
 
-# YAML files for POD
-* Exmample YAML file. Note that container is a list since many containers can be run on single pod. 
+# Kubernetes Top 100 Commands Cheat Sheet
+
+This cheat sheet lists common Kubernetes (`kubectl`) commands with brief descriptions to help you manage and troubleshoot your Kubernetes clusters efficiently.
+
+---
+
+## Cluster and Node Management
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl cluster-info`             | Show cluster info and API server endpoints.  |
+| `kubectl get nodes`                | List all nodes in the cluster.                 |
+| `kubectl describe node <node>`    | Show detailed info about a specific node.     |
+| `kubectl drain <node>`             | Safely evict pods before node maintenance.    |
+| `kubectl cordon <node>`            | Mark node as unschedulable.                     |
+| `kubectl uncordon <node>`          | Mark node as schedulable again.                 |
+| `kubectl label node <node> key=val` | Add or update label on node.                   |
+| `kubectl annotate node <node> key=val` | Add or update annotation on node.             |
+| `kubectl get nodes --show-labels` | Show labels attached to nodes.                  |
+| `kubectl top node <node>`          | Display resource usage (CPU/memory) of node.  |
+
+---
+
+## Pod Management
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl get pods`                 | List pods in the current namespace.            |
+| `kubectl get pods -o wide`         | List pods with detailed info (including node). |
+| `kubectl describe pod <pod>`      | Show detailed info of a pod.                     |
+| `kubectl logs <pod>`               | View logs for a pod's main container.          |
+| `kubectl logs <pod> -c <container>` | View logs for a specific container in the pod. |
+| `kubectl exec -it <pod> -- /bin/bash` | Open interactive shell in a pod container.    |
+| `kubectl delete pod <pod>`        | Delete a specific pod.                           |
+| `kubectl create -f pod.yaml`      | Create a pod from a YAML manifest file.         |
+| `kubectl apply -f pod.yaml`       | Apply changes or create resources from YAML.    |
+| `kubectl get pods --field-selector=status.phase=Running` | List running pods only.    |
+| `kubectl annotate pod <pod> key=val` | Add or update annotation on a pod.              |
+| `kubectl label pod <pod> key=val` | Add or update label on a pod.                     |
+| `kubectl top pod <pod>`            | Show resource usage for pod.                      |
+
+---
+
+## Deployment and ReplicaSet
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl get deployments`          | List deployments in the current namespace.    |
+| `kubectl describe deployment <name>` | Show detailed info of a deployment.            |
+| `kubectl apply -f deployment.yaml` | Create or update a deployment from YAML.       |
+| `kubectl rollout status deployment/<name>` | Show rollout status of a deployment.       |
+| `kubectl scale deployment <name> --replicas=N` | Scale deployment replicas to N.         |
+| `kubectl delete deployment <name>` | Delete a deployment.                            |
+
+---
+
+## Service and Networking
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl get services`             | List services in the current namespace.       |
+| `kubectl describe service <name>` | Show detailed service info.                     |
+| `kubectl expose pod <pod> --port=80 --target-port=80` | Expose a pod as a service.      |
+| `kubectl get endpoints`            | List service endpoints.                         |
+
+---
+
+## Namespace Management
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl get namespaces`            | List all namespaces.                           |
+| `kubectl create namespace <name>` | Create a new namespace.                         |
+| `kubectl delete namespace <name>` | Delete a namespace.                             |
+| `kubectl config set-context --current --namespace=<name>` | Switch current namespace. |
+
+---
+
+## Configuration and Context Management
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl config view`              | Display kubeconfig details.                    |
+| `kubectl config get-contexts`      | List available contexts.                        |
+| `kubectl config use-context <name>` | Switch to a specific context.                  |
+
+---
+
+## Secrets and ConfigMaps
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl get secrets`              | List secrets in the current namespace.         |
+| `kubectl create secret generic <name> --from-literal=key=value` | Create a generic secret. |
+| `kubectl get configmaps`           | List config maps in the current namespace.      |
+| `kubectl create configmap <name> --from-file=path/to/file` | Create config map from file. |
+
+---
+
+## Debugging and Troubleshooting
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl get events`               | List cluster events.                           |
+| `kubectl describe <resource> <name>` | Describe resource and recent events.          |
+| `kubectl exec -it <pod> -- /bin/sh` | Open shell inside container for debugging.    |
+| `kubectl logs <pod> -p`            | Get logs from the previous container instance.|
+| `kubectl top pods`                 | Show resource usage of pods.                    |
+
+---
+
+## Common Resource Commands (applicable to any resource)
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl get <resource>`           | List resources of a given type (pods, svc, etc). |
+| `kubectl describe <resource> <name>` | Show detailed information about a resource.     |
+| `kubectl delete <resource> <name>` | Delete a resource.                               |
+| `kubectl apply -f <file.yaml>`    | Apply a configuration file to create/update resource. |
+| `kubectl edit <resource> <name>`  | Edit a resource on the fly in an editor.        |
+
+---
+
+## Advanced/Additional Commands
+
+| Command                             | Description                                   |
+|-----------------------------------|-----------------------------------------------|
+| `kubectl rollout undo deployment/<name>` | Roll back deployment to previous revision.  |
+| `kubectl expose deployment <name> --type=LoadBalancer --port=80` | Expose deployment as load balancer service. |
+| `kubectl port-forward <pod> <local_port>:<pod_port>` | Forward local port to pod port for access.  |
+| `kubectl scale --replicas=<num> <resource>/<name>` | Scale replicas of resource.                   |
+| `kubectl wait --for=condition=ready pod/<pod>` | Wait for pod to be ready.                      |
+| `kubectl proxy`                   | Run proxy to access Kubernetes API locally.    |
+
+---
+
+This cheat sheet highlights the most commonly used commands that cover everyday cluster management, resource management, debugging, and configuration tasks.
+
+For a complete and regularly updated list, official Kubernetes documentation and cheat sheets like:
+
+- [Kubernetes Official Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+- [Kubectl Commands Overview](https://spacelift.io/blog/kubernetes-cheat-sheet)
+- [Kubectl Cheat Sheet by StrongDM](https://www.strongdm.com/blog/kubernetes-cheat-sheet)
+
+are recommended.
+
+---
+
+*Note: Replace angle brackets like `<pod>` or `<node>` with the actual resource names in your cluster.*
+
+
+### YAML files for POD
+- apiVersion: apps/v1 for Deployment resource.
+- kind: Deployment (could also be Pod, StatefulSet, etc. depending on need).
+- metadata: Name, labels, and optional annotations (used here for proxy example).
+- spec: Defines replicas, selector, and template.
+* Example. 
 ******************************
+```text
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: example-deployment
+  name: example-multi-app-deployment
+  labels:
+    app: multi-app
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
-      app: example
+      app: multi-app
   template:
     metadata:
       labels:
-        app: example
+        app: multi-app
+      annotations:
+        example.com/proxy: "http://proxy.example.com:3128"
     spec:
       containers:
-      - name: example-container
-        image: example-image
-        ports:
-        - containerPort: 8080
+        - name: postgres
+          image: postgres:14
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+
+        - name: jenkins
+          image: jenkins/jenkins:lts
+          env:
+            - name: JENKINS_ADMIN_ID
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-secret
+                  key: admin_id
+            - name: JENKINS_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-secret
+                  key: admin_password
+          ports:
+            - containerPort: 8080
+            - containerPort: 50000
+
+        - name: apache-airflow
+          image: apache/airflow:2.6.1
+          env:
+            - name: AIRFLOW__CORE__EXECUTOR
+              value: "LocalExecutor"
+            - name: AIRFLOW__CORE__FERNET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: airflow-secret
+                  key: fernet_key
+            - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+              value: postgresql+psycopg2://postgres:password@postgres-service:5432/airflow
+          ports:
+            - containerPort: 8080
+
+        - name: jfrog-artifactory
+          image: releases-docker.jfrog.io/jfrog/artifactory-cpp-ce:latest
+          env:
+            - name: ARTIFACTORY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: artifactory-secret
+                  key: admin_password
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - name: artifactory-data
+              mountPath: /var/opt/jfrog/artifactory
+
+        - name: docker-registry
+          image: registry:2
+          env:
+            - name: REGISTRY_AUTH_HTPASSWD_PATH
+              value: /auth/htpasswd
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: registry-data
+              mountPath: /var/lib/registry
+            - name: auth
+              mountPath: /auth
+
+        - name: github-api-client
+          image: some-github-api-client-image
+          env:
+            - name: GITHUB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: github-secret
+                  key: api_key
+            - name: GITHUB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: github-secret
+                  key: username
+
+        - name: rest-api-server
+          image: example/rest-api:latest
+          env:
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: restapi-secret
+                  key: api_key
+            - name: PROXY_URL
+              value: "http://proxy.example.com:3128"
+          ports:
+            - containerPort: 8080
+
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: pgdata-pvc
+        - name: artifactory-data
+          persistentVolumeClaim:
+            claimName: artifactory-pvc
+        - name: registry-data
+          persistentVolumeClaim:
+            claimName: registry-pvc
+        - name: auth
+          secret:
+            secretName: registry-auth-secret
+```
 ******************************
 
 # Networking
