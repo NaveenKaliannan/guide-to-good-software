@@ -28,12 +28,119 @@ Key characteristics of a Kubernetes pod:
 ******************************
 * **Master** node is a node where Kubernetes installed and it mangaes the cluster, which contains set of nodes. The master server contain kube-apiserver that makes them master. It conatins the etcd, controller, scheduler as well.
 * when K8s is installed, we are installing the following components: **API server, etcd, kubelet, container runtime, controller, scheduler**
-* **API server** The API server is the front-end for the Kubernetes control plane. It exposes the Kubernetes API, which allows users, management devices, and the cluster's internal components to interact with the cluster.
-* **etcd** is a distributed key-value store used by Kubernetes to store all cluster data. It is responsible for reliably storing the configuration data required to define the desired state of the cluster.
-* **controller**  is a daemon that embeds the core control loops shipped with Kubernetes. It watches the shared state of the cluster through the API server and makes changes to move the current state towards the desired state.
-* **scheduler** is responsible for distributing work or containers across the nodes in the cluster. It watches for newly created Pods with no assigned node, and selects a node for them to run on.
+* **API server** The API server is the front-end for the Kubernetes control plane. It exposes the Kubernetes API, which allows users, management devices, and the cluster's internal components to interact with the cluster. The API server stores the cluster state in etcd and exposes it via a RESTful API
+1. When you run a Kubernetes command (e.g., kubectl apply -f pod.yaml), the kubectl client sends a REST API request to the Kubernetes API server. The API server is the central management point for the cluster state.
+2. The API server processes the request and creates the Pod resource object in its internal state and writes this new desired state as a serialized key-value pair in etcd (the distributed key-value store).
+3. The scheduler watches the API server for newly created Pods that do not have a nodeName assigned yet. Once it finds such a Pod, it selects an appropriate node by evaluating resource availability and other constraints, then updates the Pod resource by assigning the nodeName field through the API server.
+4. This update causes the API server to write the updated Pod state (now bound to a node) back into etcd.
+5. The controller(s) watch the API server (and thus etcd indirectly) for changes in cluster state. When they detect the Pod is scheduled to a node, they ensure any dependent resources and cluster state are consistent and may trigger other updates as needed.
+6. The kubelet, running on the worker node assigned to the Pod (nodeName), monitors the API server for newly assigned or updated Pods on its node. It then communicates with the container runtime (e.g., Docker, containerd) to start and manage the Pod's containers. The kubelet regularly reports Pod and node status back to the API server, which updates that status in etcd as well.
+
+* **etcd** is a distributed, consistent, and highly available key-value store used as the primary data store for Kubernetes. It stores all cluster state and configuration data, making it critical to the reliability and performance of Kubernetes clusters. The API server stores the cluster state in etcd and exposes it via a RESTful API
+---
+#### 🔧 What is etcd?
+- Developed by CoreOS, now part of CNCF.
+- Written in Go.
+- Uses the **Raft** consensus algorithm for strong consistency.
+- Exposes HTTP/gRPC APIs.
+---
+#### 🚀 Features
+- **Strong Consistency:** Achieved through the Raft consensus algorithm.
+- **High Availability:** Replicated across multiple master nodes.
+- **Hierarchical Key Storage:** Like a virtual filesystem (`/registry/...`).
+- **Watch & Notification System:** Clients can watch keys for changes.
+---
+#### 📦 etcd in Kubernetes
+| Node Type   | Typical Count | Runs etcd | Data Location |
+|-------------|---------------|-----------|----------------|
+| Master Node | 3 or 5        | ✅ Yes     | `/var/lib/etcd/` |
+| Worker Node | N (scalable)  | ❌ No      | N/A             |
+- **Master Nodes**: Run etcd as a static pod or systemd service.
+- **Worker Nodes**: Do **not** run etcd, but communicate via API server.
+---
+#### 📂 etcd Data File Layout (on Master Node)
+```
+/var/lib/etcd/
+└── member/
+    ├── snap/
+    │   └── db       # Main database file (BoltDB)
+    ├── wal/         # Write-ahead logs
+    └── ...          # Metadata and cluster information
+```
+---
+#### 🔑 etcd Key-Value Format in Kubernetes
+#### 📌 Pod Creation Example
+1. User runs: `kubectl apply -f pod.yaml`
+2. API Server receives the request.
+3. Writes the pod object under key:
+   - `/registry/pods/<namespace>/<podname>`
+4. Value is a serialized JSON or protobuf object.
+**Example:**
+- **Key**: `/registry/pods/default/nginx-deployment-abc123`
+- **Value**: Serialized Pod spec and status.
+#### 📤 Pod Deletion
+- Key `/registry/pods/default/nginx-deployment-abc123` is **deleted** from etcd.
+- Change is reflected in the `db` file and WAL.
+### 🔁 Pod Update
+- Key remains the same.
+- Value is overwritten with updated data.
+---
+#### 🛠 How etcd Changes in Different Scenarios
+| Scenario                  | etcd Behavior |
+|---------------------------|----------------|
+| Pod Created               | New key-value added |
+| Pod Updated               | Value updated |
+| Pod Deleted               | Key removed |
+| Master Node Fails         | Quorum required to proceed (≥ majority) |
+| Worker Node Fails         | No effect on etcd |
+| etcd Member Added/Removed | Raft reconfigures and syncs data |
+| etcd Data Corrupted       | Use snapshot or backup for restore |
+---
+#### 🧪 Sample Key Listing
+Run `etcdctl` with proper TLS/auth to see keys:
+```bash
+ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379   --cacert=/etc/kubernetes/pki/etcd/ca.crt   --cert=/etc/kubernetes/pki/etcd/server.crt   --key=/etc/kubernetes/pki/etcd/server.key   get /registry/pods --prefix --keys-only
+```
+---
+#### 🔄 High Availability: Master Nodes
+Deploying 3 or 5 master nodes helps maintain quorum:
+- **3 nodes**: Tolerates 1 failure
+- **5 nodes**: Tolerates 2 failures
+Always keep etcd node count **odd** for optimal quorum.
+---
+#### 📉 Failure Scenarios and etcd
+#### 🔴 etcd Member Down
+- Cluster remains functional if quorum is maintained.
+- Replace or recover failed etcd node to restore full redundancy.
+#### ❌ Pod Fails (CrashLoopBackOff)
+- etcd retains pod spec until explicitly deleted.
+- Status changes in the value field of the key.
+#### ❌ etcd Corruption
+- Use `etcdctl snapshot save` and `etcdctl snapshot restore` for backups and disaster recovery.
+---
+---
+
+#### 🧰 Useful Commands
+```bash
+# Get a key
+etcdctl get /registry/pods/default/nginx
+
+# List all keys
+etcdctl get "" --prefix --keys-only
+
+# Watch for changes
+etcdctl watch /registry/pods --prefix
+
+# Take a snapshot
+etcdctl snapshot save snapshot.db
+
+# Restore from snapshot
+etcdctl snapshot restore snapshot.db --data-dir /var/lib/etcd
+```
+* **controller**  is a daemon that embeds the core control loops shipped with Kubernetes. It watches the shared state of the cluster through the API server and makes changes to move the current state towards the desired state. Controllers monitor cluster resources and make changes by creating, updating, or deleting Kubernetes objects to match the desired state. Controllers typically run on the master (control plane) nodes. Controllers continuously watch the cluster state via the API server, looking for discrepancies between the desired state and actual state. When they detect changes (e.g., Pod failed, insufficient replicas), they write updates or create/delete resources via the API server to reconcile the difference. The controller does not assign nodes but monitors the cluster state continuously via the API server. It ensures that the overall desired state is maintained by creating or deleting Pods and other resources as needed. For example, if a Pod fails or a node becomes unhealthy, controllers react to those changes by adjusting replicas, rescheduling Pods, or managing node lifecycle events.
+* **scheduler** is responsible for distributing work or containers across the nodes in the cluster. It watches for newly created Pods with no assigned node, and selects a node for them to run on. The scheduler runs on master nodes as part of the control plane. The scheduler decides which node each Pod should run on by evaluating the cluster state and Pod requirements. The scheduler watches newly created Pods that have no assigned node by watching the API server for Pods without a nodeName. It decides on the best-fit worker node for each Pod, then updates the Pod's specification with the selected node by writing this information back to the API server. This update propagates as a change in the cluster state stored in etcd
 * **container runtime** is the software that is responsible for running containers. Kubernetes supports several container runtimes, such as Docker, containerd, and CRI-O.
-* **kubelet** is the primary "node agent" that runs on each node. It watches for Pods that have been assigned to its node, and ensures that the containers in those Pods are healthy and running.
+* **kubelet** is the primary "node agent" that runs on each node. The kubelet is the primary agent that runs on each worker node. It watches for Pods that have been assigned to its node, and ensures that the containers in those Pods are healthy and running. It communicates with the container runtime (Docker, containerd, CRI-O) to create, start, stop, and monitor containers. The kubelet on each worker node watches the API server for Pods assigned to its node (nodeName set). After detecting new or updated Pods, the kubelet uses the container runtime to start or manage containers accordingly and continuously reports the Pod and node status back to the API server
 * **Nodes** Nodes are the physical or virtual machines where the containers will be launched. Each worker node runs a kubelet, which is the agent responsible for interacting with the Kubernetes master components.  The Nodes server contain kublet that makes them nodes.
 * **Cluster** A Kubernetes cluster is a set of nodes that run containerized applications. The cluster is managed by the Kubernetes master components. 
 ******************************
