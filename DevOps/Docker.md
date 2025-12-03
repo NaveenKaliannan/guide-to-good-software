@@ -69,7 +69,26 @@ Save the file and restart the Docker daemon for the changes to take effect. Crea
 * Docker daemon logs using the following command: **sudo journalctl -u docker** or **grep -i docker /var/syslog** offers the issue in daemon's operation, whereas logs for a specific Docker container **docker logs <container_name_or_id>** for contaiener level logs
 * **hostname -I** specifically displays the IP address(es) of our system. **netstat -r** or **route -n** show the "Gateway" IP address, which is the router's IP address. **ip route** find the router's IP address. Note that the 192.168.0.1 IP address is commonly used as the default gateway or router IP address within this 192.168.0.0/24 subnet. The 192.168.0.0 address is the network address, and 192.168.0.255 is the broadcast address. 192.168.0.1 and 192.168.0.255 are reserved. **broadcast address** is primarily used to send data, messages, and requests to all devices connected to a local network or subnet, enabling communication and discovery without needing to know individual IP addresses.  **default gateway or router IP** is for intercommunication that communicating to outside world.
 * **docker system info** command provides a comprehensive overview of your Docker environment. You can also format the output using a custom template: **docker info --format '{{json .}}'** This will print the information in JSON format.
-******************************
+* Default rprivate (files stay on host disk, not S3) **docker run -v /mnt/s3:/data my-app** Mounts host's S3 path (/mnt/s3) into container at /data. Uses rprivate propagation (Docker default). Container sees existing files, but writes create a private copy on the host's disk. S3 FUSE layer ignores them—no files appear in S3 mount point. Safe but isolated. Host/container share files now, but new changes/mounts inside stay separate. Mount changes (like new files or sub-mounts) stay isolated. Container sees host files, but its writes don't fully propagate to the host's live mount (like S3 FUSE). Files end up on host disk, not S3.
+* rshared (files go directly to S3) **docker run --mount type=bind,source=/mnt/s3,target=/data,bind-propagation=rshared --cap-add SYS_ADMIN --device /dev/fuse my-app** Same paths, but rshared propagation shares mount events both ways. Container writes hit the live S3 FUSE mount on host, which sends them straight to the bucket. Needs FUSE privileges for direct S3 access. Files appear immediately in S3. All changes (files + new mounts) sync both ways instantly. Like a live mirror. Mount changes propagate both ways recursively. Container writes hit the host's live S3 mount directly, so files appear in S3 immediately. Needs FUSE caps for special filesystems
+* rslave (Host→container only, one directional only) **docker run --mount type=bind,source=/sys,target=/sys,bind-propagation=rslave ...** Same behavior as rprivate for writes → data stays on local disk
+
+* **For chain of mounts s3 bucket -> aws node -> docker container**
+
+| Propagation | Docker Command | Initial Mounts Visible | New Mount Added (`sudo s3fs bucket3 /mnt/s3/bucket3`) | Write Test (`docker exec container echo "test" > /data/bucket1/file.txt`) | Final Location |
+|-------------|----------------|-----------------------|-------------------------------------------------------|-----------------------------------------------------------------------|----------------|
+| **rprivate** (default) | `docker run -v /mnt/s3:/data alpine sh -c "ls /data; sleep 100"` | ✅ `/data/bucket1/`<br>✅ `/data/bucket2/` | ❌ **MISSING** `/data/bucket3/` | ✅ File created | **AWS EBS**<br>`/mnt/s3/bucket1/file.txt`<br>❌ **No S3** [web:4] |
+| **rslave** | `docker run --mount type=bind,source=/mnt/s3,target=/data,bind-propagation=rslave alpine sh -c "ls /data; sleep 100"` | ✅ `/data/bucket1/`<br>✅ `/data/bucket2/` | ✅ **VISIBLE** `/data/bucket3/` | ✅ File created | **AWS EBS**<br>`/mnt/s3/bucket1/file.txt`<br>❌ **No S3** [web:4] |
+| **rshared** | `docker run --mount type=bind,source=/mnt/s3,target=/data,bind-propagation=rshared --cap-add SYS_ADMIN --device /dev/fuse alpine sh -c "ls /data; sleep 100"` | ✅ `/data/bucket1/`<br>✅ `/data/bucket2/` | ✅ **VISIBLE** `/data/bucket3/` | ✅ File created | **S3 bucket1** ✅<br>`aws s3 ls s3://bucket1/file.txt` [web:18] |
+
+## S3 Storage Recommendation for chain of mounts s3 bucket -> aws node -> docker container
+
+| Goal | Use This | Why |
+|------|----------|-----|
+| **Store files in S3 bucket** | **rshared** | **ONLY mode** that propagates writes through FUSE to S3 |
+| General app isolation | rprivate | Default, safe, no surprises |
+| Monitoring host changes | rslave | Sees dynamic host mounts without write pollution |
+
 
 ### Docker Terminology 
 ******************************
@@ -395,7 +414,7 @@ Image layer is always read only. Contaienr only is read and write.
 * **docker volume create mydata** creates a folder in data. mydata folder is inside  /var/lib/docker/volumes. all the data generated from docker run will stored in this folder rather than the default folder created by docker contaienr name. The data will be available even when the container is deleted. Docker volumes are the recommended option for persisting data in Docker containers, as they are managed by Docker and provide better performance. **docker volume create testvolume** **docker volume ls**, **docker volume inspect** shows the mountpoint, **docker volume rm testvolume**
 * Bind mounts  **docker run -v /home/naveenk/mydata:/var/lib/mysql mysql** or **docker run --mount type==bind,source=/home/naveenk/mydata,target=/var/lib/mysql mysql**  offer more flexibility by allowing you to directly access the host's filesystem. Mount option by creating **docker volume create testvolume**,  **docker run --mount type==bind,source=testvolume,target=/var/lib/mysql mysql**
 * **docker run -v mydata:/var/lib/mysql mysql** stores all the data in mydata folder.
-* **docker run -v /host/path:/container/path:ro image** mounts the file in read only option. 
+* **docker run -v /host/path:/container/path:ro image** mounts the file in read only option.
 * **docker system df** or **docker system df -v** to see the memory used by images inside docker
 * Docker provides three main types of mounts for managing data in containers: volumes, bind mounts, and tmpfs mounts. 
   1. Volumes are the recommended way to persist data in Docker. They are managed by Docker and are stored in a part of the host filesystem (/var/lib/docker/volumes/ on Linux) that is designed to be managed by Docker.
