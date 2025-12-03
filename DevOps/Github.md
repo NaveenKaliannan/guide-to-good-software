@@ -264,6 +264,11 @@ use the SSH URL for your Git remote instead of the HTTPS URL.
 * Pick commit and copy to another branch: Checkout the branch you want to apply the commit to : **git checkout interested-branch** and Use the git cherry-pick command, providing the commit SHA (hash value) of the commit you want to copy: **git cherry-pick SHA-of-commit**
 * **Resolving conflicts during rebase** :exclamation: If there are any conflicts, you'll need to resolve them manually. Once the conflicts are resolved, add the files and continue the rebase: **git add .**,  **git rebase --continue**, and **git log**
 * **git clean -d -f** is used to remove untracked files from the working directory of a Git repository, including directories (-d) and force-deleting (-f) them.
+* **git status -s | awk '{print $2}' | grep '\.py$' | xargs black** Format all changed Python files with black.
+* **git status -s | awk '{print $2}' | grep '^test_.*\.py$' | xargs pytest** Run tests from changed test files.
+* **git diff --name-only origin/master -- | grep '\.py$' | xargs -n 1 pytest** It gets Python files changed compared to origin/master, then runs pytest on each one-by-one.
+* **git diff --name-only -- '*.py' | xargs black** Format only changed Python files.
+* **git rm --cached -r .**     ← remove everything from staging, **git reset --hard**  ← restore EVERYTHING from last commit, **git rm .gitattributes** ← delete .gitattributes, **git reset .** ← unstage anything (mostly nothing), **git checkout .**           ← restore files from index again. All these commands resets the repo to the last commit and deletes .gitattribute
 
 
 ## Github commands
