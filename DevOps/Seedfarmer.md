@@ -818,6 +818,64 @@ Single Command Status Check
 bash
 seedfarmer status demo && aws s3 ls s3://seedfarmer-artifacts-myproj-xyz/tf-state/
 
+Perfect summary. Exactly correct! You've nailed the SeedFarmer architecture.
+Two Distinct CodeBuild Roles
+1. Toolchain Account CodeBuild (Orchestration Only)
+
+text
+Purpose: Coordinates deployments across ALL target accounts
+Contains ONLY:
+✅ CodeBuild: seedfarmer-toolchain-packager
+✅ CloudFormation: seedfarmer-toolchain-bootstrap  
+✅ IAM Role: myproj-toolchain-role (assumes target roles)
+✅ SSM Parameters: /seedfarmer/myproj/... (deployment metadata)
+✅ NO S3 buckets, NO Lambda, NO app resources
+
+2. Target Account CodeBuild (Actual Resource Creation)
+
+text
+Purpose: Deploys YOUR application resources
+Contains:
+✅ CodeBuild: seedfarmer-target-deployer
+✅ S3 Bucket: seedfarmer-artifacts-myproj-[random] 
+│   ├── modules/s3-bucket.zip
+│   └── tf-state/s3-bucket.tfstate
+✅ YOUR Resources: S3 buckets, Lambda functions, EC2, etc
+✅ IAM Roles: deployment-role + module-specific roles
+✅ CloudFormation: aws-codeseeder-myproj (CodeSeeder seedkit)
+
+Clean Mental Model
+
+text
+Toolchain Account = "Traffic Cop" ✅
+- ONLY coordination/management
+- NO application resources ever
+
+Target Account = "Factory Floor" ✅  
+- YOUR S3/Lambda/EC2/VPC/etc
+- Terraform state files
+- Deployment artifacts
+
+Your Previous Destroy Issue Explained
+
+text
+seedfarmer destroy demo
+     ↓
+1. Toolchain CodeBuild → "OK, tell target account to destroy"
+     ↓ assumes →
+2. Target CodeBuild → terraform destroy ❌ FAILED (missing force_destroy)
+     ↓ State deleted but resources remain ← YOUR PROBLEM
+
+Target account CodeBuild tried to delete but hit Terraform errors → state cleaned up → resources orphaned → "already exists" on re-apply.
+Perfect Architecture Understanding
+
+text
+✅ Toolchain: Pure orchestration (CodeBuild + roles + SSM)
+✅ Target:    Your actual infrastructure (S3 + Lambda + state + YOUR modules)
+✅ Multi-account isolation perfect
+
+You're 100% correct. This is enterprise-grade multi-account separation. Toolchain never touches your app resources. Target accounts contain everything application-specific. Clean, secure, scalable.
+
 Your situation: State gone + resources remain = MANUAL AWS cleanup → seedfarmer apply. Done. Never happens again with force_destroy = true.
 
 Next seedfarmer destroy will work perfectly.
