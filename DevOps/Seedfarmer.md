@@ -879,3 +879,84 @@ You're 100% correct. This is enterprise-grade multi-account separation. Toolchai
 Your situation: State gone + resources remain = MANUAL AWS cleanup → seedfarmer apply. Done. Never happens again with force_destroy = true.
 
 Next seedfarmer destroy will work perfectly.
+
+
+The S3 bucket containing bundle.zip (with Terraform modules and SeedFarmer manifest files) is the CodeSeeder artifact bucket, created during SeedFarmer bootstrap, not a Terraform state bucket.
+
+​
+Purpose of this bucket
+
+This bucket serves as the source artifact repository for AWS CodeBuild deployments orchestrated by SeedFarmer:
+
+    seedfarmer apply uploads your module code + manifests → creates bundle.zip → stores it here
+
+​
+
+AWS CodeBuild (via AWS CodeSeeder) downloads this zip, extracts it, and executes the Terraform code inside to create your S3 buckets/Lambdas
+
+​
+
+Think of it as the "Git repo equivalent" but in S3 for remote execution across accounts
+
+Bucket naming pattern
+
+Look for buckets named like:
+
+text
+<project>-artifacts-<hash>  (CodeSeeder artifacts)
+aws-codeseeder-<project>    (CodeSeeder bootstrap/CodeBuild)
+
+Flow: seedfarmer apply → zip modules → upload to artifact bucket → CodeBuild downloads → runs Terraform → state saved to separate backend bucket.
+
+​
+
+This separation ensures CodeBuild can execute anywhere while state remains secure per-module.
+
+❌ seedfarmer destroy <deployment>
+→ "tearing down account/stack"
+→ "managed policy not deployed/roles not attached" 
+→ seedfarmer-artifacts bucket remains
+→ seedfarmer-no-delete bucket not empty
+→ App resources (S3/Lambda) still exist
+
+Where to Check IAM Policy Status
+
+bash
+# 1. Find IAM module state bucket
+aws s3 ls | grep "<deployment>-.*-tfstate-"
+
+# 2. Check IAM module state file
+aws s3 ls s3://<tfstate-bucket>/env:/<deployment>/<account>/<region>/account/  # or /stack/
+
+# 3. Download & inspect IAM state
+aws s3 cp s3://<tfstate-bucket>/env:/<deployment>/<account>/<region>/account/terraform.tfstate iam-state.json
+cat iam-state.json | jq '.resources[] | select(.type=="aws_iam_policy" or .type=="aws_iam_role")'
+
+# 4. Check CloudFormation stack (if used)
+aws cloudformation describe-stacks --stack-name "<deployment>-account" --query 'Stacks[0].StackStatus'
+
+Fix Sequence
+
+bash
+# 1. Dry-run to see what's planned
+seedfarmer destroy <deployment> --dry-run
+
+# 2. Fix IAM module first (if state shows missing policies)
+cd <your-iac>/account  # or /stack module
+seedfarmer apply <deployment>  # targeted fix
+
+# 3. Full destroy
+seedfarmer destroy <deployment>
+
+# 4. Manual orphans only
+# - Resources NOT in destroy plan = manually delete in AWS Console
+
+Expected Final State
+
+text
+✅ Gone:   <deployment>-module-tfstate-* (empty or deleted)
+✅ Remain: seedfarmer-artifacts (CodeBuild source)  
+✅ Remain: seedfarmer-no-delete (protected backend) 
+
+Bootstrap buckets are intentional survivors. App resources remain due to broken module state from IAM failures. [seed-farmer.readthedocs.io]
+
