@@ -221,7 +221,59 @@ Customers are responsible for securing everything they build or configure on AWS
 
 AWS provides a secure cloud platform with built‑in controls for data protection, compliance, and governance. Security is based on the **Shared Responsibility Model**, where AWS secures the cloud infrastructure and customers secure their workloads.
 
----
+# Examples of What the Customer Must Secure in AWS
+
+Under the AWS Shared Responsibility Model, AWS secures the cloud infrastructure, while customers must secure everything they build *in* the cloud. Below are practical examples of what customers are responsible for.
+
+## 🔐 Identity & Access Management (IAM)
+- Creating and managing IAM users, roles, and groups  
+- Enforcing MFA  
+- Managing access keys and credentials  
+- Applying least‑privilege permissions  
+
+## 🗄️ Data Security
+- Encrypting data at rest (S3, EBS, RDS, DynamoDB)  
+- Encrypting data in transit (TLS/HTTPS)  
+- Managing KMS customer-managed keys (CMKs)  
+- Setting S3 bucket policies and access controls  
+
+## 🌐 Network Security
+- Designing VPC architecture  
+- Configuring Security Groups and NACLs  
+- Managing routing tables and subnets  
+- Controlling inbound/outbound traffic  
+- Setting up firewalls and WAF rules (if used)  
+
+## 🖥️ Compute & OS Security
+For EC2 and self-managed workloads:
+- Patching the operating system  
+- Updating applications and libraries  
+- Managing antivirus/endpoint protection  
+- Hardening the OS and SSH access  
+
+## 🧱 Application Security
+- Securing application code  
+- Validating inputs and preventing vulnerabilities  
+- Managing API keys, secrets, and tokens  
+- Implementing authentication and authorization  
+
+## 📊 Monitoring & Logging
+- Enabling CloudTrail, CloudWatch Logs, and Config  
+- Setting log retention policies  
+- Creating alarms and alerts  
+- Reviewing audit logs  
+
+## 🧹 Resource Management
+- Deleting unused EBS volumes, snapshots, and IPs  
+- Managing backups and disaster recovery plans  
+- Ensuring proper tagging and cost controls  
+
+## 📌 Summary
+Customers must secure:
+- **Identity, access, data, network, OS, applications, and logging**  
+AWS secures:
+- **Data centers, hardware, networking, and managed service infrastructure**
+
 
 ## 🔐 Security in AWS
 AWS offers multiple layers of security to protect workloads:
@@ -375,6 +427,88 @@ These often accumulate silently.
 ## 🧪 Free Tier Pitfalls
 - Free tier expires after 12 months.
 - Some services (e.g., CloudWatch, NAT Gateway) are **not** included.
+
+# How AWS Pay‑As‑You‑Go Saves Money vs Physical Hardware
+
+AWS uses a **Pay‑As‑You‑Go (PAYG)** pricing model, meaning you only pay for the resources you actually use. This is fundamentally different from traditional on‑premises hardware, where you must buy, maintain, and over‑provision infrastructure upfront.
+
+## 💸 1. No Upfront Hardware Costs
+With physical servers, you must purchase:
+- Servers
+- Storage arrays
+- Networking equipment
+- Racks, cooling, and power
+
+AWS removes all capital expenditure (CapEx). You start instantly with zero upfront cost.
+
+## 📉 2. No Over‑Provisioning
+On‑prem hardware requires buying enough capacity for **peak load**, even if it’s rarely used.
+
+AWS lets you scale up and down:
+- Pay only for CPU, memory, storage, and bandwidth you consume
+- Automatically scale during peak times
+- Scale down to zero when idle (e.g., Lambda, ECS Fargate)
+
+This eliminates wasted capacity.
+
+## 🛠️ 3. No Maintenance or Upgrade Costs
+Physical hardware requires:
+- Patching
+- Replacing failed disks
+- Hardware refresh cycles
+- Warranty extensions
+- Data center staff
+
+AWS handles all infrastructure maintenance, reducing operational costs.
+
+## ⚡ 4. Energy, Cooling, and Space Savings
+On‑premises servers require:
+- Electricity
+- Cooling systems
+- Physical space
+
+AWS absorbs these costs in its data centers, lowering your total cost of ownership.
+
+## 🧑‍💼 5. Reduced IT Staffing Costs
+Managing physical hardware requires specialized staff.
+
+AWS reduces the need for:
+- Hardware technicians
+- Network engineers
+- Data center operators
+
+Teams can focus on innovation instead of maintenance.
+
+## 🔄 6. Pay Only for What You Use
+Examples:
+- EC2 billed per second
+- Lambda billed per millisecond
+- S3 billed per GB stored
+- CloudWatch billed per metric/log volume
+
+No idle resources = no wasted money.
+
+## 🧪 7. Faster Experimentation Without Risk
+With physical hardware:
+- Testing requires buying equipment
+- Failed experiments waste money
+
+With AWS:
+- Spin up resources in minutes
+- Shut them down when done
+- Pay only for the test duration
+
+This encourages innovation at low cost.
+
+## 📌 Summary
+- **No upfront investment**
+- **No over‑provisioning**
+- **No maintenance or upgrade costs**
+- **Lower staffing and energy expenses**
+- **Pay only for actual usage**
+
+AWS turns infrastructure from a **capital expense (CapEx)** into a **flexible operating expense (OpEx)**, saving money and reducing risk.
+
 
 
 ## AWS Access Types
