@@ -88,7 +88,85 @@ Save the file and restart the Docker daemon for the changes to take effect. Crea
 | **Store files in S3 bucket** | **rshared** | **ONLY mode** that propagates writes through FUSE to S3 |
 | General app isolation | rprivate | Default, safe, no surprises |
 | Monitoring host changes | rslave | Sees dynamic host mounts without write pollution |
+# 🐳 Docker Architecture & Components Explained
 
+When you install Docker (Docker Engine), you aren't just installing a single application. You are installing a **client-server stack** composed of several specialized tools that work together to manage the container lifecycle.
+
+---
+
+## 🏗️ The Core Architecture
+
+Docker uses a client-server architecture. The **Docker Client** talks to the **Docker Daemon**, which does the heavy lifting of building, running, and distributing your containers.
+
+
+
+---
+
+## ⚙️ Installed Components & Roles
+
+### 1. Docker CLI (`docker`)
+* **Role:** The User Interface (Client).
+* **Function:** This is the command-line tool you interact with. When you type `docker run`, the CLI converts your command into a **REST API call** and sends it to the Docker Daemon. It doesn't actually create containers; it just sends instructions.
+
+### 2. Docker Daemon (`dockerd`)
+* **Role:** The "Brain" (Server).
+* **Function:** A persistent background process. It manages "high-level" features like:
+    * **Networks:** Creating virtual bridges for containers.
+    * **Volumes:** Managing persistent storage.
+    * **Images:** Managing the local image cache and authentication to registries (Docker Hub).
+    * **API:** Listening for requests from the CLI.
+
+### 3. `containerd`
+* **Role:** The Manager (High-level Runtime).
+* **Function:** Originally part of Docker, now a separate industry-standard CNCF project. It handles the "supervision" of containers:
+    * Pushing and pulling images.
+    * Managing storage snapshots.
+    * Managing the execution of containers.
+    * **Key Fact:** If `dockerd` crashes, `containerd` can keep your containers running.
+
+### 4. `runc`
+* **Role:** The Executor (Low-level Runtime).
+* **Function:** This is a tiny, lightweight tool that follows the **OCI (Open Container Initiative)** standard. Its only job is to interact with the **Linux Kernel**.
+    * It creates **Namespaces** (for isolation).
+    * It creates **Cgroups** (for resource limits like CPU/RAM).
+    * Once the container process starts, `runc` exits.
+
+### 5. `containerd-shim`
+* **Role:** The "Babysitter."
+* **Function:** Since `runc` exits after starting a container, the "shim" stays behind. It acts as the parent process for the container to:
+    * Keep the STDIN/STDOUT streams open even if the Daemon restarts.
+    * Report the container's exit status back to `containerd`.
+
+---
+
+## 🔄 The "Docker Run" Workflow
+
+What actually happens when you type `docker run alpine`?
+
+1.  **CLI:** Turns your command into a REST API request.
+2.  **dockerd:** Receives the request, finds the `alpine` image, and calls `containerd`.
+3.  **containerd:** Prepares the image as a bundle and calls `runc`.
+4.  **runc:** Communicates with the Linux Kernel to create a "container" (isolated process).
+5.  **Kernel:** Starts the process inside the namespace.
+6.  **runc:** Exits, leaving the **shim** to watch the process.
+
+---
+
+## 📊 Summary Table
+
+| Component | Level | Primary Responsibility |
+| :--- | :--- | :--- |
+| **Docker CLI** | User | Takes your commands and talks to the API. |
+| **dockerd** | Management | Manages logic (images, volumes, networks). |
+| **containerd** | Supervision | Manages the container lifecycle and images. |
+| **runc** | Hardware/OS | Talks to the Kernel to build the "walls" (isolation). |
+| **Shim** | Process | Handles logs and streams without needing the Daemon. |
+
+---
+
+## 🛠️ Related Tools (Optional Installs)
+* **Docker Compose:** A tool for defining and running multi-container applications using a YAML file.
+* **Docker Desktop:** A GUI application for Mac/Windows that bundles all the above plus a Linux VM and Kubernetes.
 
 ### Docker Terminology 
 ******************************
