@@ -4,12 +4,12 @@
 ******************************
 1. **Host computer or local machine** controls all the program and file.  It has an Operating System (OS), which has two layer OS kernel (layer 1) and application layer (layer 2 and top layer). The kernel communicates with hardware such as cpu, mouse and etc.  The applications run on the kernel layer. All linux OS looks different becuase they use different application layer  but on same OS kernal.
 2. **Virtual Machine** virtualize OS kernel and application layer. The VM is built on hypervisor, which controls the hardware.
-3. **Docker** virualizae application layer and borrows the OS kernel from host machine. Docker occupys less space compared to VM becuase it doesnt virtualize OS kernel. The other advantages are: Faster boot time, Easy to scale up, Reproduciability, compatability/dependenceies, no need to set up environment, Developer and tester can run the same code and get the same results even thought the machines are different. The application that we build we will always have same dependencies and easy to ship the application. With docker, each component or application can be run with specific dependecies/librarie with seperate container. The goal of the docker is to package an application, containerize the application and ship them  and run anytime/anywhere. Docker is to run a specific tasks, once the tasks is completed, the container exists but always lives until removed **docker rm container-id**. 
+3. **Docker** virualizae application layer and borrows the OS kernel from host machine. Docker occupys less space compared to VM becuase it doesnt virtualize OS kernel. The other advantages are: Faster boot time, Easy to scale up, Reproduciability, compatability/dependenceies, no need to set up environment, Developer and tester can run the same code and get the same results even thought the machines are different. The application that we build we will always have same dependencies and easy to ship the application. With docker, each component or application can be run with specific dependecies/librarie with seperate container. The goal of the docker is to package an application, containerize the application and ship them  and run anytime/anywhere. Docker is to run a specific tasks, once the tasks is completed, the container exists but always lives until removed **docker rm container-id**.  
 ******************************
 
 ## Docker Installation 
 ******************************
-* Docker Community Edition (public) and Enterprise Edition (industries and images are verfified).
+* Docker Community Edition (public) and Enterprise Edition (industries and images are verfified). Docker UCP (Universal Control Plane) was Docker’s enterprise-grade management dashboard for running and controlling:     Docker Swarm clusters.    Kubernetes clusters.    Docker Trusted Registry (DTR).    Access control and security policies. Think of UCP as the “control center” for your entire container platform. It gave you a web UI + API to manage everything instead of using only CLI commands.
 * **Linux installation** : https://docs.docker.com/engine/install/ubuntu/
 * **Debian installation** : https://docs.docker.com/engine/install/debian/
 * The command **sudo systemctl enable docker** enables the Docker service to start automatically when the system boots up
@@ -396,9 +396,113 @@ docker image inspect <IMAGE_NAME> --format '{{.Os}}/{{.Architecture}}'
 docker manifest inspect <IMAGE_NAME>:<TAG>
 ```
 If the OS of the image differs from the host machine's OS, Docker will generally fail to run the container because the image is not compatible. For example, pulling a Windows Docker image on a Linux host will not work since runtimes cannot match the OS or run a foreign OS image natively. Docker may give errors indicating no compatible image manifest was found for the host platform if the image settings and host OS do not match, especially on newer Docker versions that do inspect platform compatibility even on traditional manifests.When the Docker runtime pulls or runs such an image, it assumes the manifest matches the current machine’s platform and proceeds to download and run the image as-is.
+22. **Docker Content Trust (DCT)** is a security feature that ensures the images you pull or run are authentic and untampered, using digital signatures. ✅ What IS Backed Up by DTR: TTR’s backup command includes:    Cluster configuration.    Repository metadata (tags, manifests, repo info).    Certificates and keys used for TLS.    DTR internal configuration stored in named volumes. What is not backed up? : Docker images. Users, teams, orgs. 
+# UCP vs DTR — Overview
+## Docker Trusted Registry (DTR) is a private, enterprise‑grade Docker image registry.
+A secure, on‑premises version of Docker Hub with extra enterprise features.
+DTR provides features that normal Docker registries do not:
+🔐 1. Image Signing & Verification (Content Trust)
+    Ensures images are trusted and not tampered with
+    Works with Notary
+    Uses DOCKER_CONTENT_TRUST=1
+🛡️ 2. Vulnerability Scanning
+    Scans images for CVEs
+    Shows security reports
+🔒 3. Access Control (RBAC)
+    Fine‑grained permissions
+    Control who can push/pull images
+🗂️ 4. Immutable Tags
+    Prevents overwriting tags
+    Ensures production images never change
+🗑️ 5. Garbage Collection
+    Cleans unused layers
+    Frees disk space
+🏢 6. Enterprise Integration
+    Works with UCP (Universal Control Plane)
+    Works with LDAP/AD
+    Auditing and compliance
+## 🧭 Universal Control Plane (UCP)
+UCP is the **cluster management layer** for Docker Enterprise.
+
+It provides:
+- Kubernetes & Swarm orchestration
+- Node and cluster management
+- RBAC (users, teams, organizations)
+- Access control and authentication
+- UI and API for managing the cluster
+
+UCP stores **users, teams, orgs, and permissions**.
+* **DOCKER_CONTENT_TRUST=1** is used to instruct to perform signing of the image.
+* In Docker Trusted Registry (DTR), **garbage collection** (GC) is the process that:   removes unused image layers,   cleans up dangling blobs,,  frees disk space,   keeps the registry healthy, DTR stores images as layers (blobs). When tags are deleted, the layers remain until GC removes them. ```docker system prune -a --volumes``` This removes: unused images, stopped containers,  unused networks, build cache,    unused volumes. `docker run --rm docker/dtr:<VERSION> garbage-collect --ucp-url <UCP-URL> --ucp-username <ADMIN> --ucp-password <PASSWORD> --ucp-insecure-tls` 
+---
+
+## 🏛 Docker Trusted Registry (DTR)
+DTR is the **private container registry** for Docker Enterprise.
+
+It provides:
+- Secure image storage
+- Image scanning and signing
+- Repository management
+- Replication and promotion workflows
+
+DTR stores **image metadata and registry configuration**, but **not user accounts**.
+
+---
+
+# 📦 DTR Backup — What’s Included and Excluded
+
+## ✅ What *IS* Backed Up in DTR
+- Repository metadata (tags, manifests, repo structure)
+- DTR configuration settings
+- TLS certificates and keys
+- Internal DTR database (metadata stored in volumes)
+
+These are included in the DTR backup `.tar` file.
+
+---
+
+## ❌ What is *NOT* Backed Up in DTR
+
+### 1. Docker Images (Layers)
+- Actual image data is **not** included.
+- You must back up the **image storage backend** separately (NFS, S3, filesystem).
+
+### 2. Users, Teams, Organizations
+- DTR does **not** store user accounts.
+- These are stored in **UCP**, so UCP must be backed up separately.
+
+---
+
+# 🧠 Quick Summary Table
+
+| Component | UCP | DTR |
+|----------|-----|-----|
+| Cluster management | ✅ | ❌ |
+| Private registry | ❌ | ✅ |
+| Stores users/teams/orgs | ✅ | ❌ |
+| Stores images | ❌ | ✅ (but image data not included in backup) |
+| Backup includes | RBAC, cluster state | Metadata, configs, certs |
+| Backup excludes | Images | Users, teams, orgs |
 
 
-
+* Docker always stores container data on the host machine
+  - Device Mapper → old, block‑device/LVM‑based storage
+  - overlay2 → new, filesystem‑based storage. Think of overlay2 as a smart folder system that Docker uses to store image layers and container changes. `/var/lib/docker/overlay2/` Inside this directory, Docker creates: `diff/` → actual file changes. `merged/` → the final view of the container filesystem.  `lower/` → references to parent layers. No LVM. No block devices. No thin pools. Just directories and files. /var/lib/docker/volumes/ for volumes, /var/lib/docker/containers/ for container metadata. The storage driver (overlay2, devicemapper, etc.) only controls how Docker organizes those files internally. Docker storage drivers are Docker’s internal mechanism for organizing files on the host. overlay2 just a Linux filesystem feature (OverlayFS) that Docker uses to:   Combine image layers,  Track changes,    Build containers efficiently. OverlayFS is built directly into the Linux kernel.
+| Docker Function     | Kernel Feature Used                     | Purpose                                                                 |
+|---------------------|-------------------------------------------|-------------------------------------------------------------------------|
+| **Storage**         | **OverlayFS** (Docker driver: overlay2)   | Layered filesystem, copy‑on‑write, image layers + container layers      |
+| **Networking**      | **Network namespaces**                    | Isolated network stack per container (IP, routes, firewall rules)       |
+|                     | **veth pairs**                            | Virtual Ethernet links container ↔ host                                 |
+|                     | **Linux bridge (`docker0`)**              | Virtual switch for container networking                                 |
+|                     | **iptables / nftables**                   | NAT, port mapping, firewall rules                                       |
+| **CPU Limits**      | **cgroups (cpu controller)**              | CPU quotas, CPU shares, CPU pinning                                     |
+| **Memory Limits**   | **cgroups (memory controller)**           | RAM limits, swap limits, OOM handling                                   |
+| **Process Isolation**| **PID namespaces**                       | Separate process tree per container                                     |
+| **Filesystem Isolation** | **Mount namespaces**                 | Separate filesystem view per container                                  |
+| **Security**        | **seccomp**                               | System call filtering (block dangerous syscalls)                        |
+|                     | **AppArmor** (Ubuntu)                     | Mandatory access control profiles                                       |
+|                     | **SELinux** (RHEL/Fedora)                 | Mandatory access control with labels                                    |
+| **User Isolation**  | **User namespaces**                       | Map container users to non‑privileged host users                        |
 
 
 
@@ -434,7 +538,9 @@ Overall, multi-stage builds in Docker provide a way to optimize the build proces
 * **tags** are used for versioning, testing purposes
 * There are a few ways to force a rebuild of a Docker image when the Dockerfile has been updated: Use the docker build command with the --no-cache option: **docker build --no-cache -t my-image .**, **docker-compose build --no-cache my-service**,
 * **docker save <IMAGE_NAME>:<TAG> | gzip > <FILE_NAME>.tar.gz** or **docker save <IMAGE_NAME>:<TAG> > <FILE_NAME>.tar** you can combine the docker save and compression steps into a single command using a pipe (|).
-
+* **docker images --filter since=ubuntu** shows all images that were created after the image named ubuntu in your local Docker image history
+* **docker system df** shows you exactly how much disk space Docker is using on your machine — including images, containers, volumes, and build cache. It’s the fastest way to see what’s filling your storage and what can be safely reclaimed 
+* In Docker Trusted Registry (DTR), an **immutable tag** means:  Once an image tag is pushed, it cannot be overwritten, modified, or deleted.
  ******************************
 
 ### Container house keeping and running commands
@@ -480,7 +586,17 @@ PIDS: The number of processes or threads the container has created.
 ```
 * **docker rename <CURRENT_NAME> <NEW_NAME>** rename a container
 * **docker --privileged** flag grants a container root capabilities and unrestricted access to all devices on the host system. Mounting /dev: The container can access and mount all devices on the host, including disk devices. Capabilities: The container gains all capabilities available on the host, including CAP_SYS_ADMIN for modifying kernel parameters and overriding security policies. Cgroups: The cgroup restrictions enforced by the device cgroup controller are lifted, giving the container access to all devices on the host. Privileged mode is primarily intended for debugging and running nested Docker instances (Docker-in-Docker) but should be avoided in production environments due to the significant security risks involved
-* **docker run -it --entrypoint /bin/bash image_name** Creates and starts a new Docker container based on the specified image. Overrides the default ENTRYPOINT of the image with /bin/bash. Runs the container in interactive mode (-i) with a pseudo-TTY allocated (-t). you can explore the container's filesystem, run commands, and interact with the container environment directly through a Bash shell. 
+* **docker run -it --entrypoint /bin/bash image_name** Creates and starts a new Docker container based on the specified image. Overrides the default ENTRYPOINT of the image with /bin/bash. Runs the container in interactive mode (-i) with a pseudo-TTY allocated (-t). you can explore the container's filesystem, run commands, and interact with the container environment directly through a Bash shell.
+* **docker run --cpus=0.5 --cpuset-cpus=0,1 --memory=512m myimage** for limiting the cpu and memory usage
+```yaml
+deploy:
+  resources:
+    limits:
+      cpus: "0.5"
+      memory: 512M
+```
+* **docker run -P nginx** Docker will automatically map:   Container port 80 → random host port,    Container port 443 → random host port. **-p 8080:80** Map specific host port → container port while the **-P** Map all EXPOSED ports → random host ports. Use docker ps or docker port mycontainer to find the host port number
+* **docker export** is used to back up the container while the **docker save** is used to back the docker images.
 ******************************
 
 ### Docker storage and File systems
@@ -729,6 +845,10 @@ COPY . .
 CMD ["bash"]
 ```
 **Configuration Mounts** Mounts a configuration file or directory from the host into the container to customize runtime configuration
+
+- **📦 1. Named Volume (recommended)** `docker run -v shared-data:/data app1 & docker run -v shared-data:/data app2`  Uses a Docker‑managed volume that both containers can share, making it the cleanest and most reliable way to persist and share data.
+- **🔗 2. --volumes-from (legacy but simple)** `docker run -v /data --name c1 app1 & docker run --volumes-from c1 app2` Container B mounts the exact same volumes used by Container A, effectively cloning its volume setup. `docker run -v /data -v /logs -v /cache --name c1 app1 && docker run --volumes-from c1 app2` If the source container has multiple volumes, ALL of them will be mounted into the second container.
+- **🗂️ 3. Bind Mount (host directory shared)** `docker run -v /host/data:/data app1 & docker run -v /host/data:/data app2` Both containers mount the same directory from the host filesystem, giving them shared access to real host files.
 ******************************
 
 ### Docker networking
@@ -821,6 +941,22 @@ The structure of docker reposity is as follows: **dockerregistry/username/imager
 
 ### Important Docker Files You Should Know About
 ******************************
+1. daemon.json is Docker’s configuration file for the Docker daemon (the background service).
+Instead of passing flags to dockerd manually, you put settings in this file.
+Location on most Linux systems: `/etc/docker/daemon.json`
+Set the debug key and `sudo systemctl restart docker`. Print much more detailed logs. Show internal operations (networking, storage, cgroups, etc.). Help diagnose issues with containers, networking, storage drivers, etc.
+```
+{
+  "debug": true,
+  "log-level": "debug",
+  "storage-driver": "overlay2",
+  "iptables": true,
+  "bip": "172.20.0.1/16"
+}
+```
+2. **/var/run/docker.sock** is a UNIX domain socket file that acts as the communication endpoint for the Docker daemon. Think of it as:     The remote control for the Docker engine Yes — if you mount the Docker socket from Machine A into a container running on Machine B, you can control Machine A’s Docker daemon.  
+But this only works if the socket is accessible over the network, which is normally not the case.
+
 1. **Dockerfile** file handles single containers, while the **docker-compose.yaml** file handles multiple container applications
 * Create a docker file with name **Dockerfile** and add all the necessary commands
 ```
@@ -832,7 +968,7 @@ copy the source code
 * **docker build . -t dockerimagename** builds the image with given name. Note that the Dockerfile with commands should be available in the same folder where this commands get executed. 
 * Difference between **ENTRYPOINT** and **CMD** in a Dockerfile is how they interact with the Docker run command.
 * **EXPOSE** expose the port.
-* **COPY** simply copies files or directories from the host machine to the Docker image. **ADD** has additional functionality beyond just copying - it can also download files from remote URLs and automatically extract compressed archives
+* **COPY** simply copies files or directories from the host machine to the Docker image. **ADD** has additional functionality beyond just copying - it can also download files from remote URLs and automatically extract compressed archives ✔ COPY :    Only copies local files → container.    No magic, no surprises.    Preferred for almost everything. ✔ ADD:   Does everything COPY does plus:   Unpacks tar files automatically.  Can fetch files from URLs.
 * **RUN** executes when building the image. ENTRYPOINT and CMD gets executed when the container runs. Each RUN instruction creates a new layer. Connect all the RUN instructions via &&.
 * **ENTRYPOINT** Defines the executable that will be run when the container starts. The **ENTRYPOINT** command cannot be overridden by the Docker run command. Any arguments passed to the Docker run command will be appended to the **ENTRYPOINT** command. The **ENTRYPOINT** command is the primary entry point for executing the container.
 * **CMD** Defines the default command and/or parameters that will be used if no command is specified when starting the container. The **CMD** command can be completely overridden by providing arguments to the Docker run command. The **CMD** command is used as the default command when none is specified, but it can be overridden. If the Dockerfile contains multiple CMD instructions, **only the last one is used**. The CMD instruction can be overridden by providing a command and arguments when running the container.
@@ -1226,3 +1362,84 @@ networks:
 
 ### orchestration
 * kubernetes, docker swarm, container orchestration for running multiple containers and monitoring them.
+* In docker swarm, A global service runs exactly one container on every node in the swarm — no more, no less.
+* In Docker Swarm, quorum is the minimum number of manager nodes that must be online and communicating for the cluster to continue functioning. quorum=⌊N/2⌋+1
+
+Interesting questions 
+- The command **docker network create -d overlay -o encrypted network** correctly creates an encrypted overlay network for services. Overlay networks exist to solve multi‑host communication: You have multiple servers (nodes). Docker Swarm runs containers across them. Overlay creates a virtual network that spans all nodes.  Containers on different machines can talk as if they’re on the same LAN. ✔ Bridge network:  Default Docker network.    Works on one host.    Containers can talk to each other.    Host can talk to containers (via port mapping).  Containers are isolated from the outside world unless you publish ports. Host Network : Direct Access to Host Networking. If you use --network host:    Container shares the host’s network stack.    No isolation.    No port mapping needed.   Fastest networking. 🧬 Macvlan — Containers Get Their Own IP on Your LAN: Macvlan makes containers appear as physical devices on your LAN.    Each container gets its own IP address.    They behave like separate machines.    Host cannot talk to containers unless you configure special routing
+# Docker Swarm Setup — Simple Story + Commands
+
+This guide explains Docker Swarm in the simplest way possible using two short stories:
+
+1. **Two distant computers** (India + Germany) forming one Swarm cluster. If both machines are on the same LAN → use the LAN IP. If machines are in different locations → you need a stable, reachable IP  
+2. **A larger cluster** with many nodes  
+
+Both stories include the exact commands you need.
+
+---
+
+# 1. Story: Two Distant Computers Become One Cluster
+
+Arun has a computer in India.  
+Lena has a computer in Germany.  
+Both install Docker and want their machines to work together as one cluster.
+
+## Step 1 — Install Docker (on both machines)
+
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+## Step 2 — Arun creates the Swarm (manager)
+```
+docker swarm init --advertise-addr <INDIA-IP>
+```
+
+## Step 3 — Lena joins the Swarm (worker)
+```
+docker swarm join --token <TOKEN> <INDIA-IP>:2377
+```
+
+## Step 4 — Create an overlay network. ✅ Run this command on a Swarm manager. Only managers can modify swarm‑level objects (networks, services, configs, secrets).
+```
+docker network create -d overlay --opt encrypted global-net
+```
+
+## Step 5 — Deploy a service. Run it on a Swarm manager node
+```
+docker service create \
+  --name webapp \
+  --replicas 4 \
+  --network global-net \
+  nginx
+```
+
+# 2. Story: A Big Cluster With Many Nodes
+Imagine you have 10, 20, or 50 machines in the same datacenter or cloud region.
+You install Docker on each one, just like before.
+## Step 1 — Install Docker on every node
+```
+curl -fsSL https://get.docker.com | sh
+```
+## Step 2 — Initialize Swarm on the first node. ip addr show or hostname -I to get the ip address. 192.168.1.10 looks like LAN (Local Area Network) IP address is used. 
+```
+docker swarm init --advertise-addr <MANAGER-IP>
+```
+## Step 3 — Join all other nodes
+```
+docker swarm join --token <TOKEN> <MANAGER-IP>:2377
+```
+
+## Step 4 — Create an overlay network
+```
+docker network create -d overlay --opt encrypted global-net
+```
+## Step 5 — Deploy a service
+```
+docker service create \
+  --name api \
+  --replicas 20 \
+  --network cluster-net \
+  nginx
+```
