@@ -53,6 +53,7 @@ docker info
    3. docker-compose --version
 
 * **docker info** displays all the information about docker installation, configuration and networking.
+* **docker system events** reports events happening in docker. for example image pulling, running, deleting etc.
 * **docker system prune** prune the entire Docker system and remove all unused containers, images, networks, and volumes.  **-fa** are force and all flag.
 * The number of containers that can be run depends on the available resources (CPU, memory, etc.) on the host machine.
 The main factors that determine the maximum number of containers on a host are: Available memory on the host, CPU resources of the host, Kernel resources like cgroups, namespaces, etc. As you run more containers, they consume more of the host's memory, CPU cycles, and kernel resources. Once these resources are exhausted, you won't be able to run additional containers.
@@ -597,6 +598,8 @@ deploy:
 ```
 * **docker run -P nginx** Docker will automatically map:   Container port 80 → random host port,    Container port 443 → random host port. **-p 8080:80** Map specific host port → container port while the **-P** Map all EXPOSED ports → random host ports. Use docker ps or docker port mycontainer to find the host port number
 * **docker export** is used to back up the container while the **docker save** is used to back the docker images.
+* **docker container create --dns 8.8.8.8 --name mycontainer app1** create a container (not run it) with a custom DNS server. **docker container create --dns 8.8.8.8 --dns 1.1.1.1 --name mycontainer app1** You can also specify multiple DNS servers. **docker container create --dns 8.8.8.8 --dns-search mydomain.local --name mycontainer app1** And if you want to set a custom DNS search domain. **docker container start mycontainer** stats container manually. **docker run --dns 8.8.8.8 ubuntu** runs containre directly with all set up. **docker run --dns 8.8.8.8 --dns 1.1.1.1 ubuntu** Inside the container, Docker writes this into /etc/resolv.conf: `nameserver 8.8.8.8 and nameserver 1.1.1.1` Default bridge network (normal mode) Docker injects its own DNS:`nameserver 127.0.0.11`. When a container is on the default bridge network, the traffic flow is: container → docker0 bridge → host NAT → internet. docker0 does allow containers to access the outside world. ✔ Bridge network isolates containers from the outside world reaching in: Containers can reach the internet The internet cannot reach containers unless you expose ports.    A virtual gateway for containers Host network mode (--network host). The container shares the host’s network stack, so it uses the host’s DNS directly.
+
 ******************************
 
 ### Docker storage and File systems
